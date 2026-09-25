@@ -5,10 +5,11 @@ export const SITE = {
   name: 'Playful Candles',
   legalName: 'Paloma da Cruz Marques', // empresária em nome individual (atividade aberta nas Finanças)
   nif: '314148213',
-  // Domínio oficial: playfulcandles.com (a configurar na VPS ao subir). NEXT_PUBLIC_SITE_URL tem prioridade.
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://playfulcandles.com').replace(/\/$/, ''),
+  // Domínio oficial: playfulcandles.com. NEXT_PUBLIC_SITE_URL tem prioridade; `||` (não `??`) porque o
+  // Docker passa build args não definidas como string vazia.
+  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://playfulcandles.com').replace(/\/$/, ''),
   // Contas de cliente (Shopify hosted). Trocar por NEXT_PUBLIC_ACCOUNT_URL se mudar.
-  accountUrl: process.env.NEXT_PUBLIC_ACCOUNT_URL ?? 'https://shopify.com/98533048648/account',
+  accountUrl: process.env.NEXT_PUBLIC_ACCOUNT_URL || 'https://shopify.com/98533048648/account',
   locale: 'pt_PT',
   description:
     'Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com ceras vegetais e fragrâncias premium. Portes grátis acima de €35 e entrega em 24/72h em Portugal continental.',
