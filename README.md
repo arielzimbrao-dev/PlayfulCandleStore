@@ -30,7 +30,7 @@ O projeto é publicado como imagem Docker (`Dockerfile` multi-stage, `output: 's
 1. **Coolify → New Resource → Application** → escolher este repositório (GitHub App ou repo público) e o branch.
 2. **Build Pack:** `Dockerfile` (caminho `/Dockerfile`, base directory `/`).
 3. **Ports Exposes:** `3000`.
-4. **Domínio:** em *Domains* pôr `https://playfulcandles.pt` (o Coolify/Traefik emite o certificado Let's Encrypt).
+4. **Domínio:** em *Domains* pôr `https://playfulcandles.com` (o Coolify/Traefik emite o certificado Let's Encrypt).
    O DNS (registo A) do domínio tem de apontar para o IP da VPS.
 5. **Environment Variables:** as da tabela acima + as do `.env.local.example`
    (`NEXT_PUBLIC_*`, `SHOPIFY_CLIENT_ID`, `SHOPIFY_CLIENT_SECRET`, `SHOPIFY_REVALIDATE_SECRET`).
@@ -41,7 +41,7 @@ O projeto é publicado como imagem Docker (`Dockerfile` multi-stage, `output: 's
 6. **Health Check:** caminho `/api/health`, porta `3000` (a imagem também traz `HEALTHCHECK`).
 7. **Deploy automático:** ativar *Auto Deploy* (com a GitHub App) ou usar o webhook de deploy do Coolify.
 8. **Webhook Shopify (ISR):** apontar `products/update` e `collections/update` para
-   `https://playfulcandles.pt/api/revalidate` com o header `x-revalidate-secret`.
+   `https://playfulcandles.com/api/revalidate` com o header `x-revalidate-secret`.
 
 Notas: correr **uma só instância** — o rate limit das reviews e o cache ISR vivem no container
 (o cache recomeça a cada deploy, o que é inofensivo). Testar a imagem localmente:

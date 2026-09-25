@@ -128,7 +128,7 @@ O menu/footer apontam para estas **handles exatas**. Estado atual verificado na 
 
 ## 3. SEO — configuração externa
 
-- [ ] **Domínio**: apontar `playfulcandles.pt` para a VPS do Coolify (registo A → IP da VPS; HTTPS via Let's Encrypt no Coolify — ver README › Deploy). Definir `NEXT_PUBLIC_SITE_URL` com o domínio final.
+- [ ] **Domínio**: apontar `playfulcandles.com` para a VPS do Coolify (registo A → IP da VPS; HTTPS via Let's Encrypt no Coolify — ver README › Deploy). Definir `NEXT_PUBLIC_SITE_URL` com o domínio final.
 - [ ] **Google Search Console**: adicionar a propriedade, verificar (mete o token em `NEXT_PUBLIC_GSC_VERIFICATION` → gera a meta tag) e **submeter `/sitemap.xml`**.
 - [ ] **Bing Webmaster Tools**: idem (submeter sitemap).
 - [ ] **Google Business Profile** (GEO/local): criar/reclamar o perfil da marca, verificar, e usar **exatamente o mesmo NAP** de `lib/site.ts`. Ligar as redes sociais.
@@ -141,7 +141,7 @@ O menu/footer apontam para estas **handles exatas**. Estado atual verificado na 
 
 Variáveis (em `.env.local`, ver `.env.local.example`):
 ```bash
-NEXT_PUBLIC_SITE_URL=https://playfulcandles.pt
+NEXT_PUBLIC_SITE_URL=https://playfulcandles.com
 NEXT_PUBLIC_GSC_VERIFICATION=   # Search Console
 NEXT_PUBLIC_GTM_ID=             # GTM-XXXXXXX
 NEXT_PUBLIC_GA_ID=              # G-XXXXXXXXXX (se não usares GTM)
