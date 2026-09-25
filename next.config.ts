@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 
 const config: NextConfig = {
+  // Build autocontido para a imagem Docker (Coolify): .next/standalone traz só o necessário.
+  output: 'standalone',
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'cdn.shopify.com' }],
     // 75 é o default do Next e chega para thumbnails; 90 é para as imagens grandes de marca
