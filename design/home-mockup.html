@@ -1,0 +1,1018 @@
+<title>Playful Candles</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js" crossorigin="anonymous"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+  /* Genty — the brand identity font (self-hosted; GentyDemo, personal-use license).
+     'Genty' is first in --font-display, so headings render in it; Fredoka is the fallback.
+     Production TODO: convert to woff2 for smaller payload + secure a commercial license. */
+  @font-face{
+    font-family:'Genty';
+    src:url('fonts/Genty.otf') format('opentype');
+    font-weight:400 700;font-style:normal;font-display:swap;
+  }
+
+  /* ============ TOKENS ============ */
+  :root{
+    /* brand fills */
+    --pink:#ff5ca6; --orange:#f88e2f; --grape:#7c2fb0; --grape-bright:#a24bd6;
+    --teal:#2bb6a3; --lemon:#ffd24c;
+    /* ink (AA text) */
+    --ink:#2a1b24; --ink-soft:#63505b;
+    --pink-deep:#c01e63; --orange-deep:#b8560f;
+    --on-brand:#2a1b24; --on-deep:#ffffff;
+    /* surfaces */
+    --bg:#fff7fb; --surface:#ffffff; --surface-sink:#fff0f6;
+    --line:#f4d9e6; --line-strong:#e9c2d4;
+    --sale:var(--pink-deep); --success:#1f8f6b;
+    /* type — Genty is the brand face; Fredoka is the graceful fallback until the file lands */
+    --font-display:'Genty','Fredoka','Baloo 2',system-ui,sans-serif;
+    --font-body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --fs-hero:clamp(2.6rem,7vw,5rem);
+    --fs-h2:clamp(1.9rem,4vw,3rem);
+    --fs-h3:clamp(1.25rem,2vw,1.6rem);
+    --fs-lead:clamp(1.05rem,1.6vw,1.3rem);
+    --fs-sm:.875rem; --fs-xs:.75rem;
+    /* space */
+    --wrap:1200px; --gutter:clamp(1rem,4vw,2.5rem);
+    --section:clamp(3.5rem,8vw,7rem);
+    --announce-h:42px; --header-h:68px;
+    /* radii */
+    --r-sm:10px; --r-md:16px; --r-lg:24px; --r-xl:32px; --r-2xl:44px; --r-pill:999px;
+    --r-blob:42% 58% 63% 37%/41% 44% 56% 59%;
+    /* shadow */
+    --sh-sm:0 2px 8px -2px rgba(42,27,36,.12);
+    --sh-md:0 14px 30px -14px rgba(255,92,166,.45);
+    --sh-lg:0 26px 60px -22px rgba(248,142,47,.5);
+    --sh-focus:0 0 0 3px var(--bg),0 0 0 6px var(--pink-deep);
+    /* motion */
+    --ease:cubic-bezier(.22,1,.36,1); --t-fast:150ms; --t:280ms; --t-slow:600ms;
+    /* z */
+    --z-blob:0; --z-base:1; --z-sticky:100; --z-header:200; --z-menu:300;
+  }
+
+  /* ============ BASE ============ */
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--font-body);font-size:1rem;line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:clip}
+  h1,h2,h3{font-family:var(--font-display);font-weight:600;line-height:1.05;
+    letter-spacing:-.02em;text-wrap:balance;margin:0}
+  p{text-wrap:pretty;margin:0}
+  a{color:var(--grape);text-decoration:none}
+  img{max-width:100%}
+  ul{margin:0;padding:0;list-style:none}
+  button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  :where(a,button,input,summary,[tabindex]):focus-visible{outline:none;
+    box-shadow:var(--sh-focus);border-radius:var(--r-md)}
+  .wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:var(--gutter)}
+  .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+    overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  main>section{position:relative}
+  .eyebrow-strong{font-family:var(--font-display);font-weight:600;
+    color:var(--pink-deep);font-size:var(--fs-sm)}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;
+    min-height:48px;padding:.7em 1.5em;border-radius:var(--r-pill);
+    font-family:var(--font-display);font-weight:600;font-size:1.02rem;
+    transition:transform var(--t) var(--ease),box-shadow var(--t) var(--ease),
+      background var(--t) var(--ease),color var(--t) var(--ease)}
+  .btn:hover{transform:translateY(-3px)}
+  .btn--primary{background:var(--pink);color:var(--on-brand);box-shadow:var(--sh-sm)}
+  .btn--primary:hover{box-shadow:var(--sh-md)}
+  .btn--outline{background:transparent;color:var(--pink-deep);
+    box-shadow:inset 0 0 0 2px var(--pink-deep)}
+  .btn--outline:hover{background:var(--surface-sink)}
+  .btn--ghost{min-height:44px;min-width:44px;padding:.5em;border-radius:var(--r-pill);
+    font-size:1.05rem;color:var(--ink)}
+  .btn--ghost:hover{background:var(--surface-sink)}
+
+  /* ============ ANNOUNCEMENT BAR ============ */
+  .announce{background:linear-gradient(90deg,var(--pink),var(--orange));
+    color:var(--on-brand);font-weight:800;font-size:var(--fs-sm);
+    text-align:center;overflow:hidden;height:var(--announce-h);position:relative}
+  .announce__viewport{height:var(--announce-h);overflow:hidden;max-width:var(--wrap);
+    margin-inline:auto;padding-inline:var(--gutter)}
+  .announce__rotator{display:flex;flex-direction:column;
+    animation:announce-roll 12s var(--ease) infinite}
+  .announce__item{height:var(--announce-h);display:flex;align-items:center;
+    justify-content:center;gap:.5em}
+  @keyframes announce-roll{
+    0%,28%{transform:translateY(0)}
+    33%,61%{transform:translateY(-42px)}
+    66%,94%{transform:translateY(-84px)}
+    100%{transform:translateY(-126px)}}
+
+  /* ============ HEADER ============ */
+  .site-header{position:sticky;top:0;z-index:var(--z-header);
+    background:color-mix(in srgb,var(--surface) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .header-inner{display:flex;align-items:center;gap:clamp(.5rem,2vw,1.5rem);
+    min-height:var(--header-h)}
+  .brand-logo{display:flex;align-items:center;height:38px;flex-shrink:0}
+  .brand-logo img{height:100%;width:auto;display:block}
+  .primary-nav ul{display:flex;gap:.25rem}
+  .primary-nav a{display:inline-flex;align-items:center;min-height:44px;
+    padding:0 .85rem;border-radius:var(--r-pill);color:var(--ink);
+    font-weight:700;font-size:.95rem;transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease)}
+  .primary-nav a:hover{background:var(--surface-sink);color:var(--pink-deep)}
+  .header-tools{margin-left:auto;display:flex;align-items:center;gap:.15rem}
+  .cart-btn{position:relative}
+  .cart-count{position:absolute;top:2px;right:0;min-width:20px;height:20px;
+    padding:0 5px;border-radius:var(--r-pill);background:var(--pink);
+    color:var(--on-brand);font-family:var(--font-display);font-weight:700;
+    font-size:.7rem;display:grid;place-items:center;line-height:1;
+    box-shadow:0 0 0 2px var(--surface)}
+  .nav-toggle{position:absolute;opacity:0;width:44px;height:44px;margin:0;cursor:pointer}
+  .burger{display:none;width:44px;height:44px;border-radius:var(--r-pill);
+    place-items:center;background:var(--surface-sink)}
+  .burger span,.burger span::before,.burger span::after{content:"";display:block;
+    width:20px;height:2.5px;border-radius:2px;background:var(--ink);
+    transition:transform var(--t) var(--ease),opacity var(--t) var(--ease)}
+  .burger span::before{transform:translateY(-6px)}
+  .burger span::after{transform:translateY(3.5px)}
+
+  /* ============ CAROUSEL CONTROLS (shared) ============ */
+  .car-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:6;
+    width:48px;height:48px;border-radius:var(--r-pill);display:grid;place-items:center;
+    background:rgba(255,255,255,.92);color:var(--ink);box-shadow:var(--sh-sm);
+    font-size:1.05rem;transition:background var(--t-fast) var(--ease),transform var(--t) var(--ease),opacity var(--t) var(--ease)}
+  .car-arrow:hover{background:#fff;transform:translateY(-50%) scale(1.06)}
+  .car-arrow[disabled]{opacity:.35;cursor:default;transform:translateY(-50%)}
+  .car-arrow--prev{left:10px}
+  .car-arrow--next{right:10px}
+  .car-dots{display:flex;gap:.45rem;justify-content:center;align-items:center}
+  .car-dots .dot{width:10px;height:10px;padding:0;border-radius:var(--r-pill);
+    background:var(--line-strong);transition:width var(--t) var(--ease),background var(--t) var(--ease)}
+  .car-dots .dot[aria-current="true"]{width:26px;background:var(--pink-deep)}
+
+  /* ============ HERO — FULLSCREEN MEDIA CAROUSEL ============ */
+  .hero{position:relative;height:calc(100dvh - var(--announce-h) - var(--header-h));
+    min-height:540px;max-height:880px;overflow:hidden;background:var(--ink);isolation:isolate}
+  .hero__viewport{height:100%;overflow:hidden}
+  .hero__track{display:flex;height:100%;
+    transition:transform var(--t-slow) var(--ease)}
+  .hero__slide{position:relative;flex:0 0 100%;height:100%;overflow:hidden;
+    display:grid;align-items:end}
+  /* media layer — swap the gradient for <img>/<video> in production (see note) */
+  .hero__media{position:absolute;inset:0;z-index:0}
+  .hero__media img,.hero__media video{width:100%;height:100%;object-fit:cover;display:block}
+  .hero__media--1{background:
+    radial-gradient(60% 80% at 78% 30%,rgba(255,210,76,.9),transparent 60%),
+    radial-gradient(70% 90% at 15% 80%,rgba(124,47,176,.85),transparent 60%),
+    linear-gradient(135deg,var(--pink),var(--orange))}
+  .hero__media--2{background:
+    radial-gradient(60% 80% at 20% 25%,rgba(43,182,163,.9),transparent 60%),
+    radial-gradient(70% 90% at 85% 80%,rgba(255,92,166,.9),transparent 60%),
+    linear-gradient(135deg,#5a2ea6,var(--grape-bright))}
+  .hero__media--3{background:
+    radial-gradient(60% 80% at 80% 70%,rgba(255,210,76,.95),transparent 60%),
+    radial-gradient(70% 90% at 20% 20%,rgba(248,142,47,.95),transparent 60%),
+    linear-gradient(135deg,var(--orange),var(--pink))}
+  .hero__scrim{position:absolute;inset:0;z-index:1;
+    background:linear-gradient(90deg,rgba(20,10,16,.72),rgba(20,10,16,.28) 55%,transparent),
+      linear-gradient(0deg,rgba(20,10,16,.55),transparent 45%)}
+  .hero__ph{position:absolute;top:1rem;right:1rem;z-index:2;
+    background:rgba(0,0,0,.35);color:#fff;font-size:var(--fs-xs);font-weight:700;
+    padding:.35em .8em;border-radius:var(--r-pill);backdrop-filter:blur(4px)}
+  .hero__content{position:relative;z-index:3;width:100%;
+    padding-block:clamp(2rem,5vw,4rem)}
+  .hero__content .wrap{color:#fff}
+  .hero__eyebrow{font-family:var(--font-display);font-weight:600;
+    color:#ffd9ea;font-size:var(--fs-sm);text-shadow:0 1px 8px rgba(0,0,0,.4)}
+  .hero__title{font-size:var(--fs-hero);font-weight:700;color:#fff;max-width:14ch;
+    margin-top:.4rem;text-shadow:0 2px 20px rgba(0,0,0,.35)}
+  .hero__title .a{color:#ff9ec8}
+  .hero__title .b{color:var(--lemon)}
+  .hero__lead{font-size:var(--fs-lead);color:rgba(255,255,255,.92);
+    max-width:44ch;margin-top:1rem;text-shadow:0 1px 10px rgba(0,0,0,.4)}
+  .hero__cta{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:1.7rem}
+  .hero__cta .btn--outline{color:#fff;box-shadow:inset 0 0 0 2px #fff}
+  .hero__cta .btn--outline:hover{background:rgba(255,255,255,.15)}
+  .hero__trust{display:flex;flex-wrap:wrap;gap:.4rem 1.3rem;margin-top:1.5rem;
+    color:#fff;font-weight:700;font-size:var(--fs-sm)}
+  .hero__trust li{display:flex;align-items:center;gap:.45em}
+  .hero__trust i{color:var(--lemon)}
+  .hero .car-arrow{background:rgba(255,255,255,.85)}
+  .hero__dots{position:absolute;left:0;right:0;bottom:1.1rem;z-index:6}
+  .hero__dots .dot{background:rgba(255,255,255,.5)}
+  .hero__dots .dot[aria-current="true"]{background:#fff}
+
+  /* ============ WAVE DIVIDER ============ */
+  .wave{display:block;width:100%;height:clamp(28px,5vw,60px);margin-bottom:-1px}
+
+  /* section heading block */
+  .sec-head{display:flex;flex-wrap:wrap;align-items:end;gap:.5rem 1.5rem;
+    justify-content:space-between;margin-bottom:clamp(1.5rem,3vw,2.5rem)}
+  .sec-head h2{font-size:var(--fs-h2);max-width:16ch}
+  .sec-head p{color:var(--ink-soft);max-width:42ch}
+  .sec-link{font-family:var(--font-display);font-weight:600;color:var(--pink-deep);
+    display:inline-flex;align-items:center;gap:.35em;min-height:44px}
+
+  /* ============ CATEGORY TILES ============ */
+  .cats{padding-block:var(--section)}
+  .cat-grid{display:grid;gap:clamp(1rem,2.5vw,1.5rem);
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .cat-tile{position:relative;overflow:hidden;border-radius:var(--r-2xl);
+    padding:clamp(1.4rem,3vw,2rem);min-height:210px;display:flex;flex-direction:column;
+    justify-content:flex-end;color:var(--ink);isolation:isolate;
+    transition:transform var(--t) var(--ease),box-shadow var(--t) var(--ease)}
+  .cat-tile:hover{transform:translateY(-5px);box-shadow:var(--sh-md)}
+  .cat-tile__blob{position:absolute;inset:auto -20% 40% auto;width:70%;aspect-ratio:1;
+    border-radius:var(--r-blob);z-index:-1;transition:transform var(--t-slow) var(--ease)}
+  .cat-tile:hover .cat-tile__blob{transform:translate(-8%,6%) rotate(14deg)}
+  .cat-tile__ico{font-size:2rem;margin-bottom:auto}
+  .cat-tile h3{font-size:var(--fs-h3)}
+  .cat-tile p{color:var(--ink-soft);font-size:var(--fs-sm);margin:.25rem 0 .8rem}
+  .cat-tile .go{font-family:var(--font-display);font-weight:600;color:var(--pink-deep);
+    display:inline-flex;align-items:center;gap:.35em}
+  .cat-tile--pink{background:var(--surface-sink)}
+  .cat-tile--pink .cat-tile__blob{background:radial-gradient(circle at 40% 40%,var(--pink),transparent 72%)}
+  .cat-tile--pink .cat-tile__ico{color:var(--pink-deep)}
+  .cat-tile--orange{background:#fff3e6}
+  .cat-tile--orange .cat-tile__blob{background:radial-gradient(circle at 40% 40%,var(--orange),transparent 72%)}
+  .cat-tile--orange .go,.cat-tile--orange .cat-tile__ico{color:var(--orange-deep)}
+  .cat-tile--grape{background:#f6ecfb}
+  .cat-tile--grape .cat-tile__blob{background:radial-gradient(circle at 40% 40%,var(--grape-bright),transparent 72%)}
+  .cat-tile--grape .go,.cat-tile--grape .cat-tile__ico{color:var(--grape)}
+  .cat-tile--teal{background:#e8f8f4}
+  .cat-tile--teal .cat-tile__blob{background:radial-gradient(circle at 40% 40%,var(--teal),transparent 72%)}
+  .cat-tile--teal .go,.cat-tile--teal .cat-tile__ico{color:#0f7a6c}
+
+  /* ============ PRODUCT CAROUSEL ============ */
+  .bestsellers{padding-block:var(--section);background:var(--surface-sink)}
+  .scroller{position:relative}
+  .carousel{display:flex;gap:clamp(1rem,2vw,1.4rem);overflow-x:auto;
+    scroll-snap-type:x mandatory;padding:.5rem .25rem 1.5rem;
+    margin-inline:calc(-1*var(--gutter));padding-inline:var(--gutter);
+    scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+  .carousel::-webkit-scrollbar{height:8px}
+  .carousel::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:var(--r-pill)}
+  .scroller .car-arrow{top:38%}
+  .card{scroll-snap-align:start;flex:0 0 clamp(230px,72vw,270px);
+    background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--sh-sm);
+    display:flex;flex-direction:column;overflow:hidden;
+    transition:transform var(--t) var(--ease),box-shadow var(--t) var(--ease)}
+  .card:hover{transform:translateY(-6px);box-shadow:var(--sh-md)}
+  .card__thumb{position:relative;aspect-ratio:4/5;display:grid;place-items:center;
+    overflow:hidden}
+  .card__thumb .mini-candle{font-size:2.8rem;filter:drop-shadow(0 8px 14px rgba(42,27,36,.2));
+    z-index:1}
+  .card__thumb .t-blob{position:absolute;width:78%;aspect-ratio:1;border-radius:var(--r-blob);
+    filter:blur(4px);opacity:.9}
+  .th-pink{background:linear-gradient(150deg,#ffe1ee,#ffd0e6)}
+  .th-pink .t-blob{background:radial-gradient(circle at 40% 40%,var(--pink),transparent 70%)}
+  .th-orange{background:linear-gradient(150deg,#ffe9d3,#ffdcb8)}
+  .th-orange .t-blob{background:radial-gradient(circle at 40% 40%,var(--orange),transparent 70%)}
+  .th-grape{background:linear-gradient(150deg,#f0e0f8,#e6cdf5)}
+  .th-grape .t-blob{background:radial-gradient(circle at 40% 40%,var(--grape-bright),transparent 70%)}
+  .th-teal{background:linear-gradient(150deg,#d8f5ee,#c4efe4)}
+  .th-teal .t-blob{background:radial-gradient(circle at 40% 40%,var(--teal),transparent 70%)}
+  .th-lemon{background:linear-gradient(150deg,#fff2c9,#ffe89e)}
+  .th-lemon .t-blob{background:radial-gradient(circle at 40% 40%,var(--lemon),transparent 68%)}
+  .card__body{padding:.9rem 1rem 1.1rem;display:flex;flex-direction:column;gap:.4rem;flex:1}
+  .tag{align-self:flex-start;font-weight:800;font-size:var(--fs-xs);
+    padding:.3em .7em;border-radius:var(--r-pill);letter-spacing:.01em}
+  .tag--vela{background:rgba(255,92,166,.14);color:var(--pink-deep)}
+  .tag--snap{background:rgba(248,142,47,.16);color:var(--orange-deep)}
+  .tag--wax{background:rgba(124,47,176,.14);color:var(--grape)}
+  .tag--pack{background:rgba(43,182,163,.16);color:#0f7a6c}
+  .tag--burner{background:rgba(42,27,36,.08);color:var(--ink)}
+  .card__name{font-family:var(--font-display);font-weight:600;font-size:1.08rem;
+    line-height:1.15}
+  .stars{display:flex;align-items:center;gap:.35em;font-size:var(--fs-sm);
+    color:var(--ink-soft);font-weight:700}
+  .stars .s{color:var(--lemon);letter-spacing:.06em}
+  .price-row{display:flex;align-items:baseline;gap:.5em;margin-top:auto}
+  .price{font-family:var(--font-display);font-weight:600;font-size:1.2rem}
+  .price--sale{color:var(--sale)}
+  .price-old{color:var(--ink-soft);text-decoration:line-through;font-weight:700;font-size:.95rem}
+  .card__cta{margin-top:.7rem;width:100%;min-height:46px;border-radius:var(--r-pill);
+    background:var(--pink);color:var(--on-brand);font-family:var(--font-display);
+    font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:.45em;
+    transition:transform var(--t-fast) var(--ease),box-shadow var(--t) var(--ease)}
+  .card__cta:hover{box-shadow:var(--sh-md)}
+  .card__cta[disabled]{background:var(--surface-sink);color:var(--ink-soft);
+    cursor:not-allowed;box-shadow:none}
+  /* badges on thumb */
+  .badge{position:absolute;top:.7rem;font-family:var(--font-display);font-weight:600;
+    font-size:var(--fs-xs);padding:.35em .7em;border-radius:var(--r-pill);z-index:2}
+  .badge--sale{left:.7rem;background:var(--pink-deep);color:#fff}
+  .badge--soldout{left:.7rem;background:var(--ink);color:#fff}
+  .card--soldout .card__thumb{filter:saturate(.4) opacity(.85)}
+  .scroller__dots{margin-top:.4rem}
+
+  /* ============ USP MARQUEE ============ */
+  .marquee{background:linear-gradient(90deg,var(--pink),var(--orange));
+    color:var(--on-brand);overflow:hidden;padding-block:.9rem;position:relative}
+  .marquee__track{display:flex;gap:0;width:max-content;
+    animation:marquee 30s linear infinite}
+  .marquee__group{display:flex;align-items:center;flex-shrink:0}
+  .marquee__item{display:inline-flex;align-items:center;gap:.6rem;
+    padding-inline:1.4rem;font-family:var(--font-display);font-weight:600;
+    font-size:clamp(1rem,2vw,1.3rem);white-space:nowrap}
+  .marquee__item::after{content:"✦";margin-left:1.4rem;opacity:.7}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ============ MIX & MATCH ============ */
+  .mix{padding-block:var(--section)}
+  .mix-card{position:relative;overflow:hidden;border-radius:var(--r-2xl);
+    background:linear-gradient(150deg,#2a1b24,#4a2540);color:#fff;
+    padding:clamp(1.8rem,5vw,3.5rem);display:grid;gap:2rem;
+    grid-template-columns:1fr;box-shadow:var(--sh-lg)}
+  .mix-card .m-blob{position:absolute;border-radius:var(--r-blob);filter:blur(8px);opacity:.55;z-index:0}
+  .mix-card .m-blob--1{width:40%;aspect-ratio:1;right:-8%;top:-14%;
+    background:radial-gradient(circle,var(--pink),transparent 70%)}
+  .mix-card .m-blob--2{width:34%;aspect-ratio:1;left:-6%;bottom:-16%;
+    background:radial-gradient(circle,var(--orange),transparent 70%)}
+  .mix-card>*{position:relative;z-index:1}
+  .mix-copy h2{font-size:var(--fs-h2);color:#fff}
+  .mix-copy .eyebrow-strong{color:var(--lemon)}
+  .mix-copy p{color:rgba(255,255,255,.82);margin-top:.8rem;max-width:44ch}
+  .mix-options{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.6rem}
+  .mix-opt{position:relative;background:rgba(255,255,255,.08);
+    border:2px solid rgba(255,255,255,.16);border-radius:var(--r-lg);
+    padding:1.1rem 1.4rem;min-width:150px;
+    transition:border-color var(--t) var(--ease),transform var(--t) var(--ease)}
+  .mix-opt:hover{transform:translateY(-4px);border-color:var(--pink)}
+  .mix-opt .q{font-family:var(--font-display);font-weight:700;font-size:1.5rem}
+  .mix-opt .pr{color:var(--lemon);font-family:var(--font-display);font-weight:600;font-size:1.15rem}
+  .mix-opt--pop{border-color:var(--pink)}
+  .mix-opt .pop{position:absolute;top:-11px;right:12px;background:var(--pink);
+    color:var(--on-brand);font-family:var(--font-display);font-weight:600;
+    font-size:var(--fs-xs);padding:.25em .7em;border-radius:var(--r-pill)}
+  .mix-card .btn{margin-top:1.7rem;align-self:flex-start}
+  .mix-card .btn--primary{background:var(--lemon)}
+  .mix-visual{text-align:center;font-size:clamp(4rem,14vw,8rem);line-height:1}
+
+  /* ============ HOW IT WORKS ============ */
+  .how{padding-block:var(--section);background:var(--surface-sink)}
+  .steps{display:grid;gap:clamp(1.2rem,3vw,2rem);
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .step{position:relative;background:var(--surface);border-radius:var(--r-xl);
+    padding:2.2rem 1.6rem 1.6rem;box-shadow:var(--sh-sm);text-align:center}
+  .step__num{width:56px;height:56px;margin:0 auto .9rem;border-radius:var(--r-blob);
+    display:grid;place-items:center;font-family:var(--font-display);font-weight:700;
+    font-size:1.5rem;color:var(--on-brand)}
+  .step:nth-child(1) .step__num{background:var(--pink)}
+  .step:nth-child(2) .step__num{background:var(--orange)}
+  .step:nth-child(3) .step__num{background:var(--grape-bright);color:#fff}
+  .step h3{font-size:var(--fs-h3);margin-bottom:.4rem}
+  .step p{color:var(--ink-soft);font-size:var(--fs-sm)}
+  .step__ico{font-size:1.3rem;display:block;margin-top:.7rem;color:var(--pink-deep)}
+
+  /* ============ REVIEWS ============ */
+  .reviews{padding-block:var(--section)}
+  .reviews-head{text-align:center;margin-bottom:clamp(2rem,4vw,3rem)}
+  .rating-big{display:inline-flex;align-items:center;gap:.6rem;
+    background:var(--surface);border-radius:var(--r-pill);padding:.6rem 1.3rem;
+    box-shadow:var(--sh-sm);font-family:var(--font-display);font-weight:600;margin-bottom:1rem}
+  .rating-big .num{font-size:1.6rem}.rating-big .s{color:var(--lemon)}
+  .reviews-head h2{font-size:var(--fs-h2)}
+  .review-grid{display:grid;gap:clamp(1rem,2.5vw,1.5rem);
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .review{background:var(--surface);border-radius:var(--r-xl);padding:1.6rem;
+    box-shadow:var(--sh-sm);display:flex;flex-direction:column;gap:.8rem}
+  .review .s{color:var(--lemon);font-size:1.1rem;letter-spacing:.1em}
+  .review blockquote{margin:0;font-size:1.05rem;line-height:1.55}
+  .review figcaption{display:flex;align-items:center;gap:.7rem;margin-top:auto;
+    color:var(--ink-soft);font-weight:700;font-size:var(--fs-sm)}
+  .avatar{width:40px;height:40px;border-radius:var(--r-blob);display:grid;
+    place-items:center;font-size:1.1rem;color:var(--on-brand);flex-shrink:0}
+
+  /* ============ NEWSLETTER ============ */
+  .news{padding-block:var(--section)}
+  .news-card{position:relative;overflow:hidden;border-radius:var(--r-2xl);
+    background:linear-gradient(150deg,var(--pink),var(--orange));
+    padding:clamp(2rem,5vw,4rem);text-align:center;color:var(--on-brand);
+    box-shadow:var(--sh-lg)}
+  .news-card .n-blob{position:absolute;border-radius:var(--r-blob);
+    background:rgba(255,255,255,.25);filter:blur(6px)}
+  .news-card .n-blob--1{width:30%;aspect-ratio:1;left:-6%;top:-10%}
+  .news-card .n-blob--2{width:26%;aspect-ratio:1;right:-4%;bottom:-14%}
+  .news-card>*{position:relative;z-index:1}
+  .news-card h2{font-size:var(--fs-h2)}
+  .news-card p{max-width:38ch;margin:.7rem auto 0;font-weight:700}
+  .news-form{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;
+    max-width:480px;margin:1.6rem auto 0}
+  .news-form input{flex:1 1 220px;min-height:52px;border:none;border-radius:var(--r-pill);
+    padding:0 1.3rem;font-family:var(--font-body);font-size:1rem;color:var(--ink);
+    background:var(--surface);box-shadow:var(--sh-sm)}
+  .news-form input::placeholder{color:var(--ink-soft)}
+  .news-form .btn--primary{background:var(--ink);color:#fff;flex:0 0 auto}
+  .news-form .btn--primary:hover{background:#3d2735}
+  .news-trust{margin-top:1rem;font-size:var(--fs-sm);font-weight:700;opacity:.9;
+    display:inline-flex;flex-wrap:wrap;justify-content:center;gap:.3em .6em}
+
+  /* ============ FOOTER ============ */
+  .site-footer{background:var(--ink);color:rgba(255,255,255,.8);
+    padding-block:clamp(2.5rem,6vw,4.5rem) 1.5rem}
+  .footer-grid{display:grid;gap:2rem;grid-template-columns:1fr;
+    padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.12)}
+  .footer-brand .brand-logo{height:42px;background:rgba(255,255,255,.96);
+    padding:.4rem .7rem;border-radius:var(--r-pill);width:max-content}
+  .footer-brand p{margin-top:.9rem;max-width:32ch;font-size:var(--fs-sm)}
+  .footer-cols{display:grid;gap:2rem;grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+  .footer-cols h3{font-family:var(--font-display);font-weight:600;color:#fff;
+    font-size:1rem;margin-bottom:.9rem}
+  .footer-cols a{color:rgba(255,255,255,.8);font-size:var(--fs-sm);
+    display:inline-flex;min-height:36px;align-items:center;
+    transition:color var(--t-fast) var(--ease)}
+  .footer-cols a:hover{color:var(--pink)}
+  .footer-bottom{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;
+    align-items:center;padding-top:1.5rem;font-size:var(--fs-sm)}
+  .pay-row{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;font-size:1.7rem;
+    color:rgba(255,255,255,.85)}
+  .pay-chip{background:rgba(255,255,255,.1);border-radius:var(--r-sm);
+    padding:.35em .7em;font-weight:700;font-size:.75rem}
+  .social-row{display:flex;gap:.5rem}
+  .social-row a{width:40px;height:40px;border-radius:var(--r-pill);
+    background:rgba(255,255,255,.1);display:grid;place-items:center;font-size:1.05rem;
+    color:#fff;transition:background var(--t-fast) var(--ease)}
+  .social-row a:hover{background:var(--pink)}
+
+  /* ============ RESPONSIVE ============ */
+  @media (min-width:720px){
+    .mix-card{grid-template-columns:1.2fr .8fr;align-items:center}
+    .footer-grid{grid-template-columns:1.2fr 2fr}
+  }
+  @media (max-width:719px){
+    .primary-nav{position:absolute;left:0;right:0;top:100%;
+      background:var(--surface);border-bottom:1px solid var(--line);
+      padding:.5rem var(--gutter) 1rem;box-shadow:var(--sh-md);z-index:var(--z-menu);
+      display:none}
+    .primary-nav ul{flex-direction:column;gap:.15rem}
+    .primary-nav a{min-height:48px;width:100%}
+    .nav-toggle:checked~.primary-nav{display:block}
+    .burger{display:grid;order:-1}
+    .nav-toggle{display:block;order:-1;position:relative;width:44px;height:44px}
+    .nav-toggle~.burger{margin-left:-44px}
+    .nav-toggle:checked~.burger span{background:transparent}
+    .nav-toggle:checked~.burger span::before{transform:rotate(45deg)}
+    .nav-toggle:checked~.burger span::after{transform:rotate(-45deg)}
+    .car-arrow{width:42px;height:42px;font-size:.95rem}
+  }
+
+  /* ============ REDUCED MOTION ============ */
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;
+      animation-iteration-count:1!important;transition-duration:.001ms!important;
+      scroll-behavior:auto!important}
+    .announce__rotator{animation:none}
+    .marquee__track{animation:none;flex-wrap:wrap;width:auto}
+    .btn:hover,.card:hover,.cat-tile:hover,.mix-opt:hover{transform:none}
+  }
+</style>
+
+<a class="visually-hidden" href="#main">Saltar para o conteúdo</a>
+
+<!-- 1. ANNOUNCEMENT -->
+<div class="announce" role="region" aria-label="Anúncios da loja">
+  <div class="announce__viewport">
+    <ul class="announce__rotator">
+      <li class="announce__item"><i class="fa-solid fa-truck-fast" aria-hidden="true"></i> Portes grátis acima de €35 em Portugal continental</li>
+      <li class="announce__item"><i class="fa-solid fa-bolt" aria-hidden="true"></i> Entregas em 24/72h — encomenda hoje, acende amanhã</li>
+      <li class="announce__item"><i class="fa-solid fa-gift" aria-hidden="true"></i> Monta o teu pack: 3 snapbars por €13,50</li>
+      <li class="announce__item"><i class="fa-solid fa-truck-fast" aria-hidden="true"></i> Portes grátis acima de €35 em Portugal continental</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 2. HEADER -->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Abrir menu de navegação">
+    <span class="burger" aria-hidden="true"><span></span></span>
+
+    <a class="brand-logo" href="#" aria-label="Playful Candles — página inicial">
+      <img src="logo.png" alt="Playful Candles" width="1615" height="341">
+    </a>
+
+    <nav class="primary-nav" aria-label="Navegação principal">
+      <ul>
+        <li><a href="#loja">Loja</a></li>
+        <li><a href="#velas">Velas</a></li>
+        <li><a href="#wax">Wax Melts</a></li>
+        <li><a href="#snap">Snapbars</a></li>
+        <li><a href="#packs">Packs</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-tools">
+      <button class="btn btn--ghost" aria-label="Pesquisar"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+      <button class="btn btn--ghost" aria-label="A minha conta"><i class="fa-regular fa-user" aria-hidden="true"></i></button>
+      <button class="btn btn--ghost cart-btn" aria-label="Carrinho, 2 artigos">
+        <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i><span class="cart-count" aria-hidden="true">2</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- 3. HERO — fullscreen media carousel (images/videos) -->
+  <section class="hero" data-hero aria-label="Destaques" aria-roledescription="carrossel">
+    <div class="hero__viewport">
+      <div class="hero__track">
+
+        <!-- SLIDE 1 — swap .hero__media div for: <img src="..." alt="..."> or <video autoplay muted loop playsinline poster="..."><source src="..."></video> -->
+        <div class="hero__slide" role="group" aria-roledescription="slide" aria-label="1 de 3">
+          <div class="hero__media hero__media--1"></div>
+          <div class="hero__scrim"></div>
+          <span class="hero__ph">Substituir por foto/vídeo</span>
+          <div class="hero__content">
+            <div class="wrap">
+              <p class="hero__eyebrow">Velas artesanais · feitas em Lisboa</p>
+              <h1 class="hero__title">Acende o teu <span class="a">bom</span> <span class="b">mood</span>.</h1>
+              <p class="hero__lead">Velas, wax melts e snapbars feitos à mão, com ceras vegetais e fragrâncias que te põem a sorrir.</p>
+              <div class="hero__cta">
+                <a class="btn btn--primary" href="#loja">Explorar loja</a>
+                <a class="btn btn--outline" href="#packs">Montar o meu pack</a>
+              </div>
+              <ul class="hero__trust">
+                <li><i class="fa-solid fa-leaf" aria-hidden="true"></i> Ceras vegetais</li>
+                <li><i class="fa-solid fa-heart" aria-hidden="true"></i> Feito em Portugal</li>
+                <li><i class="fa-solid fa-truck-fast" aria-hidden="true"></i> Portes grátis &gt; €35</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2 -->
+        <div class="hero__slide" role="group" aria-roledescription="slide" aria-label="2 de 3">
+          <div class="hero__media hero__media--2"></div>
+          <div class="hero__scrim"></div>
+          <span class="hero__ph"><i class="fa-solid fa-play" aria-hidden="true"></i> Slot para vídeo</span>
+          <div class="hero__content">
+            <div class="wrap">
+              <p class="hero__eyebrow">Nova coleção</p>
+              <h1 class="hero__title">Verão <span class="b">Groovy</span> chegou.</h1>
+              <p class="hero__lead">Aromas frescos, frutados e tropicais para pôr a casa em modo férias.</p>
+              <div class="hero__cta">
+                <a class="btn btn--primary" href="#loja">Ver a coleção</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3 -->
+        <div class="hero__slide" role="group" aria-roledescription="slide" aria-label="3 de 3">
+          <div class="hero__media hero__media--3"></div>
+          <div class="hero__scrim"></div>
+          <span class="hero__ph">Substituir por foto/vídeo</span>
+          <div class="hero__content">
+            <div class="wrap">
+              <p class="hero__eyebrow">Mix &amp; Match</p>
+              <h1 class="hero__title">3 snapbars, <span class="a">1 preço</span> giro.</h1>
+              <p class="hero__lead">Escolhe os aromas que fazem o teu estilo e poupa já a partir de €13,50.</p>
+              <div class="hero__cta">
+                <a class="btn btn--primary" href="#packs">Montar o meu pack</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <button class="car-arrow car-arrow--prev" data-prev type="button" aria-label="Slide anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+    <button class="car-arrow car-arrow--next" data-next type="button" aria-label="Slide seguinte"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+    <div class="car-dots hero__dots" role="tablist" aria-label="Selecionar slide"></div>
+  </section>
+
+  <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="#fff7fb" d="M0,32 C240,72 480,0 720,24 C960,48 1200,8 1440,36 L1440,60 L0,60 Z"></path>
+  </svg>
+
+  <!-- 4. CATEGORIES -->
+  <section class="cats" id="loja" aria-labelledby="cats-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow-strong">Escolhe o teu vício ✨</p>
+          <h2 id="cats-h">Por onde queres começar?</h2>
+        </div>
+        <a class="sec-link" href="#loja">Ver tudo <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i></a>
+      </div>
+      <div class="cat-grid">
+        <a class="cat-tile cat-tile--pink" id="velas" href="#velas">
+          <span class="cat-tile__blob"></span>
+          <i class="cat-tile__ico fa-solid fa-fire-flame-curved" aria-hidden="true"></i>
+          <h3>Velas de Copo</h3>
+          <p>Horas de aroma num copo giro e reutilizável.</p>
+          <span class="go">Explorar <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i></span>
+        </a>
+        <a class="cat-tile cat-tile--grape" id="wax" href="#wax">
+          <span class="cat-tile__blob"></span>
+          <i class="cat-tile__ico fa-solid fa-droplet" aria-hidden="true"></i>
+          <h3>Wax Melts</h3>
+          <p>Potes de cera para o teu queimador favorito.</p>
+          <span class="go">Explorar <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i></span>
+        </a>
+        <a class="cat-tile cat-tile--orange" id="snap" href="#snap">
+          <span class="cat-tile__blob"></span>
+          <i class="cat-tile__ico fa-solid fa-cookie-bite" aria-hidden="true"></i>
+          <h3>Snapbars</h3>
+          <p>Parte, aquece e enche a casa de cheirinho.</p>
+          <span class="go">Explorar <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i></span>
+        </a>
+        <a class="cat-tile cat-tile--teal" href="#queimadores">
+          <span class="cat-tile__blob"></span>
+          <i class="cat-tile__ico fa-solid fa-fire" aria-hidden="true"></i>
+          <h3>Queimadores</h3>
+          <p>Peças de cerâmica que são pura decoração.</p>
+          <span class="go">Explorar <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. BEST-SELLERS CAROUSEL (arrows + dots) -->
+  <section class="bestsellers" aria-labelledby="best-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow-strong">Os preferidos de toda a gente ⭐</p>
+          <h2 id="best-h">Mais vendidos</h2>
+        </div>
+        <a class="sec-link" href="#loja">Ver a loja toda <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i></a>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="scroller" data-scroller>
+        <ul class="carousel" aria-label="Produtos mais vendidos, lista deslizável">
+
+          <li class="card">
+            <div class="card__thumb th-pink"><span class="t-blob"></span><span class="mini-candle">🕯️</span></div>
+            <div class="card__body">
+              <span class="tag tag--vela">Vela de Copo</span>
+              <span class="card__name">Pôr do Sol em Lisboa</span>
+              <span class="stars"><span class="s" aria-hidden="true">★★★★★</span> 4,9 <span style="font-weight:400">(128)</span></span>
+              <div class="price-row"><span class="price">€15,00</span></div>
+              <button class="card__cta">Escolher <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></button>
+            </div>
+          </li>
+
+          <li class="card">
+            <div class="card__thumb th-orange"><span class="t-blob"></span><span class="mini-candle">🍫</span></div>
+            <div class="card__body">
+              <span class="tag tag--snap">Snapbar</span>
+              <span class="card__name">Groovy Grapefruit</span>
+              <span class="stars"><span class="s" aria-hidden="true">★★★★★</span> 4,8 <span style="font-weight:400">(96)</span></span>
+              <div class="price-row"><span class="price">€5,00</span></div>
+              <button class="card__cta">Escolher <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></button>
+            </div>
+          </li>
+
+          <li class="card">
+            <div class="card__thumb th-grape">
+              <span class="badge badge--sale">SALE −15%</span>
+              <span class="t-blob"></span><span class="mini-candle">🫠</span>
+            </div>
+            <div class="card__body">
+              <span class="tag tag--wax">Wax Melt</span>
+              <span class="card__name">Baunilha Bubblegum</span>
+              <span class="stars"><span class="s" aria-hidden="true">★★★★★</span> 4,9 <span style="font-weight:400">(210)</span></span>
+              <div class="price-row">
+                <span class="price price--sale">€8,50</span>
+                <span class="price-old">€10,00</span>
+              </div>
+              <button class="card__cta">Escolher <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></button>
+            </div>
+          </li>
+
+          <li class="card">
+            <div class="card__thumb th-teal"><span class="t-blob"></span><span class="mini-candle">🕯️</span></div>
+            <div class="card__body">
+              <span class="tag tag--vela">Vela de Copo</span>
+              <span class="card__name">Figo &amp; Flor de Sal</span>
+              <span class="stars"><span class="s" aria-hidden="true">★★★★★</span> 5,0 <span style="font-weight:400">(64)</span></span>
+              <div class="price-row"><span class="price">€15,00</span></div>
+              <button class="card__cta">Escolher <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></button>
+            </div>
+          </li>
+
+          <li class="card">
+            <div class="card__thumb th-lemon"><span class="t-blob"></span><span class="mini-candle">🎁</span></div>
+            <div class="card__body">
+              <span class="tag tag--pack">Pack</span>
+              <span class="card__name">Trio Disco · 3 snapbars</span>
+              <span class="stars"><span class="s" aria-hidden="true">★★★★★</span> 4,9 <span style="font-weight:400">(150)</span></span>
+              <div class="price-row"><span class="price">€13,50</span></div>
+              <button class="card__cta">Escolher <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></button>
+            </div>
+          </li>
+
+          <li class="card card--soldout">
+            <div class="card__thumb th-pink">
+              <span class="badge badge--soldout">Esgotado</span>
+              <span class="t-blob"></span><span class="mini-candle">🔥</span>
+            </div>
+            <div class="card__body">
+              <span class="tag tag--burner">Queimador</span>
+              <span class="card__name">Blob Cerâmico</span>
+              <span class="stars"><span class="s" aria-hidden="true">★★★★★</span> 4,7 <span style="font-weight:400">(41)</span></span>
+              <div class="price-row"><span class="price">€20,00</span></div>
+              <button class="card__cta" disabled aria-disabled="true">Avisa-me <i class="fa-solid fa-bell" aria-hidden="true"></i></button>
+            </div>
+          </li>
+
+          <li class="card">
+            <div class="card__thumb th-teal"><span class="t-blob"></span><span class="mini-candle">🍫</span></div>
+            <div class="card__body">
+              <span class="tag tag--snap">Snapbar</span>
+              <span class="card__name">Menta Retro</span>
+              <span class="stars"><span class="s" aria-hidden="true">★★★★★</span> 4,8 <span style="font-weight:400">(77)</span></span>
+              <div class="price-row"><span class="price">€5,00</span></div>
+              <button class="card__cta">Escolher <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></button>
+            </div>
+          </li>
+
+          <li class="card card--soldout">
+            <div class="card__thumb th-orange">
+              <span class="badge badge--soldout">Esgotado</span>
+              <span class="t-blob"></span><span class="mini-candle">🫠</span>
+            </div>
+            <div class="card__body">
+              <span class="tag tag--wax">Wax Melt</span>
+              <span class="card__name">Coco Cósmico</span>
+              <span class="stars"><span class="s" aria-hidden="true">★★★★★</span> 4,9 <span style="font-weight:400">(88)</span></span>
+              <div class="price-row"><span class="price">€8,50</span></div>
+              <button class="card__cta" disabled aria-disabled="true">Avisa-me <i class="fa-solid fa-bell" aria-hidden="true"></i></button>
+            </div>
+          </li>
+
+        </ul>
+        <button class="car-arrow car-arrow--prev" data-prev type="button" aria-label="Anterior"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+        <button class="car-arrow car-arrow--next" data-next type="button" aria-label="Seguinte"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+        <div class="car-dots scroller__dots" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. USP MARQUEE -->
+  <section class="marquee" aria-label="Porquê a Playful Candles">
+    <div class="marquee__track">
+      <div class="marquee__group">
+        <span class="marquee__item"><i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i> Feito à mão em Portugal</span>
+        <span class="marquee__item"><i class="fa-solid fa-leaf" aria-hidden="true"></i> Ceras vegetais &amp; biodegradáveis</span>
+        <span class="marquee__item"><i class="fa-solid fa-gem" aria-hidden="true"></i> Fragrâncias premium</span>
+        <span class="marquee__item"><i class="fa-solid fa-gift" aria-hidden="true"></i> Super giftable</span>
+      </div>
+      <div class="marquee__group" aria-hidden="true">
+        <span class="marquee__item"><i class="fa-solid fa-hand-holding-heart"></i> Feito à mão em Portugal</span>
+        <span class="marquee__item"><i class="fa-solid fa-leaf"></i> Ceras vegetais &amp; biodegradáveis</span>
+        <span class="marquee__item"><i class="fa-solid fa-gem"></i> Fragrâncias premium</span>
+        <span class="marquee__item"><i class="fa-solid fa-gift"></i> Super giftable</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. MIX & MATCH -->
+  <section class="mix" id="packs" aria-labelledby="mix-h">
+    <div class="wrap">
+      <div class="mix-card">
+        <span class="m-blob m-blob--1"></span>
+        <span class="m-blob m-blob--2"></span>
+        <div class="mix-copy">
+          <p class="eyebrow-strong">Mix &amp; Match 🎨</p>
+          <h2 id="mix-h">Monta o teu pack de snapbars</h2>
+          <p>Escolhe os aromas que fazem o teu estilo. Quanto mais juntas, mais poupas — e fica sempre bem embrulhado para oferta.</p>
+          <div class="mix-options">
+            <div class="mix-opt">
+              <span class="q">3 snapbars</span>
+              <div class="pr">€13,50</div>
+            </div>
+            <div class="mix-opt mix-opt--pop">
+              <span class="pop">Mais popular ⭐</span>
+              <span class="q">5 snapbars</span>
+              <div class="pr">€20,00</div>
+            </div>
+          </div>
+          <a class="btn btn--primary" href="#packs">Começar a montar <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i></a>
+        </div>
+        <div class="mix-visual" aria-hidden="true">🍫🍬<br>🧡💗</div>
+      </div>
+    </div>
+  </section>
+
+  <svg class="wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="#fff0f6" d="M0,28 C220,8 460,56 720,32 C980,8 1220,52 1440,28 L1440,60 L0,60 Z"></path>
+  </svg>
+
+  <!-- 8. HOW IT WORKS -->
+  <section class="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <div class="sec-head" style="justify-content:center;text-align:center">
+        <div>
+          <p class="eyebrow-strong">Simples como acender um fósforo 🔥</p>
+          <h2 id="how-h">Como funciona?</h2>
+        </div>
+      </div>
+      <ol class="steps">
+        <li class="step">
+          <div class="step__num">1</div>
+          <h3>Escolhe o mood</h3>
+          <p>Doce, fresco, gourmand ou groovy — há um aroma para cada dia.</p>
+          <i class="step__ico fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+        </li>
+        <li class="step">
+          <div class="step__num">2</div>
+          <h3>Confirma o aroma</h3>
+          <p>Fazemos cada vela à mão, com carinho e cera vegetal.</p>
+          <i class="step__ico fa-solid fa-fire-flame-curved" aria-hidden="true"></i>
+        </li>
+        <li class="step">
+          <div class="step__num">3</div>
+          <h3>Recebe em 24/72h</h3>
+          <p>Entregamos em todo o Portugal continental, prontinho a acender.</p>
+          <i class="step__ico fa-solid fa-box-open" aria-hidden="true"></i>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 9. REVIEWS -->
+  <section class="reviews" aria-labelledby="rev-h">
+    <div class="wrap">
+      <div class="reviews-head">
+        <div class="rating-big"><span class="num">4,9</span><span class="s" aria-hidden="true">★★★★★</span> <span style="font-weight:400;color:var(--ink-soft)">· 1.200+ avaliações</span></div>
+        <h2 id="rev-h">O que dizem os nossos clientes 💌</h2>
+      </div>
+      <div class="review-grid">
+        <figure class="review">
+          <div class="s" aria-hidden="true">★★★★★</div>
+          <blockquote>"A minha casa nunca cheirou tão bem! O aroma dura imenso e os copos são lindos. Já vou na terceira encomenda."</blockquote>
+          <figcaption><span class="avatar" style="background:var(--pink)"><i class="fa-solid fa-face-smile" aria-hidden="true"></i></span> Rita M. · Porto</figcaption>
+        </figure>
+        <figure class="review">
+          <div class="s" aria-hidden="true">★★★★★</div>
+          <blockquote>"Comprei um pack para oferecer e foi um sucesso. Chegou super rápido e embrulhado com todo o cuidado."</blockquote>
+          <figcaption><span class="avatar" style="background:var(--orange)"><i class="fa-solid fa-gift" aria-hidden="true"></i></span> Tiago S. · Lisboa</figcaption>
+        </figure>
+        <figure class="review">
+          <div class="s" aria-hidden="true">★★★★★</div>
+          <blockquote>"Adoro que sejam veganas e feitas cá. Os snapbars são viciantes — o Groovy Grapefruit é o meu favorito!"</blockquote>
+          <figcaption><span class="avatar" style="background:var(--grape-bright);color:#fff"><i class="fa-solid fa-heart" aria-hidden="true"></i></span> Ana C. · Braga</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. NEWSLETTER -->
+  <section class="news" aria-labelledby="news-h">
+    <div class="wrap">
+      <div class="news-card">
+        <span class="n-blob n-blob--1"></span>
+        <span class="n-blob n-blob--2"></span>
+        <h2 id="news-h">Subscreve e ganha 10% 💥</h2>
+        <p>Junta-te ao clube e recebe novidades, aromas em pré-venda e mimos só para ti.</p>
+        <form class="news-form" onsubmit="return false">
+          <label class="visually-hidden" for="news-email">O teu email</label>
+          <input id="news-email" type="email" name="email" placeholder="o.teu@email.pt" autocomplete="email" required>
+          <button class="btn btn--primary" type="submit">Quero 10% <i class="fa-solid fa-arrow-right-long" aria-hidden="true"></i></button>
+        </form>
+        <p class="news-trust"><span><i class="fa-solid fa-truck-fast" aria-hidden="true"></i> Portes grátis acima de €35</span> · <span>Entrega em 24/72h</span> · <span>Cancela quando quiseres</span></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 11. FOOTER -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="brand-logo"><img src="logo.png" alt="Playful Candles" width="1615" height="341"></span>
+        <p>Velas artesanais feitas à mão em Lisboa, com ceras vegetais e muito bom mood. Enviamos para todo o Portugal continental.</p>
+      </div>
+      <nav class="footer-cols" aria-label="Rodapé">
+        <div>
+          <h3>Loja</h3>
+          <a href="#velas">Velas de Copo</a>
+          <a href="#wax">Wax Melts</a>
+          <a href="#snap">Snapbars</a>
+          <a href="#queimadores">Queimadores</a>
+          <a href="#packs">Packs</a>
+        </div>
+        <div>
+          <h3>Ajuda</h3>
+          <a href="#">Envios &amp; portes</a>
+          <a href="#">Trocas &amp; devoluções</a>
+          <a href="#">Seguir encomenda</a>
+          <a href="#">Contacto</a>
+        </div>
+        <div>
+          <h3>Sobre</h3>
+          <a href="#">A nossa história</a>
+          <a href="#">Ingredientes</a>
+          <a href="#">Sustentabilidade</a>
+          <a href="#">Presentes &amp; empresas</a>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <div class="pay-row" aria-label="Métodos de pagamento">
+        <span class="pay-chip">Multibanco</span>
+        <span class="pay-chip">MB WAY</span>
+        <i class="fa-brands fa-cc-visa" aria-label="Visa"></i>
+        <i class="fa-brands fa-cc-mastercard" aria-label="Mastercard"></i>
+        <i class="fa-brands fa-cc-paypal" aria-label="PayPal"></i>
+      </div>
+      <div class="social-row">
+        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+        <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok" aria-hidden="true"></i></a>
+        <a href="#" aria-label="Pinterest"><i class="fa-brands fa-pinterest" aria-hidden="true"></i></a>
+      </div>
+      <p>© 2026 Playful Candles · Feito com 💗 em Lisboa</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ponytail: two tiny vanilla carousels (hero = slide track, best-sellers = native scroll).
+  // No library — arrows + dots + autoplay is ~70 lines; a carousel dep would be overkill.
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ---- HERO: transform-based slide carousel with autoplay ----
+    var hero = document.querySelector('[data-hero]');
+    if (hero) {
+      var track = hero.querySelector('.hero__track');
+      var slides = track.children;
+      var n = slides.length, i = 0, timer = null;
+      var dotsWrap = hero.querySelector('.hero__dots');
+      var dots = [];
+      for (var k = 0; k < n; k++) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'dot';
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-label', 'Ir para o destaque ' + (k + 1));
+        (function (idx) { b.addEventListener('click', function () { go(idx); restart(); }); })(k);
+        dotsWrap.appendChild(b); dots.push(b);
+      }
+      function go(idx) {
+        i = (idx + n) % n;
+        track.style.transform = 'translateX(' + (-i * 100) + '%)';
+        for (var d = 0; d < n; d++) dots[d].setAttribute('aria-current', d === i ? 'true' : 'false');
+      }
+      function play() { if (!reduce) timer = setInterval(function () { go(i + 1); }, 6000); }
+      function restart() { clearInterval(timer); play(); }
+      hero.querySelector('[data-prev]').addEventListener('click', function () { go(i - 1); restart(); });
+      hero.querySelector('[data-next]').addEventListener('click', function () { go(i + 1); restart(); });
+      hero.addEventListener('mouseenter', function () { clearInterval(timer); });
+      hero.addEventListener('mouseleave', restart);
+      hero.addEventListener('focusin', function () { clearInterval(timer); });
+      hero.addEventListener('focusout', restart);
+      go(0); play();
+    }
+
+    // ---- SCROLL CAROUSELS: arrows scroll by a card, dots = pages ----
+    document.querySelectorAll('[data-scroller]').forEach(function (sc) {
+      var lane = sc.querySelector('.carousel');
+      var prev = sc.querySelector('[data-prev]');
+      var next = sc.querySelector('[data-next]');
+      var dotsWrap = sc.querySelector('.car-dots');
+      var behavior = reduce ? 'auto' : 'smooth';
+      function step() {
+        var card = lane.querySelector('.card');
+        var gap = parseFloat(getComputedStyle(lane).columnGap || getComputedStyle(lane).gap) || 16;
+        return card ? card.getBoundingClientRect().width + gap : lane.clientWidth * 0.8;
+      }
+      prev && prev.addEventListener('click', function () { lane.scrollBy({ left: -step(), behavior: behavior }); });
+      next && next.addEventListener('click', function () { lane.scrollBy({ left: step(), behavior: behavior }); });
+      function pages() { return Math.max(1, Math.round(lane.scrollWidth / lane.clientWidth)); }
+      function buildDots() {
+        if (!dotsWrap) return;
+        var p = pages();
+        dotsWrap.innerHTML = '';
+        dotsWrap.style.display = p <= 1 ? 'none' : 'flex';
+        for (var k = 0; k < p; k++) {
+          (function (idx) {
+            var b = document.createElement('button');
+            b.type = 'button'; b.className = 'dot';
+            b.setAttribute('aria-label', 'Página ' + (idx + 1));
+            b.addEventListener('click', function () {
+              lane.scrollTo({ left: idx * lane.clientWidth, behavior: behavior });
+            });
+            dotsWrap.appendChild(b);
+          })(k);
+        }
+        sync();
+      }
+      function sync() {
+        var idx = Math.round(lane.scrollLeft / lane.clientWidth);
+        if (dotsWrap) [].forEach.call(dotsWrap.children, function (d, di) {
+          d.setAttribute('aria-current', di === idx ? 'true' : 'false');
+        });
+        if (prev) prev.disabled = lane.scrollLeft <= 2;
+        if (next) next.disabled = lane.scrollLeft + lane.clientWidth >= lane.scrollWidth - 2;
+      }
+      lane.addEventListener('scroll', function () { requestAnimationFrame(sync); });
+      if (window.ResizeObserver) new ResizeObserver(buildDots).observe(lane);
+      buildDots();
+    });
+  })();
+</script>

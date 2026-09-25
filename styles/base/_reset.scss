@@ -1,0 +1,23 @@
+/* Seletor universal para zerar margens e preenchimentos */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Remove o estilo de listas (pontos e números) */
+ul, ol {
+  list-style: none;
+}
+
+/* Remove sublinhado e herda cor dos links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Garante que imagens respeitam o tamanho do elemento pai */
+img {
+  max-width: 100%;
+  display: block;
+}

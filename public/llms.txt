@@ -1,0 +1,29 @@
+# Playful Candles
+
+> Loja online de velas artesanais em Portugal. Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com ceras vegetais e fragrâncias premium. Envio para todo o Portugal continental (24/72h), portes grátis acima de €35.
+
+## Sobre
+- Marca: Playful Candles — velas artesanais, identidade divertida e groovy.
+- Origem: Lisboa, Portugal. Produção à mão, ceras vegetais/biodegradáveis.
+- Idiomas: Português (principal), Espanhol, Inglês.
+- Pagamentos: Multibanco, MB WAY, Visa, Mastercard, PayPal.
+
+## Categorias
+- Velas de Copo — velas em copo reutilizável, várias fragrâncias.
+- Wax Melts — pastilhas de cera para queimador.
+- Snapbars — barras de cera para partir e derreter.
+- Queimadores — peças de cerâmica decorativas.
+
+## Páginas principais
+- Loja: /produtos
+- Coleções: /colecoes
+- Pesquisa: /pesquisa?q=
+- FAQ: /faq
+- Envios e portes: /envios
+- Trocas e devoluções: /devolucoes
+- Contacto: /contacto
+- Sobre: /sobre
+
+## Contacto
+- Website: https://playfulcandles.com
+- Instagram: @theplayfulcandles

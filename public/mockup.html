@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Playful Candles — mockup retro-groovy v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --ink:#2a1524; --ink-soft:#6d5563;
+  --paper:#fdeef5; --surface:#fffbfd; --sink:#fbdcec;
+  --coral:#ff4d7d; --coral-deep:#d81e5b;
+  --tang:#ff7a1f; --tang-deep:#d95c00;
+  --gold:#ffc42e; --grape:#8a3fd1; --grape-deep:#6a26ab; --teal:#12b3a6; --teal-deep:#0b8a80;
+  /* outono */
+  --rust:#c0532a; --rust-deep:#8f3a17; --ochre:#e0982e;
+  --line:#f4d3e2;
+  --disp:'Unbounded',system-ui,sans-serif;
+  --body:'Hanken Grotesk',system-ui,sans-serif;
+  --wrap:1200px; --gutter:clamp(1.2rem,4vw,2.5rem);
+  --sec:clamp(4.5rem,9vw,8.5rem);
+  --r:16px; --r-lg:26px; --r-xl:36px;
+  --sh:0 16px 38px -18px rgba(42,21,36,.4);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:clip}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--disp);font-weight:800;line-height:1.02;letter-spacing:-.02em;margin:0;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+.wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:var(--gutter);position:relative}
+.eyebrow{font-family:var(--disp);font-weight:700;font-size:.8rem;color:var(--coral-deep)}
+.btn{display:inline-flex;align-items:center;gap:.55em;font-family:var(--disp);font-weight:700;font-size:1rem;
+  padding:.85em 1.5em;border-radius:999px;border:2px solid transparent;cursor:pointer;transition:transform .25s cubic-bezier(.22,1,.36,1),background .25s,color .25s}
+.btn:hover{transform:translateY(-2px)}
+.btn--coral{background:var(--coral);color:#fff}.btn--coral:hover{background:var(--coral-deep)}
+.btn--ink{background:var(--ink);color:var(--paper)}
+.btn--light{background:#fff;color:var(--ink)}
+.sec{padding-block:var(--sec);position:relative}
+
+/* wave divider — used between sections for fluid transitions */
+.wv{position:absolute;left:0;bottom:-1px;width:100%;height:clamp(38px,5vw,64px);line-height:0;z-index:2;pointer-events:none}
+.wv svg{width:100%;height:100%;display:block}
+
+/* floating decor */
+.deco{position:absolute;pointer-events:none;z-index:1}
+.spin{animation:spin 20s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sway{animation:sway 6s ease-in-out infinite alternate}
+@keyframes sway{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(14px) rotate(10deg)}}
+@media (prefers-reduced-motion:reduce){.spin,.sway{animation:none}}
+.sticker{position:absolute;font-family:var(--disp);font-weight:800;font-size:.82rem;color:var(--ink);
+  background:var(--gold);padding:.7em 1em;border-radius:999px;box-shadow:var(--sh);z-index:4;transform:rotate(-8deg);text-align:center;line-height:1.1}
+
+/* header */
+.hd{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hd .wrap{position:static}           /* deixa o mega ancorar ao .hd (largura total) */
+.hd__in{display:grid;grid-template-columns:1fr auto 1fr;grid-template-areas:"nav logo tools";align-items:center;gap:1rem;height:76px}
+.nav{grid-area:nav;justify-self:start;display:flex;gap:.4rem;align-items:center}
+.nav>a,.nav__item>a{font-family:var(--disp);font-weight:600;font-size:.95rem;padding:.5rem .8rem;border-radius:999px;display:inline-block}
+.nav__item>a:hover{color:var(--coral-deep)}
+.brand-logo{grid-area:logo;justify-self:center;display:inline-flex;align-items:center}
+.brand-logo img{height:34px;width:auto;display:block}
+.hd__tools{grid-area:tools;justify-self:end;display:flex;gap:.9rem;align-items:center}
+.hd__tools svg{width:22px;height:22px}
+.nav__item{position:relative}
+.nav__item--mega{position:static}   /* mega ancora ao .hd (largura total), não ao item */
+/* dropdown coleções */
+.nav__drop{position:absolute;top:calc(100% + 8px);left:0;min-width:220px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:.4rem;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .22s cubic-bezier(.22,1,.36,1),transform .22s cubic-bezier(.22,1,.36,1),visibility .22s;z-index:60}
+.nav__item:hover .nav__drop{opacity:1;visibility:visible;transform:none}
+.nav__drop a{display:block;padding:.55rem .7rem;border-radius:10px;font-weight:600}
+.nav__drop a:hover{background:var(--sink);color:var(--coral-deep)}
+.nav__drop small{display:block;padding:.3rem .7rem .1rem;color:var(--ink-soft);font-size:.7rem;font-weight:700}
+/* mega Categorias — 100% da largura, abre no hover com transição suave */
+.mega{position:absolute;left:0;right:0;top:100%;background:var(--surface);border-top:1px solid var(--line);box-shadow:var(--sh);
+  opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .28s cubic-bezier(.22,1,.36,1),transform .28s cubic-bezier(.22,1,.36,1),visibility .28s;z-index:59;overflow:hidden}
+.nav__item--mega:hover .mega{opacity:1;visibility:visible;transform:none}
+.mega__in{display:grid;grid-template-columns:1fr 1fr;min-height:300px}   /* lista 50% | foto 50% */
+.mega__list{padding:clamp(1.5rem,3vw,2.5rem) var(--gutter);display:flex;flex-direction:column;justify-content:center;gap:.2rem}
+.mega__list a{font-family:var(--disp);font-weight:700;font-size:clamp(1.4rem,2.4vw,2rem);color:var(--ink);padding:.55rem 0;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;transition:color .2s,transform .2s}
+.mega__list a:last-child{border-bottom:none}
+.mega__list a:hover{color:var(--coral);transform:translateX(.5rem)}
+.mega__list a span{font-size:.85rem;color:var(--ink-soft);font-family:var(--body);font-weight:600}
+.mega__pic{position:relative;overflow:hidden}
+.mega__pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mega__pic .cap{position:absolute;left:0;right:0;bottom:0;padding:1.2rem;color:#fff;z-index:1;
+  background:linear-gradient(0deg,rgba(42,21,36,.7),transparent);font-family:var(--disp);font-weight:700}
+/* acessibilidade: foco visível em todos os controlos */
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--grape);outline-offset:2px;border-radius:6px}
+/* ícones do header como botões reais */
+.hd__tools button{background:none;border:none;padding:4px;cursor:pointer;color:inherit;display:inline-flex;align-items:center;border-radius:8px}
+.hd__tools button:hover{color:var(--coral-deep)}
+/* hambúrguer (só mobile) */
+.burger{grid-area:nav;justify-self:start;display:none;background:none;border:none;cursor:pointer;color:var(--ink);font-size:1.6rem;line-height:1;padding:6px 8px}
+/* menus abrem também por teclado (focus-within), não só hover */
+.nav__item:focus-within .nav__drop,.nav__item--mega:focus-within .mega{opacity:1;visibility:visible;transform:none}
+@media(max-width:860px){
+  .burger{display:inline-flex}
+  .nav{display:none}
+  .hd.nav-open .nav{display:block;position:absolute;left:0;right:0;top:100%;background:var(--surface);
+    border-bottom:1px solid var(--line);padding:1rem var(--gutter) 1.4rem;max-height:82vh;overflow:auto;box-shadow:var(--sh)}
+  .hd.nav-open .nav__item{position:static}
+  .hd.nav-open .nav__item>a{display:block;font-size:1.15rem;padding:.6rem 0}
+  .hd.nav-open .mega,.hd.nav-open .nav__drop{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:none;background:transparent;padding:0}
+  .hd.nav-open .mega__in{grid-template-columns:1fr;min-height:0}
+  .hd.nav-open .mega__pic{display:none}
+  .hd.nav-open .mega__list{padding:0}
+  .hd.nav-open .mega__list a{font-size:1.05rem;padding:.5rem 0}
+}
+
+/* hero — foto imersiva full-bleed */
+.hero{position:relative;overflow:hidden;color:#fff;min-height:min(90vh,780px);display:flex;align-items:flex-end}
+.hero__bg{position:absolute;inset:0;z-index:0}
+.hero__bg img{width:100%;height:100%;object-fit:cover}
+.hero__scrim{position:absolute;inset:0;z-index:1;background:
+  linear-gradient(90deg,rgba(52,10,32,.78),rgba(52,10,32,.32) 52%,rgba(52,10,32,.05) 78%),
+  linear-gradient(0deg,rgba(52,10,32,.7),transparent 55%)}
+.hero__c{position:relative;z-index:3;padding-block:clamp(3rem,7vw,5.5rem);max-width:610px}
+.hero .eyebrow{color:var(--gold)}
+.hero h1{color:#fff;font-size:clamp(2.9rem,7vw,5.6rem);font-weight:900;margin:.6rem 0 0}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero__lead{color:rgba(255,255,255,.92);font-size:clamp(1.05rem,1.6vw,1.28rem);max-width:44ch;margin-top:1.1rem}
+.hero__cta{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.8rem}
+.hero__trust{display:flex;flex-wrap:wrap;gap:.4rem 1.5rem;margin-top:1.6rem;color:rgba(255,255,255,.92);font-weight:600;font-size:.9rem}
+.hero__trust span{display:inline-flex;align-items:center;gap:.5em}
+.hero__trust i{width:7px;height:7px;border-radius:50%;background:var(--gold);display:inline-block}
+.hero .sticker{top:clamp(90px,13vw,130px);right:clamp(1.5rem,6vw,5rem)}
+.hero__wave{color:var(--paper)}
+@media(max-width:760px){.hero__scrim{background:linear-gradient(0deg,rgba(52,10,32,.85),rgba(52,10,32,.25) 70%)}}
+
+/* usp strip */
+.usp{background:var(--coral);color:#fff}
+.usp__in{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem 2.4rem;padding-block:1.05rem;font-family:var(--disp);font-weight:700;font-size:.92rem}
+.usp span{display:inline-flex;align-items:center;gap:.5em}
+
+/* section head */
+.sec__head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:1rem;margin-bottom:clamp(1.6rem,3vw,2.4rem)}
+.sec__head h2{font-size:clamp(1.9rem,4vw,3rem)}
+.sec__link{font-family:var(--disp);font-weight:700;color:var(--coral-deep);display:inline-flex;gap:.4em;align-items:center}
+
+/* categories — photo tiles */
+.cats{display:grid;gap:clamp(1rem,2vw,1.4rem);grid-template-columns:repeat(4,1fr);grid-auto-rows:240px;grid-template-areas:"a a b c" "a a d c"}
+.tile{position:relative;overflow:hidden;border-radius:var(--r-lg);padding:1.4rem;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
+.tile:hover{transform:translateY(-4px);box-shadow:var(--sh)}
+.tile>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;transition:transform .5s ease}
+.tile:hover>img{transform:scale(1.06)}
+.tile__ov{position:absolute;inset:0;z-index:1}
+.tile>h3,.tile>p,.tile>.tile__go{position:relative;z-index:2}
+.tile h3{font-size:1.4rem}.tile--a h3{font-size:clamp(1.9rem,3vw,2.6rem)}
+.tile p{font-size:.9rem;margin-top:.2rem;opacity:.95;max-width:30ch}
+.tile__go{margin-top:.6rem;font-family:var(--disp);font-weight:700;font-size:.9rem;color:#fff}
+.tile--a{grid-area:a}.tile--b{grid-area:b}.tile--c{grid-area:c}.tile--d{grid-area:d}
+.ov-coral{background:linear-gradient(0deg,rgba(216,30,91,.9),rgba(216,30,91,.1) 70%)}
+.ov-grape{background:linear-gradient(0deg,rgba(106,38,171,.9),rgba(106,38,171,.1) 70%)}
+.ov-tang{background:linear-gradient(0deg,rgba(217,92,0,.9),rgba(217,92,0,.1) 70%)}
+.ov-teal{background:linear-gradient(0deg,rgba(11,138,128,.92),rgba(11,138,128,.1) 70%)}
+@media(max-width:760px){.cats{grid-template-columns:1fr 1fr;grid-auto-rows:190px;grid-template-areas:"a a" "b c" "d c"}}
+
+/* products */
+.rail{background:var(--sink)}
+.pgrid{display:grid;gap:clamp(1rem,2vw,1.5rem);grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.pgrid{grid-template-columns:repeat(2,1fr)}}
+.pcard{background:var(--surface);border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line);position:relative;transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
+.pcard:hover{transform:translateY(-5px);box-shadow:var(--sh)}
+.pcard__img{aspect-ratio:4/5;overflow:hidden;position:relative}
+.pcard__img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.pcard:hover .pcard__img img{transform:scale(1.06)}
+.pcard__tag{position:absolute;top:.7rem;left:.7rem;background:#fff;font-family:var(--disp);font-weight:700;font-size:.7rem;padding:.3em .7em;border-radius:999px}
+.pcard__hot{position:absolute;top:-10px;right:-6px;background:var(--gold);color:var(--ink);font-family:var(--disp);font-weight:800;font-size:.66rem;padding:.5em .7em;border-radius:999px;transform:rotate(9deg);box-shadow:var(--sh);z-index:2}
+.pcard__b{padding:1rem 1.1rem 1.2rem}
+.pcard__name{font-family:var(--disp);font-weight:700;font-size:1.05rem}
+.pcard__row{display:flex;align-items:center;justify-content:space-between;margin-top:.6rem}
+.pcard__price{font-family:var(--disp);font-weight:800}
+.pcard__add{width:40px;height:40px;border:none;cursor:pointer;border-radius:50%;background:var(--coral);color:#fff;font-size:1.3rem;line-height:1;display:grid;place-items:center;transition:background .2s,transform .2s}
+.pcard__add:hover{background:var(--coral-deep);transform:scale(1.08)}
+
+/* seasonal — outono */
+.season{background:linear-gradient(160deg,var(--rust),var(--rust-deep));color:#fff;overflow:hidden;position:relative;padding-block:var(--sec)}
+.season__in{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(1.5rem,4vw,3.5rem);align-items:center;position:relative;z-index:2}
+.season__badge{display:inline-block;background:var(--gold);color:var(--ink);font-family:var(--disp);font-weight:800;font-size:.72rem;padding:.45em .9em;border-radius:999px;margin-bottom:.8rem}
+.season .eyebrow{color:var(--gold)}
+.season h2{font-size:clamp(2.1rem,4.5vw,3.4rem);margin-top:.2rem}
+.season p{margin-top:.9rem;max-width:44ch;color:rgba(255,255,255,.92)}
+.season__tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.2rem}
+.season__tags span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:.4em .9em;font-weight:600;font-size:.85rem}
+.season__mini{display:flex;gap:.7rem;margin-top:1.4rem}
+.season__mini a{border-radius:var(--r);overflow:hidden;width:78px;aspect-ratio:1;border:2px solid rgba(255,255,255,.55)}
+.season__mini img{width:100%;height:100%;object-fit:cover}
+.season__cta{margin-top:1.6rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.season__cta small{opacity:.85;font-size:.9rem}
+.season__art{position:relative;border-radius:var(--r-xl);overflow:hidden;aspect-ratio:4/5;box-shadow:var(--sh)}
+.season__art img{width:100%;height:100%;object-fit:cover}
+.season__art .sticker{top:6%;right:6%;background:var(--tang);color:#fff}
+.leaf{position:absolute;z-index:1;pointer-events:none;opacity:.85}
+@media(max-width:760px){.season__in{grid-template-columns:1fr}}
+
+/* brand story */
+.story__in{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.5rem,4vw,3.5rem);align-items:center}
+.story__art{position:relative;border-radius:var(--r-xl);overflow:hidden;aspect-ratio:4/3}
+.story__art img{width:100%;height:100%;object-fit:cover}
+.story h2{font-size:clamp(1.9rem,4vw,3rem);margin-top:.4rem}
+.story p{margin-top:1rem;color:var(--ink-soft);max-width:46ch}
+.story__stats{display:flex;gap:2rem;margin-top:1.6rem}
+.story__stats b{font-family:var(--disp);font-size:1.7rem;display:block;color:var(--coral-deep)}
+.story__stats span{font-size:.85rem;color:var(--ink-soft)}
+@media(max-width:760px){.story__in{grid-template-columns:1fr}}
+
+/* mix */
+.mix{background:var(--tang);color:#fff;position:relative;overflow:hidden}
+.mix__in{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(1.5rem,4vw,3rem);align-items:center}
+.mix h2{font-size:clamp(2rem,4vw,3.2rem)}.mix .eyebrow{color:#fff}
+.mix p{margin-top:.9rem;max-width:42ch;color:rgba(255,255,255,.93)}
+.mix__opts{display:flex;gap:.8rem;margin-top:1.4rem}
+.mix__opt{background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.45);border-radius:var(--r);padding:.9rem 1.2rem;font-family:var(--disp);font-weight:700}
+.mix__opt b{display:block;font-size:1.5rem}
+.mix__art{aspect-ratio:4/3;border-radius:var(--r-lg);overflow:hidden}
+.mix__art img{width:100%;height:100%;object-fit:cover}
+@media(max-width:760px){.mix__in{grid-template-columns:1fr}}
+
+/* reviews */
+.rev__grid{display:grid;gap:clamp(1rem,2vw,1.5rem);grid-template-columns:repeat(3,1fr)}
+@media(max-width:760px){.rev__grid{grid-template-columns:1fr}}
+.rev{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:1.4rem}
+.rev__stars{color:var(--gold);font-size:1rem;letter-spacing:2px}
+.rev p{margin-top:.6rem;font-size:1rem}
+.rev__who{display:flex;align-items:center;gap:.7rem;margin-top:1rem}
+.rev__ava{width:40px;height:40px;border-radius:50%;overflow:hidden;flex:0 0 auto}
+.rev__ava img{width:100%;height:100%;object-fit:cover}
+.rev__name{font-family:var(--disp);font-weight:700;font-size:.9rem}
+.rev__v{font-size:.75rem;color:var(--teal-deep);font-weight:700}
+
+/* insta */
+.insta{background:var(--sink)}
+.insta__grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem}
+@media(max-width:760px){.insta__grid{grid-template-columns:repeat(2,1fr)}}
+.insta__cell{aspect-ratio:1;overflow:hidden;border-radius:var(--r);position:relative}
+.insta__cell img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.insta__cell:hover img{transform:scale(1.08)}
+
+/* vip — fundo rosa groovy (ondas da logo) */
+.vip{background:var(--coral);color:#fff;position:relative;overflow:hidden}
+.vip__sw{position:absolute;inset:0;z-index:0;opacity:.9}
+.vip__sw svg{width:100%;height:100%;object-fit:cover}
+.vip__c{position:relative;z-index:2;text-align:center;max-width:640px;margin-inline:auto;
+  padding:clamp(1rem,3vw,2rem)}
+.vip .eyebrow{color:#fff}
+.vip h2{font-size:clamp(2rem,4.5vw,3rem);margin-top:.4rem;text-shadow:0 2px 18px rgba(120,10,50,.4)}
+.vip p{max-width:44ch;margin:.9rem auto 0;color:#fff;text-shadow:0 1px 10px rgba(120,10,50,.35)}
+.vip .btn{margin-top:1.6rem}
+.vip__trust{margin-top:1.1rem;font-weight:600;font-size:.86rem;opacity:.95}
+
+/* footer */
+.ft{background:var(--ink);color:#e9ddd2;padding-block:clamp(2.5rem,5vw,4rem)}
+.ft__grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2rem}
+.ft .brand-logo{margin-bottom:.8rem}.ft .brand-logo img{height:40px}
+.ft h4{font-family:var(--disp);font-size:.85rem;color:#fff;margin:0 0 .7rem}
+.ft a{display:block;padding:.25rem 0;color:#c9b8ab;font-size:.92rem}.ft a:hover{color:#fff}
+.ft__bot{border-top:1px solid rgba(255,255,255,.12);margin-top:2rem;padding-top:1.3rem;font-size:.85rem;color:#a8958a}
+@media(max-width:760px){.ft__grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- reusable defs: groovy swirl (ondas da logo) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="swirl">
+    <rect width="1440" height="900" fill="#ff5ca6"/>
+    <path fill="#ff7a1f" d="M-120,120 C280,20 520,270 840,160 C1160,50 1320,240 1580,150 L1580,300 C1320,390 1120,190 840,300 C540,410 260,210 -120,320 Z"/>
+    <path fill="#ff2d7e" d="M-120,380 C260,300 520,540 860,430 C1200,320 1340,510 1580,420 L1580,580 C1340,660 1140,470 860,570 C560,660 260,470 -120,600 Z"/>
+    <path fill="#ff9a3d" d="M-120,650 C300,560 520,780 880,670 C1240,560 1360,730 1580,660 L1580,860 C1360,940 1120,740 880,840 C560,940 260,730 -120,860 Z"/>
+  </g>
+</defs></svg>
+
+<header class="hd">
+  <div class="wrap hd__in">
+    <nav class="nav">
+      <div class="nav__item nav__item--mega">
+        <a href="#">Categorias ▾</a>
+        <div class="mega"><div class="mega__in">
+          <div class="mega__list">
+            <a href="#">Velas de Copo <span>Horas de aroma</span></a>
+            <a href="#">Wax Melts <span>Para o teu queimador</span></a>
+            <a href="#">Snapbars <span>Parte, aquece, muda o mood</span></a>
+            <a href="#">Queimadores <span>Cerâmica decorativa</span></a>
+            <a href="#">Ver toda a loja →</a>
+          </div>
+          <div class="mega__pic"><img src="https://images.unsplash.com/photo-1532592068623-db1978e40df5?w=900&q=80" alt="Velas artesanais coloridas"/><div class="cap">Feitas à mão em Lisboa</div></div>
+        </div></div>
+      </div>
+      <div class="nav__item"><a href="#">Coleções ▾</a>
+        <div class="nav__drop">
+          <small>Coleção atual</small><a href="#">Coleção de Outono</a>
+          <small>Em breve</small><a href="#" style="color:var(--ink-soft)">Inverno · Natal</a>
+        </div>
+      </div>
+    </nav>
+    <button class="burger" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <a href="#" class="brand-logo" aria-label="Playful Candles — página inicial"><img src="http://localhost:54501/images/logo.png" alt="Playful Candles"/></a>
+    <div class="hd__tools">
+      <button type="button" aria-label="Pesquisar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+      <button type="button" aria-label="A minha conta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button>
+      <button type="button" aria-label="Cesto de compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO — foto imersiva full-bleed -->
+<section class="hero">
+  <div class="hero__bg"><img src="http://localhost:54501/images/instagram/ig1.jpg" alt="Vela de copo artesanal com flores de cera vermelhas e laranja"/></div>
+  <div class="hero__scrim"></div>
+  <div class="sticker">100%<br>cera vegetal</div>
+  <div class="wrap hero__c">
+    <p class="eyebrow">✦ Feitas à mão em Lisboa</p>
+    <h1>Aromas que dão <em>mood</em> à casa</h1>
+    <p class="hero__lead">Velas de copo, wax melts e snapbars de cera vegetal e fragrâncias premium — acende e muda o ambiente em segundos.</p>
+    <div class="hero__cta">
+      <a class="btn btn--coral" href="#">Ver a loja</a>
+      <a class="btn btn--light" href="#">Montar pack de snapbars</a>
+    </div>
+    <div class="hero__trust"><span><i></i> Portes grátis acima de €35</span><span><i></i> Entrega em 24/72h</span><span><i></i> +2.000 clientes felizes</span></div>
+  </div>
+  <div class="wv hero__wave"><svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="currentColor"><path d="M0,38 C240,66 480,8 720,28 C960,48 1200,12 1440,32 L1440,60 L0,60 Z"/></svg></div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec__head"><div><p class="eyebrow">Escolhe por mood</p><h2>Por onde queres começar?</h2></div><a class="sec__link" href="#">Ver tudo →</a></div>
+    <div class="cats">
+      <a class="tile tile--a" href="#"><img src="http://localhost:54501/images/instagram/ig1.jpg" alt="Velas de copo"/><div class="tile__ov ov-grape"></div><h3>Velas de Copo</h3><p>Horas de aroma num copo giro e reutilizável.</p><span class="tile__go">Explorar →</span></a>
+      <a class="tile tile--b" href="#"><img src="http://localhost:54501/images/instagram/ig3.jpg" alt="Wax melts"/><div class="tile__ov ov-tang"></div><h3>Wax Melts</h3><p>Potes de cera para o teu queimador.</p><span class="tile__go">Explorar →</span></a>
+      <a class="tile tile--c" href="#"><img src="http://localhost:54501/images/instagram/ig4.jpg" alt="Snapbars"/><div class="tile__ov ov-coral"></div><h3>Snapbars</h3><p>Parte, aquece e muda o mood.</p><span class="tile__go">Explorar →</span></a>
+      <a class="tile tile--d" href="#"><img src="http://localhost:54501/images/instagram/ig2.jpg" alt="Queimadores"/><div class="tile__ov ov-teal"></div><h3>Queimadores</h3><p>Cerâmica que é decoração.</p><span class="tile__go">Explorar →</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- BEST SELLERS -->
+<section class="sec rail">
+  <div class="wrap">
+    <div class="sec__head"><div><p class="eyebrow">Os preferidos de toda a gente</p><h2>Mais vendidos</h2></div><a class="sec__link" href="#">Ver a loja toda →</a></div>
+    <div class="pgrid">
+      <article class="pcard"><span class="pcard__hot">Nº1</span><div class="pcard__img"><span class="pcard__tag">Vela de Copo</span><img src="http://localhost:54501/images/instagram/ig1.jpg" alt=""/></div><div class="pcard__b"><div class="pcard__name">Jardim de Cera</div><div class="pcard__row"><span class="pcard__price">€18,00</span><button type="button" class="pcard__add" aria-label="Adicionar ao cesto">+</button></div></div></article>
+      <article class="pcard"><div class="pcard__img"><span class="pcard__tag">Vela de Copo</span><img src="http://localhost:54501/images/instagram/ig2.jpg" alt=""/></div><div class="pcard__b"><div class="pcard__name">Brisa do Mar</div><div class="pcard__row"><span class="pcard__price">€18,00</span><button type="button" class="pcard__add" aria-label="Adicionar ao cesto">+</button></div></div></article>
+      <article class="pcard"><div class="pcard__img"><span class="pcard__tag">Vela de Copo</span><img src="http://localhost:54501/images/instagram/ig3.jpg" alt=""/></div><div class="pcard__b"><div class="pcard__name">Maracujá</div><div class="pcard__row"><span class="pcard__price">€16,00</span><button type="button" class="pcard__add" aria-label="Adicionar ao cesto">+</button></div></div></article>
+      <article class="pcard"><div class="pcard__img"><span class="pcard__tag">Snapbar</span><img src="http://localhost:54501/images/instagram/ig4.jpg" alt=""/></div><div class="pcard__b"><div class="pcard__name">Trio Groovy</div><div class="pcard__row"><span class="pcard__price">€13,50</span><button type="button" class="pcard__add" aria-label="Adicionar ao cesto">+</button></div></div></article>
+    </div>
+  </div>
+  <div class="wv" style="color:var(--rust)"><svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="currentColor"><path d="M0,34 C240,60 520,6 720,26 C920,46 1200,8 1440,30 L1440,60 L0,60 Z"/></svg></div>
+</section>
+
+<!-- SEASONAL — OUTONO -->
+<section class="season">
+  <!-- folhas de outono (position absolute) -->
+  <svg class="leaf sway" style="top:8%;left:4%;width:60px;height:60px" viewBox="0 0 24 24" fill="var(--ochre)"><path d="M17 8C8 10 5.9 16.2 3.8 21.6c-.3.7.4 1.3 1 .9C10 19 16 17 18.5 11c1.5-3.5.5-8-1.5-9-.5 3 .5 5-.5 6z"/></svg>
+  <svg class="leaf sway" style="top:20%;right:8%;width:48px;height:48px;animation-delay:-2s" viewBox="0 0 24 24" fill="var(--gold)"><path d="M17 8C8 10 5.9 16.2 3.8 21.6c-.3.7.4 1.3 1 .9C10 19 16 17 18.5 11c1.5-3.5.5-8-1.5-9-.5 3 .5 5-.5 6z"/></svg>
+  <svg class="leaf sway" style="bottom:10%;left:46%;width:40px;height:40px;animation-delay:-4s" viewBox="0 0 24 24" fill="#e7c04a"><path d="M17 8C8 10 5.9 16.2 3.8 21.6c-.3.7.4 1.3 1 .9C10 19 16 17 18.5 11c1.5-3.5.5-8-1.5-9-.5 3 .5 5-.5 6z"/></svg>
+  <div class="wrap season__in">
+    <div class="season__txt">
+      <span class="season__badge">Edição limitada</span>
+      <p class="eyebrow">Coleção da estação</p>
+      <h2>Coleção de Outono</h2>
+      <p>Aromas quentes de canela, maçã caramelizada e folhas secas para aconchegar a casa nos dias mais frescos. Quando acabar, acabou.</p>
+      <div class="season__tags"><span>Canela</span><span>Maçã caramelizada</span><span>Folhas secas</span><span>Baunilha</span></div>
+      <div class="season__mini">
+        <a href="#"><img src="http://localhost:54501/images/instagram/ig1.jpg" alt="Vela de outono"/></a>
+        <a href="#"><img src="http://localhost:54501/images/instagram/ig3.jpg" alt="Vela de outono"/></a>
+        <a href="#"><img src="http://localhost:54501/images/instagram/ig2.jpg" alt="Vela de outono"/></a>
+      </div>
+      <div class="season__cta"><a class="btn btn--light" href="#">Ver a coleção</a><small>12 aromas · desde €16</small></div>
+    </div>
+    <div class="season__art"><img src="http://localhost:54501/images/instagram/ig1.jpg" alt="Coleção de Outono"/><div class="sticker">Novo<br>Outono</div></div>
+  </div>
+</section>
+
+<!-- BRAND STORY -->
+<section class="sec story">
+  <div class="wrap story__in">
+    <div class="story__art"><img src="http://localhost:54501/images/instagram/ig3.jpg" alt="Velas feitas à mão"/></div>
+    <div>
+      <p class="eyebrow">A nossa história</p>
+      <h2>Feito à mão, com muito mood</h2>
+      <p>Começámos numa cozinha em Lisboa a derreter cera e a testar aromas até acertar. Hoje continuamos a fazer tudo à mão, em pequenos lotes, com cera vegetal e fragrâncias premium — para que cada vela seja tão especial como a casa onde vai acender.</p>
+      <div class="story__stats"><div><b>100%</b><span>cera vegetal</span></div><div><b>+50</b><span>aromas</span></div><div><b>24/72h</b><span>entrega</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NEW ARRIVALS -->
+<section class="sec rail">
+  <div class="wrap">
+    <div class="sec__head"><div><p class="eyebrow">Acabadas de sair da cozinha</p><h2>Novidades</h2></div><a class="sec__link" href="#">Ver novidades →</a></div>
+    <div class="pgrid">
+      <article class="pcard"><span class="pcard__hot">Novo</span><div class="pcard__img"><span class="pcard__tag">Vela de Copo</span><img src="http://localhost:54501/images/instagram/ig2.jpg" alt=""/></div><div class="pcard__b"><div class="pcard__name">Céu de Verão</div><div class="pcard__row"><span class="pcard__price">€18,00</span><button type="button" class="pcard__add" aria-label="Adicionar ao cesto">+</button></div></div></article>
+      <article class="pcard"><div class="pcard__img"><span class="pcard__tag">Wax Melt</span><img src="http://localhost:54501/images/instagram/ig4.jpg" alt=""/></div><div class="pcard__b"><div class="pcard__name">Pack Gourmand</div><div class="pcard__row"><span class="pcard__price">€9,50</span><button type="button" class="pcard__add" aria-label="Adicionar ao cesto">+</button></div></div></article>
+      <article class="pcard"><div class="pcard__img"><span class="pcard__tag">Vela de Copo</span><img src="http://localhost:54501/images/instagram/ig3.jpg" alt=""/></div><div class="pcard__b"><div class="pcard__name">Doce Lisboa</div><div class="pcard__row"><span class="pcard__price">€16,00</span><button type="button" class="pcard__add" aria-label="Adicionar ao cesto">+</button></div></div></article>
+      <article class="pcard"><div class="pcard__img"><span class="pcard__tag">Snapbar</span><img src="http://localhost:54501/images/instagram/ig5.jpg" alt=""/></div><div class="pcard__b"><div class="pcard__name">Mini Trio</div><div class="pcard__row"><span class="pcard__price">€13,50</span><button type="button" class="pcard__add" aria-label="Adicionar ao cesto">+</button></div></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- MIX & MATCH -->
+<section class="sec mix">
+  <div class="wrap mix__in">
+    <div>
+      <p class="eyebrow">Mix &amp; Match</p><h2>Monta o teu pack de snapbars</h2>
+      <p>Escolhe os aromas que fazem o teu estilo. Quanto mais juntas, mais poupas — e vai sempre bem embrulhado para oferta.</p>
+      <div class="mix__opts"><div class="mix__opt"><b>3</b> snapbars · €13,50</div><div class="mix__opt"><b>5</b> snapbars · €21,00</div></div>
+      <div style="margin-top:1.5rem"><a class="btn btn--light" href="#">Começar a montar</a></div>
+    </div>
+    <div class="mix__art"><img src="http://localhost:54501/images/instagram/ig4.jpg" alt="Snapbars de cera em quatro cores"/></div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec__head"><div><p class="eyebrow">+2.000 clientes felizes</p><h2>O que dizem de nós</h2></div></div>
+    <div class="rev__grid">
+      <div class="rev"><div class="rev__stars">★★★★★</div><p>"A minha casa cheira INCRÍVEL e a vela dura imenso. Já vou na terceira encomenda."</p><div class="rev__who"><span class="rev__ava"><img src="http://localhost:54501/images/instagram/ig2.jpg" alt=""/></span><div><div class="rev__name">Sofia M.</div><div class="rev__v">✓ Compra verificada</div></div></div></div>
+      <div class="rev"><div class="rev__stars">★★★★★</div><p>"Comprei para oferecer e o embrulho é lindo. A pessoa adorou o aroma de maracujá."</p><div class="rev__who"><span class="rev__ava"><img src="http://localhost:54501/images/instagram/ig3.jpg" alt=""/></span><div><div class="rev__name">Rui P.</div><div class="rev__v">✓ Compra verificada</div></div></div></div>
+      <div class="rev"><div class="rev__stars">★★★★★</div><p>"Os snapbars são viciantes. Faço sempre o pack de 5 e mudo o mood conforme o dia."</p><div class="rev__who"><span class="rev__ava"><img src="http://localhost:54501/images/instagram/ig4.jpg" alt=""/></span><div><div class="rev__name">Beatriz L.</div><div class="rev__v">✓ Compra verificada</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTAGRAM -->
+<section class="sec insta">
+  <div class="wrap">
+    <div class="sec__head"><div><p class="eyebrow">@theplayfulcandles</p><h2>Segue-nos no Instagram</h2></div><a class="sec__link" href="#">Ver o feed →</a></div>
+    <div class="insta__grid">
+      <a class="insta__cell" href="#"><img src="http://localhost:54501/images/instagram/ig1.jpg" alt=""/></a>
+      <a class="insta__cell" href="#"><img src="http://localhost:54501/images/instagram/ig2.jpg" alt=""/></a>
+      <a class="insta__cell" href="#"><img src="http://localhost:54501/images/instagram/ig3.jpg" alt=""/></a>
+      <a class="insta__cell" href="#"><img src="http://localhost:54501/images/instagram/ig4.jpg" alt=""/></a>
+      <a class="insta__cell" href="#"><img src="http://localhost:54501/images/instagram/ig5.jpg" alt=""/></a>
+    </div>
+  </div>
+</section>
+
+<!-- VIP -->
+<section class="sec vip">
+  <div class="vip__sw"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice"><use href="#swirl"/></svg></div>
+  <svg class="deco spin" style="top:8%;right:10%;width:60px;height:60px;z-index:2" viewBox="0 0 24 24" fill="var(--tang)"><path d="M12 0l2.5 8.5L23 11l-8.5 2.5L12 22l-2.5-8.5L1 11l8.5-2.5z"/></svg>
+  <div class="wrap"><div class="vip__c">
+    <p class="eyebrow">Playful VIP</p>
+    <h2>Entra no grupo, sai na frente</h2>
+    <p>No nosso grupo de WhatsApp tens acesso antecipado às coleções e a ofertas exclusivas — antes de tudo sair no Instagram e no site.</p>
+    <a class="btn btn--light" href="#">Entrar no Playful VIP</a>
+    <p class="vip__trust">Acesso antecipado · Ofertas exclusivas · Sai quando quiseres</p>
+  </div></div>
+  <div class="wv" style="color:var(--ink)"><svg viewBox="0 0 1440 60" preserveAspectRatio="none" fill="currentColor"><path d="M0,32 C240,58 520,6 720,26 C920,46 1200,8 1440,32 L1440,60 L0,60 Z"/></svg></div>
+</section>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft__grid">
+      <div><a href="#" class="brand-logo"><img src="http://localhost:54501/images/logo.png" alt="Playful Candles"/></a><p style="color:#c9b8ab;max-width:34ch;font-size:.92rem">Velas artesanais feitas à mão em Lisboa, com ceras vegetais. Enviamos para todo o Portugal continental.</p></div>
+      <div><h4>Loja</h4><a href="#">Velas</a><a href="#">Wax Melts</a><a href="#">Snapbars</a><a href="#">Queimadores</a></div>
+      <div><h4>Ajuda</h4><a href="#">Envios &amp; portes</a><a href="#">Trocas &amp; devoluções</a><a href="#">Seguir encomenda</a><a href="#">Contacto</a></div>
+      <div><h4>Sobre</h4><a href="#">A nossa história</a><a href="#">Ingredientes</a><a href="#">Sustentabilidade</a><a href="#">Presentes</a></div>
+    </div>
+    <div class="ft__bot">© 2026 Playful Candles · Feito à mão em Lisboa</div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var hd=document.querySelector('.hd'), b=document.querySelector('.burger');
+    if(!b) return;
+    b.addEventListener('click',function(){
+      var open=hd.classList.toggle('nav-open');
+      b.setAttribute('aria-expanded',open);
+      b.textContent=open?'✕':'☰';
+    });
+  })();
+</script>
+</body>
+</html>
