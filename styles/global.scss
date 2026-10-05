@@ -113,7 +113,7 @@ main>section{position:relative}
 /* ============ RETRO-GROOVY PRIMITIVES (ported from public/mockup.html) ============ */
 .eyebrow{font-family:var(--disp);font-weight:700;font-size:.8rem;color:var(--coral-deep)}
 .sec{padding-block:var(--sec);position:relative}
-.sec__head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;
+.sec__head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
   gap:1rem;margin-bottom:clamp(1.6rem,3vw,2.4rem)}
 .sec__head h2{font-size:clamp(1.5rem,4vw,32px)}
 /* todos os h2 do site: máximo 32px no clamp */

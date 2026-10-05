@@ -82,18 +82,6 @@ const pt = {
     sticker: 'Novo Outono',
     alt: 'Coleção de Outono',
   },
-  story: {
-    eyebrow: 'A nossa história',
-    title: 'Feitas com amor',
-    text: 'Fazemos cada vela à mão, em lotes pequenos, com cera vegetal e fragâncias escolhidas uma a uma. É mais demorado, mas é assim que gostamos.',
-    features: [
-      { icon: 'fa-leaf', title: 'Cera de soja', sub: '100% natural' },
-      { icon: 'fa-flask', title: 'Essências premium', sub: '' },
-      { icon: 'fa-hand-holding-heart', title: 'Produção artesanal', sub: 'feita em Portugal' },
-    ],
-    bubble: 'Porque a vida fica mais bonita com velas',
-    alt: 'Velas feitas à mão em Lisboa',
-  },
   search: {
     placeholder: 'Pesquisar velas, aromas…',
     button: 'Pesquisar',
@@ -142,7 +130,6 @@ const pt = {
       text: 'Entregamos em todo o Portugal continental, prontinho a acender.',
     },
   },
-  reviews: { eyebrow: '+2.000 clientes felizes', title: 'O que dizem de nós', verified: 'Compra verificada' },
   news: {
     title: 'Entra no Playful VIP',
     text: 'No grupo VIP ficas a saber das coleções e das ofertas antes de sairem no Instagram e no site.',
@@ -290,18 +277,6 @@ const es: Dict = {
     sticker: 'Nuevo Otoño',
     alt: 'Colección de Otoño',
   },
-  story: {
-    eyebrow: 'Nuestra historia',
-    title: 'Hechas con amor',
-    text: 'Hacemos cada vela a mano, en lotes pequeños, con cera vegetal y fragancias elegidas una a una. Tarda más, pero nos gusta así.',
-    features: [
-      { icon: 'fa-leaf', title: 'Cera de soja', sub: '100% natural' },
-      { icon: 'fa-flask', title: 'Esencias premium', sub: '' },
-      { icon: 'fa-hand-holding-heart', title: 'Producción artesanal', sub: 'hecha en Portugal' },
-    ],
-    bubble: 'Porque la vida es más bonita con velas',
-    alt: 'Velas hechas a mano en Lisboa',
-  },
   search: {
     placeholder: 'Buscar velas, aromas…',
     button: 'Buscar',
@@ -348,7 +323,6 @@ const es: Dict = {
       text: 'Enviamos a todo Portugal continental, listo para encender.',
     },
   },
-  reviews: { eyebrow: '+2.000 clientes felices', title: 'Lo que dicen de nosotros', verified: 'Compra verificada' },
   news: {
     title: 'Entra en Playful VIP',
     text: 'En el grupo VIP te enteras de las colecciones y las ofertas antes de que salgan en Instagram y en la web.',
@@ -494,18 +468,6 @@ const en: Dict = {
     sticker: 'New Autumn',
     alt: 'Autumn Collection',
   },
-  story: {
-    eyebrow: 'Our story',
-    title: 'Made with love',
-    text: 'Every candle is handmade, crafted with care, quality ingredients and lots of love. Here, we believe that simple can be extraordinary.',
-    features: [
-      { icon: 'fa-leaf', title: 'Soy wax', sub: '100% natural' },
-      { icon: 'fa-flask', title: 'Premium fragrances', sub: '' },
-      { icon: 'fa-hand-holding-heart', title: 'Handmade', sub: 'made in Portugal' },
-    ],
-    bubble: 'Because life is prettier with candles',
-    alt: 'Candles handmade in Lisbon',
-  },
   search: {
     placeholder: 'Search candles, scents…',
     button: 'Search',
@@ -549,7 +511,6 @@ const en: Dict = {
     },
     s3: { title: 'Get it in 24/72h', text: 'We deliver across mainland Portugal, ready to light.' },
   },
-  reviews: { eyebrow: '+2,000 happy customers', title: 'What people say about us', verified: 'Verified purchase' },
   news: {
     title: 'Join Playful VIP',
     text: 'In the VIP group you hear about collections and offers before they hit Instagram or the site.',

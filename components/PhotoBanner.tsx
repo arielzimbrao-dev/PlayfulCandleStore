@@ -28,7 +28,7 @@ export default function PhotoBanner({
     <picture className="pban__pic">
       <source media="(min-width: 761px)" srcSet={dSet} />
       <source srcSet={mSet} />
-      <img {...img} className="pban__img" />
+      <img {...img} alt={alt} className="pban__img" />
     </picture>
   );
 
