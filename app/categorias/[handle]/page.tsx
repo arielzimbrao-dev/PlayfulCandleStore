@@ -5,7 +5,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import ProductListing from '@/components/ProductListing';
 import { getProducts } from '@/lib/shopify';
 import { resolveSort } from '@/lib/sort';
-import { CATEGORIES } from '@/lib/categories';
+import { CATEGORIES, categoryBanner } from '@/lib/categories';
 
 export const revalidate = 3600;
 
@@ -61,10 +61,8 @@ export default async function CategoriaPage({
 
   return (
     <ProductListing
-      eyebrow="Categoria"
       title={info.title}
-      text={info.text}
-      image={{ url: info.image, altText: info.title, width: null, height: null }}
+      photo={{ ...categoryBanner(handle), alt: `${info.title} artesanais Playful Candles`, text: info.text }}
       crumbs={crumbs}
       basePath={`/categorias/${handle}`}
       products={all}

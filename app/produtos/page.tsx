@@ -56,7 +56,7 @@ export default async function ProdutosPage({
 
         <div className="shop-layout__main">
           <div className="listbar">
-            <p className="listbar__count">{filtered.length} {filtered.length === 1 ? 'produto' : 'produtos'}</p>
+            <p className="listbar__count">{filtered.length} {filtered.length === 1 ? 'item' : 'itens'}</p>
             <SortSelect value={sort.key} />
           </div>
           {filtered.length > 0 ? (

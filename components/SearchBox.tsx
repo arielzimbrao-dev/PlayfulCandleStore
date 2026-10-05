@@ -88,49 +88,45 @@ export default function SearchBox() {
         <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
       </button>
 
-      <div className="search__drop">
-        <div className="wrap">
-          <form className="search__form" onSubmit={submit} role="search">
-            <i className="fa-solid fa-magnifying-glass search__icon" aria-hidden="true" />
-            <input
-              ref={inputRef}
-              className="search__input"
-              type="search"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={t.search.placeholder}
-              aria-label={t.search.label}
-            />
-            <button type="submit" className="btn btn--primary search__submit">{t.search.button}</button>
-          </form>
+      {/* input pequeno que desliza para a esquerda da lupa; Enter pesquisa */}
+      <form className="search__form" onSubmit={submit} role="search">
+        <input
+          ref={inputRef}
+          className="search__input"
+          type="search"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={t.search.placeholder}
+          aria-label={t.search.label}
+          tabIndex={open ? 0 : -1}
+        />
+      </form>
 
-          {term && (
-            <div className="search__results">
-              {results.length > 0 ? (
-                <ul>
-                  {results.map((p) => (
-                    <li key={p.id}>
-                      <Link href={`/produtos/${p.handle}`} className="search__item" onClick={() => setOpen(false)}>
-                        <span className="search__thumb">
-                          {p.featuredImage ? (
-                            <Image src={p.featuredImage.url} alt={p.featuredImage.altText ?? p.title} title={p.title} width={48} height={48} style={{ objectFit: 'cover' }} />
-                          ) : (
-                            <span aria-hidden="true">🕯️</span>
-                          )}
-                        </span>
-                        <span className="search__name">{p.title}</span>
-                        <span className="search__price">{formatMoney(p.priceRange.minVariantPrice)}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="search__msg">{loading ? '…' : `${t.search.noResults} “${term}”`}</p>
-              )}
-            </div>
+      {open && term && (
+        <div className="search__results">
+          {results.length > 0 ? (
+            <ul>
+              {results.map((p) => (
+                <li key={p.id}>
+                  <Link href={`/produtos/${p.handle}`} className="search__item" onClick={() => setOpen(false)}>
+                    <span className="search__thumb">
+                      {p.featuredImage ? (
+                        <Image src={p.featuredImage.url} alt={p.featuredImage.altText ?? p.title} title={p.title} width={48} height={48} style={{ objectFit: 'cover' }} />
+                      ) : (
+                        <span aria-hidden="true">🕯️</span>
+                      )}
+                    </span>
+                    <span className="search__name">{p.title}</span>
+                    <span className="search__price">{formatMoney(p.priceRange.minVariantPrice)}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="search__msg">{loading ? '…' : `${t.search.noResults} “${term}”`}</p>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

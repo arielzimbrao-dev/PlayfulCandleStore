@@ -5,8 +5,8 @@ import AddToCartMini from './AddToCartMini';
 import { formatMoney } from '@/lib/format';
 import type { Product } from '@/lib/shopify/types';
 
-// Card dos carrosséis (fiel ao Figma): imagem com selo de tipo (topo-esq) e coração (canto inf-dir),
-// nome, preço e botão "Adicionar ao carrinho". badge fica só para o estado esgotado.
+// Card dos carrosséis: imagem com selo de tipo (topo-esq) e coração (topo-dir); por cima da foto,
+// no fundo, nome + preço (script branco) à esquerda e botão-ícone "Adicionar ao carrinho" à direita. badge fica só para o estado esgotado.
 export default function ProductCardBig({
   product,
   soldoutLabel = 'Esgotado',
@@ -45,16 +45,16 @@ export default function ProductCardBig({
           )}
         </Link>
         <WishlistButton handle={product.handle} title={product.title} className="wish-btn--card" />
+        <div className="bcard__b">
+          <div className="bcard__info">
+            <Link href={href} className="bcard__name" title={product.title}>
+              {product.title}
+            </Link>
+            <span className="bcard__price">{formatMoney(product.priceRange.minVariantPrice)}</span>
+          </div>
+          {!soldOut && <AddToCartMini product={product} />}
+        </div>
       </div>
-
-      <div className="bcard__b">
-        <Link href={href} className="bcard__name" title={product.title}>
-          {product.title}
-        </Link>
-        <span className="bcard__price">{formatMoney(product.priceRange.minVariantPrice)}</span>
-      </div>
-
-      {!soldOut && <AddToCartMini product={product} />}
     </article>
   );
 }

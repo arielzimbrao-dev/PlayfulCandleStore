@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useT } from './LanguageProvider';
 import { SITE } from '@/lib/site';
+import Newsletter from './Newsletter';
 
 const SHOP_HREFS = ['/categorias/velas-de-copo', '/categorias/wax-melts', '/categorias/snapbars', '/categorias/queimadores'];
 const HELP_HREFS = ['/envios', '/devolucoes', SITE.accountUrl, '/contacto'];
@@ -18,6 +19,7 @@ export default function Footer() {
   ];
   return (
     <footer className="ft">
+      <Newsletter />
       <div className="wrap">
         <div className="ft__grid">
           <div>

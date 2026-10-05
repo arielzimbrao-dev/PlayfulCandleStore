@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import ProductGridPaged from './ProductGridPaged';
 import Breadcrumbs from './Breadcrumbs';
@@ -6,6 +5,7 @@ import ProductFilters from './ProductFilters';
 import PreFooter from './PreFooter';
 import SortSelect from './SortSelect';
 import JsonLd from './JsonLd';
+import PhotoBanner from './PhotoBanner';
 import { itemListLd } from '@/lib/jsonld';
 import { applyFilters, availableScents, availableTypes } from '@/lib/filters';
 import type { SortOption } from '@/lib/sort';
@@ -13,28 +13,11 @@ import type { Image as ShopImage, Product } from '@/lib/shopify/types';
 
 type Crumb = { name: string; url: string };
 
-// Toggle "Em stock" (o sort é o dropdown SortSelect). Preserva os restantes params.
-function StockToggle({ base, params, stock }: { base: string; params: Record<string, string | undefined>; stock: boolean }) {
-  const p = new URLSearchParams();
-  for (const [k, v] of Object.entries({ ...params, stock: stock ? '' : '1' })) if (v) p.set(k, v);
-  const qs = p.toString();
-  return (
-    <nav className="sort-bar" aria-label="Filtrar por stock">
-      <span className="sort-bar__label">Stock:</span>
-      <Link href={qs ? `${base}?${qs}` : base} className={`sort-chip${stock ? ' is-active' : ''}`} aria-pressed={stock}>
-        Em stock
-      </Link>
-    </nav>
-  );
-}
-
-// Listagem partilhada por /categorias/[handle] (tipos) e /colecoes/[handle] (coleções):
-// banner full-bleed + breadcrumb + filtros à esquerda + sort/stock + grelha.
 export default function ProductListing({
-  eyebrow,
   title,
-  text,
   image,
+  photo,
+  art,
   crumbs,
   basePath,
   products,
@@ -45,10 +28,12 @@ export default function ProductListing({
   params,
   listName,
 }: {
-  eyebrow: string;
   title: string;
-  text?: string | null;
   image?: ShopImage | null;
+  /** Banner foto desktop/mobile com h1 + intro visíveis por cima (categorias). */
+  photo?: { desktop: string; mobile: string; alt: string; text: string };
+  /** Banner-arte com texto embutido: substitui o hero (sem scrim nem título por cima). */
+  art?: { src: string; alt: string; width: number; height: number };
   crumbs: Crumb[];
   basePath: string;
   products: Product[];
@@ -66,21 +51,26 @@ export default function ProductListing({
     <>
     <section className="container">
       <JsonLd data={itemListLd(filtered, listName)} />
-      <div className={`chero${image ? '' : ' chero--plain'}`}>
-        {image && (
-          <>
-            <div className="chero__media">
-              <Image src={image.url} alt={image.altText ?? title} fill sizes="100vw" style={{ objectFit: 'cover' }} priority />
-            </div>
-            <div className="chero__scrim" />
-          </>
-        )}
-        <div className="chero__body">
-          <p className="eyebrow">{eyebrow}</p>
-          <h1>{title}</h1>
-          {text && <p className="chero__text">{text}</p>}
+      {photo ? (
+        <div className="art-banner">
+          <PhotoBanner desktop={photo.desktop} mobile={photo.mobile} alt={photo.alt} priority>
+            <h1 className="pban__title">{title}</h1>
+            <p className="pban__lead">{photo.text}</p>
+          </PhotoBanner>
         </div>
-      </div>
+      ) : (
+        /* Hero só-imagem (sem scrim nem texto por cima); o h1 fica para SEO/leitores de ecrã. */
+        <h1 className="visually-hidden">{title}</h1>
+      )}
+      {photo ? null : art ? (
+        <div className="art-banner">
+          <Image src={art.src} alt={art.alt} width={art.width} height={art.height} sizes="100vw" quality={90} priority className="art-banner__img" />
+        </div>
+      ) : image && (
+        <div className="art-banner art-banner--photo">
+          <Image src={image.url} alt={image.altText ?? title} fill sizes="100vw" style={{ objectFit: 'cover' }} priority />
+        </div>
+      )}
       <Breadcrumbs items={crumbs} />
       <div className="shop-layout">
         <aside className="shop-layout__aside">
@@ -91,13 +81,13 @@ export default function ProductListing({
             showType={showType}
             types={showType ? availableTypes(products) : []}
             scents={availableScents(products)}
+            stockFilter
           />
         </aside>
         <div className="shop-layout__main">
           <div className="listbar">
-            <p className="listbar__count">{filtered.length} {filtered.length === 1 ? 'produto' : 'produtos'}</p>
+            <p className="listbar__count">{filtered.length} {filtered.length === 1 ? 'item' : 'itens'}</p>
             <SortSelect value={sort.key} />
-            <StockToggle base={basePath} params={params} stock={stock} />
           </div>
           {filtered.length > 0 ? (
             <ProductGridPaged products={filtered} listName={listName} />

@@ -9,12 +9,15 @@ export default function ProductFilters({
   showType,
   types,
   scents,
+  stockFilter = false,
 }: {
   basePath: string;
   params: Record<string, string | undefined>;
   showType: boolean;
   types: TypeKey[];
   scents: string[];
+  /** Mostra o facet "Disponibilidade › Em stock" (param `stock=1`). */
+  stockFilter?: boolean;
 }) {
   const href = (key: string, value: string) => {
     const p = new URLSearchParams();
@@ -38,7 +41,7 @@ export default function ProductFilters({
     return qs ? `${basePath}?${qs}` : basePath;
   };
 
-  const anyActive = !!(params.type || params.scent || params.price);
+  const anyActive = !!(params.type || params.scent || params.price || params.stock);
   const showTypeRow = showType && types.length > 1;
 
   const Chevron = () => <i className="fa-solid fa-chevron-down facet__chev" aria-hidden="true" />;
@@ -89,6 +92,15 @@ export default function ProductFilters({
             ))}
           </ul>
         </details>
+
+        {stockFilter && (
+          <details className="facet" open>
+            <summary className="facet__head">Disponibilidade<Chevron /></summary>
+            <ul className="facet__opts">
+              <Opt url={href('stock', '1')} label="Em stock" active={params.stock === '1'} />
+            </ul>
+          </details>
+        )}
 
         {anyActive && (
           <Link href={basePath} className="facets__clear">

@@ -7,6 +7,16 @@ import { CATEGORIES } from '@/lib/categories';
 
 export const revalidate = 3600;
 
+// Banners-arte por coleção (texto embutido na imagem). ponytail: mapa fixo; passar para metafield se crescer.
+const ART: Record<string, { src: string; alt: string; width: number; height: number }> = {
+  'colecao-de-outono': {
+    src: '/images/hero-colecao-outono.png',
+    alt: 'Trio Outono — três novas sugestões para um outono três vezes mais aconchegante. Velas Pumpkin Spice e Cappuccino entre pinhas e folhas.',
+    width: 1270,
+    height: 330,
+  },
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
   if (CATEGORIES[handle]) return {}; // é uma categoria — a página redireciona
@@ -52,10 +62,9 @@ export default async function ColecaoPage({
 
   return (
     <ProductListing
-      eyebrow="Coleção"
       title={collection.title}
-      text={collection.description}
       image={bannerImage}
+      art={ART[handle]}
       crumbs={crumbs}
       basePath={`/colecoes/${handle}`}
       products={collection.products}

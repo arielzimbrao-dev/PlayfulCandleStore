@@ -58,10 +58,9 @@ const pt = {
   common: { explore: 'Explorar', seeAll: 'Ver todos' },
   appeals: [
     { icon: 'fa-leaf', label: 'Ceras 100% Vegetais' },
-    { icon: 'fa-truck-fast', label: 'Envio em até 24 horas*' },
+    { icon: 'fa-truck-fast', label: 'Envio em até 24 horas' },
     { icon: 'fa-credit-card', label: 'Pagas com MB WAY ou Multibanco' },
   ],
-  appealsNote: '*Em dias úteis. Encomendas ao fim de semana ou em feriados seguem no dia útil seguinte.',
   cats: {
     eyebrow: 'Escolhe o teu',
     title: 'Formato favorito',
@@ -93,11 +92,6 @@ const pt = {
     ],
     bubble: 'Porque a vida fica mais bonita com velas',
     alt: 'Velas feitas à mão em Lisboa',
-  },
-  insta: {
-    eyebrow: '@theplayfulcandles',
-    title: 'Segue-nos no Instagram',
-    link: 'Ver feed',
   },
   search: {
     placeholder: 'Pesquisar velas, aromas…',
@@ -271,10 +265,9 @@ const es: Dict = {
   common: { explore: 'Explorar', seeAll: 'Ver todos' },
   appeals: [
     { icon: 'fa-leaf', label: 'Ceras 100% Vegetales' },
-    { icon: 'fa-truck-fast', label: 'Envío en hasta 24 horas*' },
+    { icon: 'fa-truck-fast', label: 'Envío en hasta 24 horas' },
     { icon: 'fa-credit-card', label: 'Paga con MB WAY o Multibanco' },
   ],
-  appealsNote: '*En días laborables. Los pedidos del fin de semana o en festivos salen el siguiente día laborable.',
   cats: {
     eyebrow: 'Elige tu',
     title: 'Formato favorito',
@@ -306,11 +299,6 @@ const es: Dict = {
     ],
     bubble: 'Porque la vida es más bonita con velas',
     alt: 'Velas hechas a mano en Lisboa',
-  },
-  insta: {
-    eyebrow: '@theplayfulcandles',
-    title: 'Síguenos en Instagram',
-    link: 'Ver el feed',
   },
   search: {
     placeholder: 'Buscar velas, aromas…',
@@ -480,10 +468,9 @@ const en: Dict = {
   common: { explore: 'Explore', seeAll: 'See all' },
   appeals: [
     { icon: 'fa-leaf', label: '100% Plant-based wax' },
-    { icon: 'fa-truck-fast', label: 'Dispatch within 24 hours*' },
+    { icon: 'fa-truck-fast', label: 'Dispatch within 24 hours' },
     { icon: 'fa-credit-card', label: 'Pay with MB WAY or Multibanco' },
   ],
-  appealsNote: '*On business days. Weekend and bank holiday orders go out on the next business day.',
   cats: {
     eyebrow: 'Pick your',
     title: 'Favourite format',
@@ -515,11 +502,6 @@ const en: Dict = {
     ],
     bubble: 'Because life is prettier with candles',
     alt: 'Candles handmade in Lisbon',
-  },
-  insta: {
-    eyebrow: '@theplayfulcandles',
-    title: 'Follow us on Instagram',
-    link: 'See the feed',
   },
   search: {
     placeholder: 'Search candles, scents…',

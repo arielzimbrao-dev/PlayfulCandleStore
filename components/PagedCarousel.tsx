@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode, type TouchEvent } from 'react';
 import { usePagedCarousel } from './usePagedCarousel';
 
 type Props = {
@@ -15,11 +15,21 @@ type Props = {
 export default function PagedCarousel({ children, ariaLabel, variant = 'bleed', hideDots }: Props) {
   const { viewportRef, trackRef, offset, pages, active, atStart, atEnd, next, prev, toPage } =
     usePagedCarousel<HTMLDivElement, HTMLDivElement>();
+  // Swipe no toque (no mobile as setas ficam escondidas): deslize horizontal > 40px muda de slide.
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = (e: TouchEvent) => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; };
+  const onTouchEnd = (e: TouchEvent) => {
+    if (!touch.current) return;
+    const dx = e.changedTouches[0].clientX - touch.current.x;
+    const dy = e.changedTouches[0].clientY - touch.current.y;
+    touch.current = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) (dx < 0 ? next : prev)();
+  };
 
   return (
     <div className={`pcar pcar--${variant}`}>
       <div className="pcar__stage">
-        <div className="pcar__viewport" ref={viewportRef}>
+        <div className="pcar__viewport" ref={viewportRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
           <div
             className="pcar__track"
             ref={trackRef}

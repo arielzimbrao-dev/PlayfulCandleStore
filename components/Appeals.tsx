@@ -29,7 +29,6 @@ export default function Appeals() {
         {/* eslint-disable-next-line @next/next/no-img-element -- SVG decorativo minúsculo; next/image não otimiza SVG */}
         <img className="appeals__star" src="/icons/star.svg" alt="" aria-hidden="true" />
       </div>
-      <p className="appeals__note">{t.appealsNote}</p>
     </section>
   );
 }

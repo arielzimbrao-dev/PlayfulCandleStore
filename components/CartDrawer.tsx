@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCart } from './cart-context';
 import { useToast } from './Toast';
 import { useT } from './LanguageProvider';
@@ -125,7 +126,7 @@ export default function CartDrawer() {
             <ul className="drawer__lines">
               {cart.lines.map((line) => (
                 <li key={line.id} className="drawer__line">
-                  <span className="drawer__thumb">
+                  <Link href={`/produtos/${line.merchandise.product.handle}`} className="drawer__thumb" onClick={closeCart} tabIndex={-1} aria-hidden="true">
                     {line.merchandise.product.featuredImage ? (
                       <Image
                         src={line.merchandise.product.featuredImage.url}
@@ -138,9 +139,9 @@ export default function CartDrawer() {
                     ) : (
                       <span aria-hidden="true">🕯️</span>
                     )}
-                  </span>
+                  </Link>
                   <div className="drawer__line-main">
-                    <p>{line.merchandise.product.title}</p>
+                    <p><Link href={`/produtos/${line.merchandise.product.handle}`} className="drawer__name" onClick={closeCart}>{line.merchandise.product.title}</Link></p>
                     {line.merchandise.title !== 'Default Title' && <small>{line.merchandise.title}</small>}
                     <div className="drawer__qty">
                       <button disabled={pending === line.id} onClick={async () => { if (!(await updateItem(line.id, Math.max(1, line.quantity - 1)))) toast.show(t.cart.actionError, 'error'); }} aria-label="−">−</button>

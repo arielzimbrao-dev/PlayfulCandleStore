@@ -1,16 +1,14 @@
 'use client';
 
-import Image from 'next/image';
 import { useT } from './LanguageProvider';
 import { SITE } from '@/lib/site';
 
-// Playful VIP (Figma Frame 47) — fundo groovy (imagem), headline branca, botão creme + WhatsApp.
+// Playful VIP — vive no topo do footer e partilha o fundo dele (headline branca, botão creme + WhatsApp).
 export default function Newsletter() {
   const t = useT();
 
   return (
-    <section className="sec vip" aria-labelledby="vip-h">
-      <Image src="/images/figma/vip-bg.jpg" alt="" fill sizes="100vw" quality={90} className="vip__bg" style={{ objectFit: 'cover' }} />
+    <section className="vip" aria-labelledby="vip-h">
       <div className="wrap">
         <div className="vip__c">
           <p className="eyebrow vip__eyebrow">Playful VIP</p>

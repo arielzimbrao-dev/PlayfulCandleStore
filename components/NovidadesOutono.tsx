@@ -17,7 +17,7 @@ export default function NovidadesOutono({ products }: { products: Product[] }) {
     <section className="novi" aria-labelledby="novi-h">
       <div className="wrap novi__grid">
         <Link className="novi__feature" href={href} aria-label={t.season.newTitle}>
-          <Image src="/images/figma/novidades-outono.jpg" alt="" fill sizes="(max-width:900px) 100vw, 45vw" quality={90} style={{ objectFit: 'cover' }} />
+          <Image src="/images/novidades-outono.jpg" alt="" fill sizes="(max-width:900px) 100vw, 45vw" quality={90} style={{ objectFit: 'cover' }} />
         </Link>
         <div className="novi__body">
           <div className="sec__head novi__head">
