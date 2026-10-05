@@ -10,6 +10,7 @@ import { useLang } from '../LanguageProvider';
 import { LOCALES } from '@/lib/i18n';
 import SearchBox from '../SearchBox';
 import LanguageDropdown from '../LanguageDropdown';
+import AccountMenu from './AccountMenu';
 import { SITE } from '@/lib/site';
 
 type MenuCollection = { handle: string; title: string };
@@ -121,9 +122,7 @@ const Header = ({ collections = [] }: { collections?: MenuCollection[] }) => {
             {wishCount > 0 && <span className="cart-count" aria-hidden="true">{wishCount}</span>}
           </Link>
           <SearchBox />
-          <a href={SITE.accountUrl} className="hd-icon hd__d-only" aria-label={t.header.account} title={t.header.account}>
-            <i className="fa-regular fa-user" aria-hidden="true" />
-          </a>
+          <AccountMenu />
           <button
             onClick={openCart}
             className="hd-icon cart-btn"

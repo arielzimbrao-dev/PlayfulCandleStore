@@ -28,6 +28,7 @@ const pt = {
     items: 'artigos',
     home: 'Playful Candles, página inicial',
     language: 'Mudar idioma',
+    accountMenu: { title: 'Conta', shop: 'Iniciar sessão com a Shop', other: 'Outras opções de início de sessão', orders: 'Encomendas', profile: 'Perfil' },
   },
   topnav: { home: 'Início', shop: 'Loja', about: 'Sobre nós', contact: 'Contacto' },
   menu: {
@@ -235,6 +236,7 @@ const es: Dict = {
     items: 'artículos',
     home: 'Playful Candles, página de inicio',
     language: 'Cambiar idioma',
+    accountMenu: { title: 'Cuenta', shop: 'Iniciar sesión con Shop', other: 'Otras opciones de inicio de sesión', orders: 'Pedidos', profile: 'Perfil' },
   },
   topnav: { home: 'Inicio', shop: 'Tienda', about: 'Sobre nosotros', contact: 'Contacto' },
   menu: {
@@ -438,6 +440,7 @@ const en: Dict = {
     items: 'items',
     home: 'Playful Candles, home',
     language: 'Change language',
+    accountMenu: { title: 'Account', shop: 'Sign in with Shop', other: 'Other sign-in options', orders: 'Orders', profile: 'Profile' },
   },
   topnav: { home: 'Home', shop: 'Shop', about: 'About us', contact: 'Contact' },
   menu: {

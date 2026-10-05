@@ -1192,3 +1192,21 @@ h2.script-title{padding-left:4px}
     justify-content:flex-start;padding:clamp(1.6rem,8vw,2.6rem) var(--gutter) 3rem;
     background:linear-gradient(180deg,rgba(255,246,250,.88) 0%,rgba(255,246,250,.6) 70%,transparent 100%)}
 }
+
+/* ============ CONTA — popover do ícone de perfil (header, desktop) ============ */
+.acct{position:relative;display:inline-flex}
+.acct__pop{position:absolute;top:calc(100% + 14px);right:-12px;z-index:var(--z-menu);width:min(380px,92vw);
+  display:flex;flex-direction:column;gap:12px;padding:24px;background:#fff;color:var(--ink);
+  border-radius:4px;box-shadow:0 18px 40px -12px rgba(42,21,36,.28)}
+.acct__title{margin:0 0 6px;font-family:var(--disp);font-weight:700;font-size:1.05rem;color:var(--ink)}
+.acct__btn{display:flex;align-items:center;justify-content:center;gap:.5em;min-height:48px;padding:0 1.2rem;
+  border-radius:var(--r-pill);font-family:var(--disp);font-weight:500;font-size:.95rem;text-align:center;
+  transition:background var(--t-fast) var(--ease),color var(--t-fast) var(--ease),transform var(--t-fast) var(--ease)}
+.acct__btn:hover{transform:translateY(-1px)}
+.acct__btn--shop{background:#5a31f4;color:#fff}
+.acct__btn--shop:hover{background:#4a22e0;color:#fff}
+.acct__btn--main{background:var(--principal);color:#fff}
+.acct__btn--main:hover{background:var(--coral-deep);color:#fff}
+.acct__row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.acct__btn--ghost{border:1.5px solid var(--principal);color:var(--principal);background:#fff}
+.acct__btn--ghost:hover{background:var(--sink);color:var(--coral-deep)}
