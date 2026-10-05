@@ -39,7 +39,6 @@ const Header = ({ collections = [] }: { collections?: MenuCollection[] }) => {
   // Link ativo (laranja); os restantes ficam rosa.
   const homeActive = pathname === '/';
   const shopActive = /^\/(produtos|categorias|colecoes)/.test(pathname);
-  const aboutActive = pathname.startsWith('/sobre');
 
   return (
     <header className={`hd${menuOpen ? ' nav-open' : ''}`}>
@@ -74,7 +73,6 @@ const Header = ({ collections = [] }: { collections?: MenuCollection[] }) => {
               <Link href="/produtos" onClick={close}>{t.menu.allShop} →</Link>
             </div>
           </div>
-          <Link href="/sobre" className={aboutActive ? 'is-active' : undefined} onClick={close}>{t.topnav.about}</Link>
           <Link href="/contacto" className="nav__m-only" onClick={close}>{t.topnav.contact}</Link>
           {/* Só mobile: o que sai do header (favoritos · conta · idioma) */}
           <div className="nav__m-extra">

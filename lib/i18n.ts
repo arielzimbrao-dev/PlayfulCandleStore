@@ -30,7 +30,7 @@ const pt = {
     language: 'Mudar idioma',
     accountMenu: { title: 'Conta', shop: 'Iniciar sessão com a Shop', other: 'Outras opções de início de sessão', orders: 'Encomendas', profile: 'Perfil' },
   },
-  topnav: { home: 'Início', shop: 'Loja', about: 'Sobre nós', contact: 'Contacto' },
+  topnav: { home: 'Início', shop: 'Loja', contact: 'Contacto' },
   menu: {
     categories: 'Categorias',
     collections: 'Coleções',
@@ -157,7 +157,7 @@ const pt = {
     about: 'Sobre',
     shopLinks: ['Velas', 'Wax Melts', 'Snapbars', 'Queimadores'],
     helpLinks: ['Envios & portes', 'Trocas & devoluções', 'Seguir encomenda', 'Contacto'],
-    aboutLinks: ['A nossa história', 'Perguntas frequentes', 'Contacto'],
+    aboutLinks: ['Perguntas frequentes', 'Contacto'],
     copy: '© 2026 Playful Candles · Feito à mão em Lisboa',
   },
   product: {
@@ -238,7 +238,7 @@ const es: Dict = {
     language: 'Cambiar idioma',
     accountMenu: { title: 'Cuenta', shop: 'Iniciar sesión con Shop', other: 'Otras opciones de inicio de sesión', orders: 'Pedidos', profile: 'Perfil' },
   },
-  topnav: { home: 'Inicio', shop: 'Tienda', about: 'Sobre nosotros', contact: 'Contacto' },
+  topnav: { home: 'Inicio', shop: 'Tienda', contact: 'Contacto' },
   menu: {
     categories: 'Categorías',
     collections: 'Colecciones',
@@ -363,7 +363,7 @@ const es: Dict = {
     about: 'Nosotros',
     shopLinks: ['Velas', 'Wax Melts', 'Snapbars', 'Quemadores'],
     helpLinks: ['Envíos & portes', 'Cambios & devoluciones', 'Seguir pedido', 'Contacto'],
-    aboutLinks: ['Nuestra historia', 'Preguntas frecuentes', 'Contacto'],
+    aboutLinks: ['Preguntas frecuentes', 'Contacto'],
     copy: '© 2026 Playful Candles · Hecho a mano en Lisboa',
   },
   product: {
@@ -442,7 +442,7 @@ const en: Dict = {
     language: 'Change language',
     accountMenu: { title: 'Account', shop: 'Sign in with Shop', other: 'Other sign-in options', orders: 'Orders', profile: 'Profile' },
   },
-  topnav: { home: 'Home', shop: 'Shop', about: 'About us', contact: 'Contact' },
+  topnav: { home: 'Home', shop: 'Shop', contact: 'Contact' },
   menu: {
     categories: 'Categories',
     collections: 'Collections',
@@ -564,7 +564,7 @@ const en: Dict = {
     about: 'About',
     shopLinks: ['Candles', 'Wax Melts', 'Snapbars', 'Burners'],
     helpLinks: ['Shipping & delivery', 'Returns & exchanges', 'Track order', 'Contact'],
-    aboutLinks: ['Our story', 'FAQ', 'Contact'],
+    aboutLinks: ['FAQ', 'Contact'],
     copy: '© 2026 Playful Candles · Handmade in Lisbon',
   },
   product: {

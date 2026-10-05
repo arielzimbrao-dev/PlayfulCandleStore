@@ -8,7 +8,7 @@ import Newsletter from './Newsletter';
 
 const SHOP_HREFS = ['/categorias/velas-de-copo', '/categorias/wax-melts', '/categorias/snapbars', '/categorias/queimadores'];
 const HELP_HREFS = ['/envios', '/devolucoes', SITE.accountUrl, '/contacto'];
-const ABOUT_HREFS = ['/sobre', '/faq', '/contacto'];
+const ABOUT_HREFS = ['/faq', '/contacto'];
 
 export default function Footer() {
   const t = useT();

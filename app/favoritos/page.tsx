@@ -19,7 +19,7 @@ export default async function FavoritosPage() {
       <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Favoritos', url: '/favoritos' }]} />
       <div className="sec__head">
         <div>
-          <h1>Os teus favoritos</h1>
+          <h1 className="script-title script-title--sec">Os teus favoritos <span className="script-spark" aria-hidden="true" /></h1>
         </div>
       </div>
       <FavoritesList products={products} />
