@@ -85,7 +85,7 @@ export default function ProductReviews({ productId, reviews }: { productId: stri
   return (
     <section className="sec reviews-pdp" aria-labelledby="rev-h">
       <div className="wrap">
-        <h2 id="rev-h" className="script-title">Avaliações <span className="script-spark" aria-hidden="true" /></h2>
+        <h2 id="rev-h" className="script-title">Reviews <span className="script-spark" aria-hidden="true" /></h2>
 
         <div className="rv-sum">
           {reviews.length > 0 ? (

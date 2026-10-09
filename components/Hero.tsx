@@ -11,9 +11,9 @@ export default function Hero() {
   return (
     <section className="hero" aria-label={t.hero.eyebrow}>
       <PhotoBanner
-        desktop="/images/banners/home-hero-desktop.jpg"
-        mobile="/images/banners/home-hero-mobile.jpg"
-        alt="Velas artesanais Pumpkin Spice e Cappuccino entre pinhas e folhas de outono."
+        desktop="/images/banners/cat-wax-melts-desktop.jpg"
+        mobile="/images/banners/cat-wax-melts-mobile.jpg"
+        alt="Wax melt Cinnamon Rolls em pote de kraft ao lado de um queimador dourado com vela de chá acesa."
         href={href}
         priority
       >

@@ -81,7 +81,7 @@ export default function CarrinhoPage() {
                   <Image
                     src={line.merchandise.product.featuredImage.url}
                     alt={line.merchandise.product.featuredImage.altText ?? line.merchandise.product.title}
-                    title={line.merchandise.product.title}
+                    title={line.merchandise.product.featuredImage.altText ?? line.merchandise.product.title}
                     width={88}
                     height={88}
                     style={{ objectFit: 'cover' }}
@@ -98,7 +98,7 @@ export default function CarrinhoPage() {
                 <div className="drawer__qty">
                   <button disabled={pending === line.id} onClick={async () => { if (!(await updateItem(line.id, Math.max(1, line.quantity - 1)))) toast.show(t.cart.actionError, 'error'); }} aria-label="−">−</button>
                   <span>{line.quantity}</span>
-                  <button disabled={pending === line.id} onClick={async () => { if (!(await updateItem(line.id, line.quantity + 1))) toast.show(t.cart.actionError, 'error'); }} aria-label="+">+</button>
+                  <button disabled={pending === line.id || line.quantity >= (line.merchandise.quantityAvailable ?? Infinity)} onClick={async () => { if (!(await updateItem(line.id, line.quantity + 1))) toast.show(t.cart.actionError, 'error'); }} aria-label="+">+</button>
                   <button className="drawer__remove" disabled={pending === line.id} onClick={async () => { if (!(await removeItem(line.id))) toast.show(t.cart.actionError, 'error'); }}>{t.cart.remove}</button>
                 </div>
               </div>

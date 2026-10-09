@@ -4,12 +4,14 @@ import ProductGallery from '@/components/ProductGallery';
 import AddToCartButton from '@/components/AddToCartButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import LeveJunto from '@/components/LeveJunto';
+import LevaJuntoBundle from '@/components/LevaJuntoBundle';
 import ProductReviews from '@/components/ProductReviews';
 import JsonLd from '@/components/JsonLd';
 import TrackProductView from '@/components/TrackProductView';
 import { productLd } from '@/lib/jsonld';
 import { productCategory } from '@/lib/filters';
 import { getProduct } from '@/lib/shopify';
+import { getStock } from '@/lib/shopify/admin';
 import { seasonalCollection } from '@/lib/shopify/types';
 import Link from 'next/link';
 
@@ -50,7 +52,8 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   if (!p) return { title: 'Produto não encontrado' };
   const img = p.featuredImage?.url ?? p.images[0]?.url;
   return {
-    title: p.seo.title || p.title,
+    // seo.title da Shopify já traz "| Playful Candles" — absolute evita o sufixo do template.
+    title: p.seo.title ? { absolute: p.seo.title } : p.title,
     description: (p.seo.description || p.description || `${p.title} — vela artesanal Playful Candles.`).slice(0, 155),
     alternates: { canonical: `/produtos/${handle}` },
     openGraph: img ? { type: 'website', images: [{ url: img }] } : undefined,
@@ -59,8 +62,10 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
 
 export default async function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params;
-  const product = await getProduct(handle);
-  if (!product) notFound();
+  const found = await getProduct(handle);
+  if (!found) notFound();
+  const stock = await getStock(found.variants.map((v) => v.id));
+  const product = { ...found, variants: found.variants.map((v) => ({ ...v, quantityAvailable: stock[v.id] })) };
 
   const images = product.images.length ? product.images : product.featuredImage ? [product.featuredImage] : [];
   const coll = seasonalCollection(product);
@@ -89,21 +94,23 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
         <div className="product__grid">
           <ProductGallery images={images} title={product.title} handle={product.handle} />
           <div className="product__info">
-            <div className="product__rating" aria-label={reviews.length ? `${avg.toFixed(1)} de 5 (${reviews.length})` : 'Sem avaliações'}>
-              {[1, 2, 3, 4, 5].map((n) => (
-                <i key={n} className={`fa-star ${avg >= n - 0.25 ? 'fa-solid' : 'fa-regular'}`} aria-hidden="true" />
-              ))}
-            </div>
             {product.productType && <p className="eyebrow">{product.productType}</p>}
             <div className="product__title-row">
               <h1 className="script-title script-title--pink">{product.title}</h1>
               {product.weight && <span className="product__weight">{product.weight}</span>}
             </div>
-            {coll && (
-              <Link href={`/colecoes/${coll.handle}`} className="product__coll">
-                {coll.title}
-              </Link>
-            )}
+            <div className="product__meta">
+              {coll && (
+                <Link href={`/colecoes/${coll.handle}`} className="product__coll">
+                  {coll.title}
+                </Link>
+              )}
+              <div className="product__rating" aria-label={reviews.length ? `${avg.toFixed(1)} de 5 (${reviews.length})` : 'Sem avaliações'}>
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <i key={n} className={`fa-star ${avg >= n - 0.25 ? 'fa-solid' : 'fa-regular'}`} aria-hidden="true" />
+                ))}
+              </div>
+            </div>
 
             <AddToCartButton product={product} />
 
@@ -141,6 +148,8 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
       </section>
 
       <ProductReviews productId={product.id} reviews={reviews} />
+
+      <LevaJuntoBundle product={product} />
 
       <LeveJunto product={product} />
     </>

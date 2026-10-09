@@ -18,6 +18,8 @@ export default function ProductCardBig({
 }) {
   const href = `/produtos/${product.handle}`;
   const image = product.featuredImage ?? product.images[0];
+  // foto 2 aparece no hover (só dispositivos com rato — ver .bcard__img--alt no CSS)
+  const hoverImage = product.images.find((img) => img.url !== image?.url);
   const soldOut = product.variants.length > 0 && !product.variants.some((v) => v.availableForSale);
 
   return (
@@ -29,10 +31,22 @@ export default function ProductCardBig({
           ) : product.productType ? (
             <span className="bcard__tag">{product.productType}</span>
           ) : null}
+          {hoverImage && (
+            <Image
+              src={hoverImage.url}
+              alt={hoverImage.altText ?? product.title}
+              title={hoverImage.altText ?? product.title}
+              fill
+              sizes="(max-width:600px) 84vw, (max-width:1000px) 50vw, 25vw"
+              className="bcard__alt"
+              style={{ objectFit: 'cover' }}
+            />
+          )}
           {image ? (
             <Image
               src={image.url}
               alt={image.altText ?? product.title}
+              title={image.altText ?? product.title}
               fill
               sizes="(max-width:600px) 84vw, (max-width:1000px) 50vw, 25vw"
               style={{ objectFit: 'cover' }}

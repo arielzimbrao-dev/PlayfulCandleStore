@@ -22,7 +22,8 @@ type CartContextValue = {
   pending: string | null;
   openCart: () => void;
   closeCart: () => void;
-  addItem: (merchandiseId: string, quantity?: number) => Promise<boolean>;
+  /** Vários ids = várias linhas de uma vez (ex.: "Leva junto"), cada uma com `quantity`. */
+  addItem: (merchandiseId: string | string[], quantity?: number) => Promise<boolean>;
   updateItem: (lineId: string, quantity: number) => Promise<boolean>;
   removeItem: (lineId: string) => Promise<boolean>;
   applyDiscount: (code: string) => Promise<boolean>;
@@ -85,8 +86,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [toast, t]);
 
   const addItem = useCallback(
-    async (merchandiseId: string, quantity = 1) => {
-      const ok = await mutate({ method: 'POST', body: JSON.stringify({ merchandiseId, quantity }) });
+    async (merchandiseId: string | string[], quantity = 1) => {
+      const body = Array.isArray(merchandiseId)
+        ? { lines: merchandiseId.map((id) => ({ merchandiseId: id, quantity })) }
+        : { merchandiseId, quantity };
+      const ok = await mutate({ method: 'POST', body: JSON.stringify(body) });
       if (ok) setIsOpen(true);
       return ok;
     },

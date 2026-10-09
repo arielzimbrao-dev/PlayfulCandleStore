@@ -10,7 +10,7 @@ import { SITE } from '@/lib/site';
 import type { Product } from '@/lib/shopify/types';
 
 export default function AddToCartButton({ product }: { product: Product }) {
-  const { addItem, loading } = useCart();
+  const { cart, addItem, loading } = useCart();
   const toast = useToast();
   const t = useT();
   const variants = product.variants;
@@ -22,20 +22,24 @@ export default function AddToCartButton({ product }: { product: Product }) {
   if (variants.length === 0) return <p>Produto indisponível.</p>;
 
   const variant = variants.find((v) => v.id === variantId) ?? firstAvailable;
-  const soldOut = !variant?.availableForSale;
+  // Teto = stock menos o que já está no carrinho (null = sem limite).
+  const inCart = cart?.lines.find((l) => l.merchandise.id === variant?.id)?.quantity ?? 0;
+  const max = variant?.quantityAvailable == null ? 99 : Math.max(0, variant.quantityAvailable - inCart);
+  const soldOut = !variant?.availableForSale || variant.quantityAvailable === 0;
+  const qtyNow = Math.min(qty, Math.max(1, max));
   const onSale =
     !!variant?.compareAtPrice && Number(variant.compareAtPrice.amount) > Number(variant.price.amount);
 
   const track = () => {
     if (!variant) return;
     ecommerceEvent('add_to_cart', [
-      { item_id: product.id, item_name: product.title, price: Number(variant.price.amount), quantity: qty, item_category: product.productType },
+      { item_id: product.id, item_name: product.title, price: Number(variant.price.amount), quantity: qtyNow, item_category: product.productType },
     ]);
   };
 
   const handleAdd = async () => {
     if (!variant) return;
-    const ok = await addItem(variant.id, qty);
+    const ok = await addItem(variant.id, qtyNow);
     toast.show(ok ? `${product.title} — ${t.product.added}` : t.product.addError, ok ? 'success' : 'error');
     if (ok) track();
   };
@@ -48,7 +52,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
       const res = await fetch('/api/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ merchandiseId: variant.id, quantity: qty, buyNow: true }),
+        body: JSON.stringify({ merchandiseId: variant.id, quantity: Math.min(qty, variant.quantityAvailable ?? 99), buyNow: true }),
       });
       const data = (await res.json()) as { cart?: { checkoutUrl?: string } };
       if (data.cart?.checkoutUrl) {
@@ -67,30 +71,32 @@ export default function AddToCartButton({ product }: { product: Product }) {
 
   return (
     <div className="buybox">
-      <div className="buybox__toprow">
-        <div className="buybox__price">
-          {variant && (
-            <span className={`price${onSale ? ' price--sale' : ''}`} style={{ fontSize: '1.7rem' }}>
-              {formatMoney(variant.price)}
-            </span>
-          )}
-          {onSale && variant?.compareAtPrice && (
-            <span className="price-old" style={{ fontSize: '1.1rem' }}>{formatMoney(variant.compareAtPrice)}</span>
-          )}
-        </div>
-        {!soldOut && (
-          <div className="qty" aria-label="Quantidade">
-            <button type="button" aria-label="Diminuir quantidade" onClick={() => setQty((q) => Math.max(1, q - 1))}>−</button>
-            <span aria-live="polite">{qty}</span>
-            <button type="button" aria-label="Aumentar quantidade" onClick={() => setQty((q) => Math.min(99, q + 1))}>+</button>
-          </div>
+      <div className="buybox__price">
+        {variant && (
+          <span className={`buybox__amount${onSale ? ' price--sale' : ''}`}>
+            {formatMoney(variant.price)}
+          </span>
+        )}
+        {onSale && variant?.compareAtPrice && (
+          <span className="price-old" style={{ fontSize: '1.1rem' }}>{formatMoney(variant.compareAtPrice)}</span>
         )}
       </div>
 
       {!soldOut && (
+        <div className="buybox__qty">
+          <span>Quantidade:</span>
+          <div className="qty" aria-label="Quantidade">
+            <button type="button" aria-label="Diminuir quantidade" onClick={() => setQty(Math.max(1, qtyNow - 1))}>−</button>
+            <span aria-live="polite">{qtyNow}</span>
+            <button type="button" aria-label="Aumentar quantidade" disabled={qtyNow >= max} onClick={() => setQty(Math.min(max, qtyNow + 1))}>+</button>
+          </div>
+        </div>
+      )}
+
+      {!soldOut && (
         <p className="buybox__stock">
           <i className="fa-solid fa-circle-check" aria-hidden="true" />
-          {t.product.inStock}
+          {max === 0 ? 'Já tens no carrinho todas as unidades disponíveis' : t.product.inStock}
         </p>
       )}
 
@@ -115,7 +121,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
         </a>
       ) : (
         <>
-          <button className="buybox__cta buybox__cta--cart" disabled={loading || buying || !variant} onClick={handleAdd}>
+          <button className="buybox__cta buybox__cta--cart" disabled={loading || buying || !variant || max === 0} onClick={handleAdd}>
             <i className="fa-solid fa-cart-shopping" aria-hidden="true" />
             {loading ? t.product.adding : t.product.choose}
           </button>
@@ -134,7 +140,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
             {t.product.notify} <i className="fa-solid fa-bell" aria-hidden="true" />
           </a>
         ) : (
-          <button className="btn btn--primary buybar-m__btn" disabled={loading || buying || !variant} onClick={handleAdd}>
+          <button className="btn btn--primary buybar-m__btn" disabled={loading || buying || !variant || max === 0} onClick={handleAdd}>
             {loading ? t.product.adding : t.product.choose} <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
           </button>
         )}

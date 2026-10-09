@@ -31,7 +31,7 @@ export default function ProductListing({
   title: string;
   image?: ShopImage | null;
   /** Banner foto desktop/mobile com h1 + intro visíveis por cima (categorias). */
-  photo?: { desktop: string; mobile: string; alt: string; text: string };
+  photo?: { desktop: string; mobile: string; alt: string; text: string; textRight?: boolean };
   /** Banner-arte com texto embutido: substitui o hero (sem scrim nem título por cima). */
   art?: { src: string; alt: string; width: number; height: number };
   crumbs: Crumb[];
@@ -53,7 +53,7 @@ export default function ProductListing({
       <JsonLd data={itemListLd(filtered, listName)} />
       {photo ? (
         <div className="art-banner">
-          <PhotoBanner desktop={photo.desktop} mobile={photo.mobile} alt={photo.alt} priority>
+          <PhotoBanner desktop={photo.desktop} mobile={photo.mobile} alt={photo.alt} textRight={photo.textRight} priority>
             <h1 className="pban__title">{title}</h1>
             <p className="pban__lead">{photo.text}</p>
           </PhotoBanner>
@@ -68,7 +68,7 @@ export default function ProductListing({
         </div>
       ) : image && (
         <div className="art-banner art-banner--photo">
-          <Image src={image.url} alt={image.altText ?? title} fill sizes="100vw" style={{ objectFit: 'cover' }} priority />
+          <Image src={image.url} alt={image.altText ?? title} title={image.altText ?? title} fill sizes="100vw" style={{ objectFit: 'cover' }} priority />
         </div>
       )}
       <Breadcrumbs items={crumbs} />

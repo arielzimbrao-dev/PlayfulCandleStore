@@ -9,9 +9,19 @@ import {
   updateCartLines,
   updateCartNote,
 } from '@/lib/shopify';
+import { getStock } from '@/lib/shopify/admin';
+import type { Cart, CartLineInput } from '@/lib/shopify/types';
 
 const CART_COOKIE = 'cartId';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 dias
+
+// Junta o stock de cada linha para o UI não deixar subir a quantidade acima do disponível.
+async function withStock(cart: Cart | null) {
+  if (!cart) return NextResponse.json({ cart });
+  const stock = await getStock(cart.lines.map((l) => l.merchandise.id));
+  const lines = cart.lines.map((l) => ({ ...l, merchandise: { ...l.merchandise, quantityAvailable: stock[l.merchandise.id] } }));
+  return NextResponse.json({ cart: { ...cart, lines } });
+}
 
 async function readCartId(): Promise<string | null> {
   return (await cookies()).get(CART_COOKIE)?.value ?? null;
@@ -31,7 +41,7 @@ export async function GET() {
   try {
     const id = await readCartId();
     const cart = id ? await getCart(id) : null;
-    return NextResponse.json({ cart });
+    return withStock(cart);
   } catch {
     // Shopify indisponível: o site continua a navegar com o carrinho vazio em vez de rebentar.
     return NextResponse.json({ cart: null }, { status: 200 });
@@ -55,9 +65,13 @@ function fail(e: unknown) {
 }
 
 export async function POST(req: Request) {
-  const body = await readJson<{ merchandiseId?: string; quantity?: number; buyNow?: boolean }>(req);
+  const body = await readJson<{ merchandiseId?: string; quantity?: number; buyNow?: boolean; lines?: CartLineInput[] }>(req);
   const { merchandiseId, quantity = 1, buyNow } = body ?? {};
-  if (!merchandiseId) {
+  // `lines` adiciona vários artigos numa só chamada (secção "Leva junto").
+  const lines = Array.isArray(body?.lines)
+    ? body.lines.filter((l) => typeof l?.merchandiseId === 'string').map((l) => ({ merchandiseId: l.merchandiseId, quantity: Math.max(1, Number(l.quantity) || 1) }))
+    : merchandiseId ? [{ merchandiseId, quantity }] : [];
+  if (!lines.length) {
     return NextResponse.json({ error: 'merchandiseId obrigatorio' }, { status: 400 });
   }
 
@@ -65,8 +79,8 @@ export async function POST(req: Request) {
     // "Comprar agora": carrinho descartável só com este artigo — o carrinho do cliente fica intacto
     // (senão levava para o checkout o que já lá tinha, sem o dizer).
     if (buyNow) {
-      const cart = await createCart([{ merchandiseId, quantity }]);
-      return NextResponse.json({ cart });
+      const cart = await createCart(lines);
+      return withStock(cart);
     }
 
     // Carrinho pode ter expirado (ex.: checkout concluido) -> recria.
@@ -74,11 +88,11 @@ export async function POST(req: Request) {
     if (id && !(await getCart(id))) id = null;
 
     const cart = id
-      ? await addCartLines(id, [{ merchandiseId, quantity }])
-      : await createCart([{ merchandiseId, quantity }]);
+      ? await addCartLines(id, lines)
+      : await createCart(lines);
 
     if (!id) await writeCartId(cart.id);
-    return NextResponse.json({ cart });
+    return withStock(cart);
   } catch (e) {
     return fail(e);
   }
@@ -96,17 +110,17 @@ export async function PATCH(req: Request) {
   try {
     if (typeof body.note === 'string') {
       const cart = await updateCartNote(id, body.note.slice(0, 500));
-      return NextResponse.json({ cart });
+      return withStock(cart);
     }
     if (Array.isArray(body.discountCodes)) {
       const cart = await updateCartDiscountCodes(id, body.discountCodes);
-      return NextResponse.json({ cart });
+      return withStock(cart);
     }
     if (!body.lineId || body.quantity == null) {
       return NextResponse.json({ error: 'lineId e quantity obrigatorios' }, { status: 400 });
     }
     const cart = await updateCartLines(id, [{ id: body.lineId, quantity: body.quantity }]);
-    return NextResponse.json({ cart });
+    return withStock(cart);
   } catch (e) {
     return fail(e);
   }
@@ -120,7 +134,7 @@ export async function DELETE(req: Request) {
   }
   try {
     const cart = await removeCartLines(id, [lineId]);
-    return NextResponse.json({ cart });
+    return withStock(cart);
   } catch (e) {
     return fail(e);
   }

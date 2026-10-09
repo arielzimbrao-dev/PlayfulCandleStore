@@ -13,6 +13,8 @@ export type ProductVariant = {
   id: string;
   title: string;
   availableForSale: boolean;
+  /** Stock disponível (Admin API); null/undefined = sem limite. */
+  quantityAvailable?: number | null;
   price: Money;
   compareAtPrice: Money | null;
   selectedOptions: { name: string; value: string }[];
@@ -78,6 +80,7 @@ export type CartLine = {
     id: string;
     title: string;
     price: Money;
+    quantityAvailable?: number | null;
     product: { id: string; handle: string; title: string; featuredImage: Image | null };
   };
 };

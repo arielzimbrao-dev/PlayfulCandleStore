@@ -8,6 +8,8 @@ export type Category = { title: string; query: string; text: string; type: TypeK
 export const categoryBanner = (handle: string) => ({
   desktop: `/images/banners/cat-${handle}-desktop.jpg`,
   mobile: `/images/banners/cat-${handle}-mobile.jpg`,
+  // a foto das velas tem o produto à esquerda → texto à direita (desktop)
+  textRight: handle === 'velas-de-copo',
 });
 
 export const CATEGORIES: Record<string, Category> = {

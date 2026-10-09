@@ -10,6 +10,7 @@ export default function PhotoBanner({
   alt,
   href,
   priority = false,
+  textRight = false,
   children,
 }: {
   desktop: string;
@@ -18,6 +19,8 @@ export default function PhotoBanner({
   /** Torna a foto clicável (duplicado do CTA do texto → escondido de teclado/leitores). */
   href?: string;
   priority?: boolean;
+  /** Texto no lado direito (desktop) quando o produto está à esquerda da foto. */
+  textRight?: boolean;
   children?: ReactNode;
 }) {
   const common = { alt, sizes: '100vw', quality: 90, priority };
@@ -33,7 +36,7 @@ export default function PhotoBanner({
   );
 
   return (
-    <div className="pban pban--hero">
+    <div className={`pban pban--hero${textRight ? ' pban--right' : ''}`}>
       {href ? <Link href={href} className="pban__link" aria-hidden="true" tabIndex={-1}>{pic}</Link> : pic}
       {children && <div className="pban__c">{children}</div>}
     </div>

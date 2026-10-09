@@ -20,11 +20,11 @@ export default async function LeveJunto({ product, limit = 8 }: { product?: Prod
   if (items.length === 0) return null;
 
   return (
-    <section className="sec rail" aria-label="Leva junto">
+    <section className="sec rail" aria-label="Compra também">
       <div className="wrap">
         <div className="sec__head">
           <div>
-            <h2 className="script-title">Leva junto <span className="script-spark" aria-hidden="true" /></h2>
+            <h2 className="script-title">Compra também <span className="script-spark" aria-hidden="true" /></h2>
           </div>
         </div>
       </div>

@@ -111,7 +111,7 @@ export default function SearchBox() {
                   <Link href={`/produtos/${p.handle}`} className="search__item" onClick={() => setOpen(false)}>
                     <span className="search__thumb">
                       {p.featuredImage ? (
-                        <Image src={p.featuredImage.url} alt={p.featuredImage.altText ?? p.title} title={p.title} width={48} height={48} style={{ objectFit: 'cover' }} />
+                        <Image src={p.featuredImage.url} alt={p.featuredImage.altText ?? p.title} title={p.featuredImage.altText ?? p.title} width={48} height={48} style={{ objectFit: 'cover' }} />
                       ) : (
                         <span aria-hidden="true">🕯️</span>
                       )}

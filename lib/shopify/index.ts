@@ -78,9 +78,10 @@ function parseReviews(mf: { value: string } | null): Product['reviews'] {
   }
 }
 
-// custom.peso é texto livre (ex.: "150g"). Fallback: velas de copo são 150g de cera de soja (Figma).
+// custom.peso é texto livre (ex.: "150g"). Fallback por tipo: vela 150g · wax melt 100g · snapbar 50g.
+const WEIGHT_BY_TYPE: [RegExp, string][] = [[/vela/i, '150g'], [/wax\s*melt/i, '100g'], [/snapbar/i, '50g']];
 const productWeight = (mf: { value: string } | null, productType: string): string =>
-  mf?.value?.trim() || (/vela/i.test(productType) ? '150g' : '');
+  mf?.value?.trim() || WEIGHT_BY_TYPE.find(([re]) => re.test(productType))?.[1] || '';
 
 const normalizeProduct = ({ scent, peso, reviews, ...p }: RawProduct): Product => ({
   ...p,

@@ -438,21 +438,28 @@ h2.script-title{padding-left:4px}
 
 /* ============ PRODUCT DETAIL (PDP) ============ */
 .product__grid{display:grid;gap:clamp(1.5rem,4vw,3rem);grid-template-columns:1fr;align-items:start}
-@media (min-width:900px){ .product__grid{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)} }
+@media (min-width:900px){
+  .product__grid{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}
+  .product__info{position:sticky;top:100px}
+}
 .product__info h1{font-size:clamp(1.8rem,4vw,2.6rem);margin:.2rem 0 .4rem}
 .product__desc{margin-top:1.5rem;color:var(--ink);line-height:1.7;max-width:60ch}
 .product__desc p{margin:.6rem 0}
 
-.gallery{display:flex;flex-direction:column;gap:.7rem}
-.gallery__main{position:relative;aspect-ratio:1;overflow:hidden;
+.gallery{position:relative}
+.gallery__track{display:flex;flex-direction:column;gap:.7rem}
+.gallery__item{position:relative;overflow:hidden;border-radius:8px;
   background:var(--surface-sink);box-shadow:var(--sh-sm)}
-.gallery__main.gallery__ph{display:grid;place-items:center;font-size:4rem}
-.gallery__thumbs{display:flex;gap:.6rem;flex-wrap:wrap}
-.gallery__thumb{position:relative;width:72px;height:72px;overflow:hidden;
-  box-shadow:0 0 0 2px transparent;transition:box-shadow var(--t) var(--ease)}
-.gallery__thumb.is-active{box-shadow:0 0 0 2px var(--pink-deep)}
+.gallery__ph{aspect-ratio:2/3;display:grid;place-items:center;font-size:4rem}
+@media (max-width:899px){
+  .gallery__track{flex-direction:row;align-items:start;gap:3px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+    margin-inline:calc(-1 * var(--gutter))}
+  .gallery__track::-webkit-scrollbar{display:none}
+  .gallery__item{flex:0 0 90%;scroll-snap-align:start;border-radius:0;box-shadow:none}
+  .gallery .gallery__wish{top:12px;right:calc(10vw - var(--gutter) + 12px)}
+}
 
-.buybox{margin-top:1.2rem;display:flex;flex-direction:column;gap:1rem;max-width:420px}
+.buybox{margin-top:1.2rem;display:flex;flex-direction:column;gap:1rem}
 .buybox__price{display:flex;align-items:baseline;gap:.6rem}
 .buybox__field{display:flex;flex-direction:column;gap:.3rem;font-weight:700;font-size:var(--fs-sm)}
 .buybox__field select{min-height:48px;border-radius:var(--r-pill);border:2px solid var(--line-strong);
@@ -462,6 +469,7 @@ h2.script-title{padding-left:4px}
 .qty button{width:38px;height:38px;border-radius:50%;background:var(--principal);color:#fff;
   font-size:1.2rem;font-weight:700;display:grid;place-items:center;transition:background .15s}
 .qty button:hover{background:var(--coral-deep)}
+.qty button:disabled{opacity:.4;cursor:not-allowed;background:var(--principal)}
 .qty span{min-width:2ch;text-align:center;font-weight:700;font-family:var(--disp)}
 .buybox__add{flex:1;min-width:200px}
 .buybox__stock{display:inline-flex;align-items:center;gap:.45em;margin:-.3rem 0 0;
@@ -512,6 +520,7 @@ h2.script-title{padding-left:4px}
 .drawer__qty button{min-height:32px;min-width:32px;padding:0 .5em;border-radius:var(--r-pill);
   background:var(--surface-sink);color:var(--ink);font-weight:700}
 .drawer__qty button:hover{color:var(--pink-deep)}
+.drawer__qty button:disabled{opacity:.35;cursor:not-allowed;color:inherit}
 .drawer__remove{background:none!important;color:var(--ink-soft)!important;text-decoration:underline;font-size:.8rem}
 
 /* ============ COLLECTION / TYPE BANNER — só imagem, full-bleed, logo abaixo do header ============
@@ -917,6 +926,9 @@ h2.script-title{padding-left:4px}
 .bcard__img{position:relative;display:block;aspect-ratio:3/4;overflow:hidden;background:var(--sink)}
 .bcard__img img{object-fit:cover;transition:transform .6s var(--ease)}
 .bcard:hover .bcard__img img{transform:scale(1.04)}
+/* 2.ª foto por cima, revelada no hover; touch não tem hover → mantém a principal */
+.bcard__img .bcard__alt{z-index:1;opacity:0;transition:opacity .35s var(--ease),transform .6s var(--ease)}
+@media (hover:hover){.bcard:hover .bcard__img .bcard__alt,.bcard__img:focus-visible .bcard__alt{opacity:1}}
 .bcard--soldout .bcard__img img{filter:saturate(.5) opacity(.85)}
 /* placeholder tipográfico de marca (enquanto não há foto real) */
 .bcard__ph{display:flex;flex-direction:column;gap:.5rem;align-items:center;justify-content:center;
@@ -1159,7 +1171,13 @@ h2.script-title{padding-left:4px}
 .product__title-row{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .product__info h1.script-title{font-size:clamp(1.9rem,3.6vw,2.8rem);margin:.1rem 0 .2rem;line-height:1.05}
 .product__weight{font-family:var(--script);color:var(--principal);font-size:clamp(1.3rem,2.6vw,2rem);white-space:nowrap;line-height:1}
-.buybox__toprow{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.product__meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.product__meta .product__coll{margin:0}
+.product__meta .product__rating{margin:0}
+.buybox__amount{font-family:var(--script);color:var(--principal);font-size:clamp(1.5rem,2.4vw,1.9rem);line-height:1}
+.buybox__qty{display:flex;align-items:center;gap:.8rem;font-family:var(--font-display);font-weight:700;color:var(--principal)}
+.buybox__qty .qty{border:2px solid var(--principal);border-radius:var(--r-pill);padding:2px;gap:.9rem}
+.buybox__qty .qty button{width:30px;height:30px}
 .buybox__cta{display:inline-flex;align-items:center;justify-content:center;gap:.55em;width:100%;min-height:52px;
   padding:0 1.2rem;border-radius:var(--r-pill);font-family:var(--disp);font-weight:600;font-size:1rem;
   transition:transform var(--t) var(--ease),background var(--t) var(--ease),box-shadow var(--t) var(--ease)}
@@ -1170,17 +1188,10 @@ h2.script-title{padding-left:4px}
 .buybox__cta--buy{background:var(--details);color:var(--ink)}
 .buybox__cta--buy:hover{background:#e0bd33}
 
-/* PDP galeria — coração (topo-dir) + setas (foto) */
-.gallery__main{border-radius:8px}
+/* PDP galeria — coração (topo-dir da 1.ª foto) */
 .gallery__wish{position:absolute;top:16px;right:16px;z-index:3;width:40px;height:40px;
   background:#fff;color:var(--principal);box-shadow:var(--sh-sm);border:none}
 .gallery__wish.is-active{background:var(--principal);color:#fff}
-.gallery__arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:40px;height:40px;
-  border-radius:50%;background:var(--principal);color:#fff;display:grid;place-items:center;
-  box-shadow:var(--sh-sm);transition:background .2s var(--ease)}
-.gallery__arrow:hover{background:var(--coral-deep)}
-.gallery__arrow--prev{left:12px}
-.gallery__arrow--next{right:12px}
 
 /* PDP rating + descrição + acordeões (foto) */
 .product__rating{display:flex;gap:3px;font-size:14px;margin-bottom:.3rem}
@@ -1219,6 +1230,8 @@ h2.script-title{padding-left:4px}
   color:var(--ink);pointer-events:none;
   background:linear-gradient(90deg,rgba(255,246,250,.82) 0%,rgba(255,246,250,.55) 70%,transparent 100%)}
 .pban__c a,.pban__c button{pointer-events:auto}
+@media(min-width:761px){.pban--right .pban__c{inset:0 0 0 auto;
+  background:linear-gradient(270deg,rgba(255,246,250,.82) 0%,rgba(255,246,250,.55) 70%,transparent 100%)}}
 .pban__c .eyebrow{letter-spacing:.16em;text-transform:uppercase;color:var(--coral-deep)}
 .pban__title{font-family:var(--script);font-weight:400;line-height:1.05;margin:0;color:var(--coral-deep);
   font-size:clamp(2rem,4.2vw,3.6rem)}
@@ -1227,6 +1240,10 @@ h2.script-title{padding-left:4px}
 .pban .btn{margin-top:.4rem}
 @media(max-width:760px){
   .pban--hero .pban__img{aspect-ratio:4/5}
+  /* hero da home: quadrado, recorte ancorado em baixo (o produto está no fundo da foto) */
+  .hero .pban--hero .pban__img{aspect-ratio:1;object-position:center bottom}
+  .hero .pban__lead{display:none} /* no quadrado não cabe sem tapar o produto */
+  .hero .pban__c{padding-top:clamp(1.2rem,6vw,2rem)}
   /* mobile: texto no topo (a foto deixa o topo limpo) */
   .pban__c{inset:0 0 auto 0;width:100%;align-items:center;text-align:center;
     justify-content:flex-start;padding:clamp(1.6rem,8vw,2.6rem) var(--gutter) 3rem;
@@ -1250,3 +1267,24 @@ h2.script-title{padding-left:4px}
 .acct__row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .acct__btn--ghost{border:1.5px solid var(--principal);color:var(--principal);background:#fff}
 .acct__btn--ghost:hover{background:var(--sink);color:var(--coral-deep)}
+
+/* PDP "Leva junto": card + card = preço do conjunto (lista em display:contents → tudo na mesma linha flex) */
+.bundle .sec__head{justify-content:center;text-align:center}
+.bundle__row{display:flex;align-items:center;justify-content:center;gap:clamp(.6rem,1.6vw,1.4rem)}
+.bundle__items{display:contents}
+.bundle__row .bcard{flex:0 1 360px;min-width:0}
+.bundle__op{font-family:var(--disp);font-weight:800;font-size:clamp(1.6rem,3vw,2.4rem);color:var(--principal);line-height:1;flex:none}
+.bundle__total{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;flex:0 0 clamp(220px,24vw,300px)}
+.bundle__price{font-family:var(--script);color:var(--principal);font-size:clamp(2rem,3.4vw,2.8rem);line-height:1}
+.bundle__total small{color:var(--ink-soft);font-size:var(--fs-sm)}
+.bundle__total .buybox__cta{margin-top:.6rem}
+.bundle__promo{display:inline-flex;padding:.3em .8em;border-radius:var(--r-pill);background:var(--pink);color:var(--on-brand);
+  font-family:var(--disp);font-weight:700;font-size:.75rem}
+/* até 1200px o total desce para baixo dos cards — senão os cards ficam minúsculos */
+@media (max-width:1199px){
+  .bundle__row{flex-wrap:wrap;gap:.5rem clamp(.5rem,1.6vw,1.2rem)}
+  .bundle__row .bcard{flex:1 1 0;max-width:360px}
+  .bundle__row>.bundle__op{flex-basis:100%;text-align:center}
+  .bundle__total{flex:1 1 100%;align-items:center;text-align:center}
+  .bundle__total .buybox__cta{width:min(100%,420px)}
+}
