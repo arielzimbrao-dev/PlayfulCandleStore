@@ -25,10 +25,10 @@ export default function AccountMenu() {
 
   const a = t.header.accountMenu;
   return (
-    <div className="acct hd__d-only" ref={ref}>
+    <div className="acct hd__desk" ref={ref}>
       <button
         type="button"
-        className="hd-icon"
+        className="hd__icon"
         aria-label={t.header.account}
         title={t.header.account}
         aria-expanded={open}

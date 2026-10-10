@@ -56,11 +56,10 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Coleções do menu vindas da Shopify (cacheadas) — antes estava a handle da coleção de outono
-  // escrita no código, que dava 404 assim que fosse renomeada.
-  const collections = await getCollections(50)
-    .then((cs) => cs.filter((c) => !NON_COLLECTION_HANDLES.has(c.handle)).slice(0, 4))
-    .catch(() => []);
+  // Handle da coleção de outono (destaque do menu) vindo da Shopify, p/ não dar 404 se for renomeada.
+  const autumn = await getCollections(50)
+    .then((cs) => cs.find((c) => !NON_COLLECTION_HANDLES.has(c.handle) && c.handle.includes('outono'))?.handle)
+    .catch(() => undefined);
 
   return (
     <html lang="pt-PT" className={fontVars}>
@@ -84,7 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <WishlistProvider>
               <div className="groovy-ribbon" aria-hidden="true" />
               <AnnounceBar />
-              <Header collections={collections.map(({ handle, title }) => ({ handle, title }))} />
+              <Header autumn={autumn} />
               <main id="main">{children}</main>
               <Footer />
               <CartDrawer />

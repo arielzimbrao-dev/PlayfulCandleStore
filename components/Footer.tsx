@@ -24,7 +24,7 @@ export default function Footer() {
         <div className="ft__grid">
           <div>
             <span className="brand-logo">
-              <Image src="/images/logo.png" alt="Playful Candles" title="Playful Candles" width={1615} height={341} sizes="200px" />
+              <Image src="/images/logo.png" alt="Playful Candles" title="Playful Candles" width={1615} height={341} unoptimized />
             </span>
             <p>{t.footer.tagline}</p>
             <div className="ft__social" style={{ marginTop: '1rem' }}>

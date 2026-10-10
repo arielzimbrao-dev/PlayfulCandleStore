@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 48" preserveAspectRatio="none">
+  <rect width="1920" height="48" fill="#ff5ca6"/>
+  <!-- onda laranja em baixo (mesmas cores do footer-groovy) -->
+  <path fill="#ffb174" d="M0 34 C80 22 160 46 240 36 S400 20 480 34 S640 48 720 36 S880 22 960 34 S1120 48 1200 36 S1360 20 1440 34 S1600 48 1680 36 S1840 22 1920 34 V48 H0Z"/>
+  <!-- onda roxa em cima -->
+  <path fill="#c8489a" d="M0 0 H1920 V8 C1840 18 1760 2 1680 10 S1520 20 1440 8 S1280 0 1200 10 S1040 20 960 8 S800 0 720 10 S560 20 480 8 S320 0 240 10 S80 18 0 8Z"/>
+  <!-- fio laranja por baixo do roxo -->
+  <path fill="none" stroke="#ffb174" stroke-width="3" d="M0 13 C80 23 160 7 240 15 S400 25 480 13 S640 5 720 15 S880 25 960 13 S1120 5 1200 15 S1360 25 1440 13 S1600 5 1680 15 S1840 23 1920 13"/>
+</svg>

@@ -16,11 +16,12 @@ export const DEFAULT_LOCALE: Locale = 'pt';
 const pt = {
   langHtml: 'pt-PT',
   announce: [
+    '15% OFF na primeira compra com o código PRIMEIRACOMPRA15',
     'Portes grátis acima de €35 em Portugal continental',
     'Entregas em 24/72h. Encomenda hoje, acende amanhã.',
     'Feitas à mão em Lisboa, com cera vegetal',
   ],
-  nav: { velas: 'Velas de Copo', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Queimadores' },
+  nav: { velas: 'Velas de Copo', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Queimadores', autumn: 'Coleção de Outono' },
   header: {
     account: 'A minha conta',
     search: 'Pesquisar',
@@ -28,6 +29,7 @@ const pt = {
     items: 'artigos',
     home: 'Playful Candles, página inicial',
     language: 'Mudar idioma',
+    prev: 'Anterior', next: 'Seguinte',
     accountMenu: { title: 'Conta', shop: 'Iniciar sessão com a Shop', other: 'Outras opções de início de sessão', orders: 'Encomendas', profile: 'Perfil' },
   },
   topnav: { home: 'Início', shop: 'Loja', contact: 'Contacto' },
@@ -211,11 +213,12 @@ export type Dict = typeof pt;
 const es: Dict = {
   langHtml: 'es',
   announce: [
+    '15% de descuento en tu primera compra con el código PRIMEIRACOMPRA15',
     'Envío gratis en pedidos superiores a 35 € en Portugal continental. España peninsular: 16 €',
     'Entregas en 24/72h. Pide hoy, enciende mañana.',
     'Hechas a mano en Lisboa, con cera vegetal',
   ],
-  nav: { velas: 'Velas', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Quemadores' },
+  nav: { velas: 'Velas', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Quemadores', autumn: 'Colección de Otoño' },
   header: {
     account: 'Mi cuenta',
     search: 'Buscar',
@@ -223,6 +226,7 @@ const es: Dict = {
     items: 'artículos',
     home: 'Playful Candles, página de inicio',
     language: 'Cambiar idioma',
+    prev: 'Anterior', next: 'Siguiente',
     accountMenu: { title: 'Cuenta', shop: 'Iniciar sesión con Shop', other: 'Otras opciones de inicio de sesión', orders: 'Pedidos', profile: 'Perfil' },
   },
   topnav: { home: 'Inicio', shop: 'Tienda', contact: 'Contacto' },
@@ -402,11 +406,12 @@ const es: Dict = {
 const en: Dict = {
   langHtml: 'en',
   announce: [
+    '15% off your first order with code PRIMEIRACOMPRA15',
     'Free shipping over €35 in mainland Portugal',
     'Delivery in 24/72h. Order today, light up tomorrow.',
     'Handmade in Lisbon, with plant wax',
   ],
-  nav: { velas: 'Candles', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Burners' },
+  nav: { velas: 'Candles', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Burners', autumn: 'Autumn Collection' },
   header: {
     account: 'My account',
     search: 'Search',
@@ -414,6 +419,7 @@ const en: Dict = {
     items: 'items',
     home: 'Playful Candles, home',
     language: 'Change language',
+    prev: 'Previous', next: 'Next',
     accountMenu: { title: 'Account', shop: 'Sign in with Shop', other: 'Other sign-in options', orders: 'Orders', profile: 'Profile' },
   },
   topnav: { home: 'Home', shop: 'Shop', contact: 'Contact' },

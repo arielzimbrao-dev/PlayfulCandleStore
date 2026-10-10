@@ -65,8 +65,8 @@ export default function SearchBox() {
     };
   }, [open]);
 
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
+  const submit = (e?: FormEvent) => {
+    e?.preventDefault();
     const term = q.trim();
     if (!term) return;
     setOpen(false);
@@ -79,16 +79,17 @@ export default function SearchBox() {
     <div className={`search${open ? ' is-open' : ''}`} ref={rootRef}>
       <button
         type="button"
-        className="hd-icon"
+        className="hd__icon"
         aria-label={t.header.search}
         title={t.header.search}
         aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
+        // desktop: a barra está sempre visível, a lupa pesquisa; mobile: a lupa abre/fecha a barra.
+        onClick={() => (open && q.trim() ? submit() : setOpen((o) => !o))}
       >
         <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
       </button>
 
-      {/* input pequeno que desliza para a esquerda da lupa; Enter pesquisa */}
+      {/* desktop: barra fixa à esquerda da lupa; mobile: desce por baixo do header. Enter pesquisa */}
       <form className="search__form" onSubmit={submit} role="search">
         <input
           ref={inputRef}
@@ -98,7 +99,7 @@ export default function SearchBox() {
           onChange={(e) => setQ(e.target.value)}
           placeholder={t.search.placeholder}
           aria-label={t.search.label}
-          tabIndex={open ? 0 : -1}
+          onFocus={() => setOpen(true)}
         />
       </form>
 
