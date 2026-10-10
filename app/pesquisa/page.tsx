@@ -5,6 +5,7 @@ import ProductRail from '@/components/ProductRail';
 import ProductFilters from '@/components/ProductFilters';
 import SearchResultsHeader from '@/components/SearchResultsHeader';
 import { applyFilters, availableScents, availableTypes } from '@/lib/filters';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'Pesquisa',
@@ -27,6 +28,7 @@ export default async function SearchPage({
   return (
     <>
       <section className="container">
+        <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Pesquisa', url: '/pesquisa' }]} />
         <SearchResultsHeader q={term} count={filtered.length} />
         {results.length > 0 && (
           <div className="shop-layout">
@@ -43,7 +45,7 @@ export default async function SearchPage({
               {filtered.length > 0 ? (
                 <ProductGrid products={filtered} listName={`Pesquisa: ${term}`} />
               ) : (
-                <p style={{ textAlign: 'center', color: 'var(--ink-soft)', margin: '2.5rem 0' }}>
+                <p style={{ textAlign: 'center', color: 'var(--ink-soft)', margin: '40px 0' }}>
                   Nada com estes filtros. Experimenta limpar. ✨
                 </p>
               )}

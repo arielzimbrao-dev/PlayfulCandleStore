@@ -62,7 +62,7 @@ export default async function ProdutosPage({
           {filtered.length > 0 ? (
             <ProductGridPaged products={filtered} listName="Loja" />
           ) : (
-            <p style={{ textAlign: 'center', color: 'var(--ink-soft)', margin: '2.5rem 0' }}>
+            <p style={{ textAlign: 'center', color: 'var(--ink-soft)', margin: '40px 0' }}>
               Nada com estes filtros. Experimenta limpar. ✨
             </p>
           )}

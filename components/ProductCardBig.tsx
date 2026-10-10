@@ -5,52 +5,37 @@ import AddToCartMini from './AddToCartMini';
 import { formatMoney } from '@/lib/format';
 import type { Product } from '@/lib/shopify/types';
 
-// Card dos carrosséis: imagem com selo de tipo (topo-esq) e coração (topo-dir); por cima da foto,
-// no fundo, nome + preço (script branco) à esquerda e botão-ícone "Adicionar ao carrinho" à direita. badge fica só para o estado esgotado.
+// productType da Shopify → rótulo do card
+const TYPE_LABEL: Record<string, string> = { Vela: 'Vela de copo' };
+
+// Card de produto: cartão branco arredondado, foto com coração (canto inf. dir.),
+// tipo · nome · preço e botão "Adicionar ao carrinho" a toda a largura.
 export default function ProductCardBig({
   product,
   soldoutLabel = 'Esgotado',
 }: {
   product: Product;
-  /** compat: rails antigos passavam um badge no 1º card — o Figma não o usa. */
+  /** compat: rails antigos passavam um badge no 1º card — não é usado. */
   badge?: string;
   soldoutLabel?: string;
 }) {
   const href = `/produtos/${product.handle}`;
   const image = product.featuredImage ?? product.images[0];
-  // foto 2 aparece no hover (só dispositivos com rato — ver .bcard__img--alt no CSS)
+  // foto 2 aparece no hover (só dispositivos com rato — ver .bcard__alt no CSS)
   const hoverImage = product.images.find((img) => img.url !== image?.url);
   const soldOut = product.variants.length > 0 && !product.variants.some((v) => v.availableForSale);
+  const sizes = '(max-width:600px) 78vw, (max-width:900px) 44vw, 22vw';
 
   return (
     <article className={`bcard${soldOut ? ' bcard--soldout' : ''}`} role="listitem">
       <div className="bcard__media">
-        <Link href={href} className="bcard__img" aria-label={product.title} title={product.title}>
-          {soldOut ? (
-            <span className="bcard__badge bcard__badge--out">{soldoutLabel}</span>
-          ) : product.productType ? (
-            <span className="bcard__tag">{product.productType}</span>
-          ) : null}
+        <Link href={href} className="bcard__img" aria-label={product.title} tabIndex={-1}>
+          {soldOut && <span className="bcard__badge">{soldoutLabel}</span>}
           {hoverImage && (
-            <Image
-              src={hoverImage.url}
-              alt={hoverImage.altText ?? product.title}
-              title={hoverImage.altText ?? product.title}
-              fill
-              sizes="(max-width:600px) 84vw, (max-width:1000px) 50vw, 25vw"
-              className="bcard__alt"
-              style={{ objectFit: 'cover' }}
-            />
+            <Image src={hoverImage.url} alt="" fill sizes={sizes} className="bcard__alt" style={{ objectFit: 'cover' }} />
           )}
           {image ? (
-            <Image
-              src={image.url}
-              alt={image.altText ?? product.title}
-              title={image.altText ?? product.title}
-              fill
-              sizes="(max-width:600px) 84vw, (max-width:1000px) 50vw, 25vw"
-              style={{ objectFit: 'cover' }}
-            />
+            <Image src={image.url} alt={image.altText ?? product.title} fill sizes={sizes} style={{ objectFit: 'cover' }} />
           ) : (
             <span className="bcard__ph" aria-hidden="true">
               <b>{product.title}</b>
@@ -59,15 +44,14 @@ export default function ProductCardBig({
           )}
         </Link>
         <WishlistButton handle={product.handle} title={product.title} className="wish-btn--card" />
-        <div className="bcard__b">
-          <div className="bcard__info">
-            <Link href={href} className="bcard__name" title={product.title}>
-              {product.title}
-            </Link>
-            <span className="bcard__price">{formatMoney(product.priceRange.minVariantPrice)}</span>
-          </div>
-          {!soldOut && <AddToCartMini product={product} />}
-        </div>
+      </div>
+      <div className="bcard__b">
+        {product.productType && (
+          <span className="bcard__type">{TYPE_LABEL[product.productType] ?? product.productType}</span>
+        )}
+        <Link href={href} className="bcard__name">{product.title}</Link>
+        <span className="bcard__price">{formatMoney(product.priceRange.minVariantPrice)}</span>
+        <AddToCartMini product={product} soldOut={soldOut} soldoutLabel={soldoutLabel} />
       </div>
     </article>
   );

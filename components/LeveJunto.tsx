@@ -1,6 +1,7 @@
 import ProductCarousel from './ProductCarousel';
 import { getRelatedProducts, getProducts } from '@/lib/shopify';
 import type { Product } from '@/lib/shopify/types';
+import TwoTone from '@/components/TwoTone';
 
 // Rail "Leva junto" (produtos complementares do Shopify) — com fallback que garante que NUNCA fica vazio:
 //   1) getRelatedProducts (COMPLEMENTARY → RELATED → catálogo determinístico)
@@ -24,7 +25,7 @@ export default async function LeveJunto({ product, limit = 8 }: { product?: Prod
       <div className="wrap">
         <div className="sec__head">
           <div>
-            <h2 className="script-title">Compra também <span className="script-spark" aria-hidden="true" /></h2>
+            <h2 className="script-title"><TwoTone text="Compra também" /> <span className="script-spark" aria-hidden="true" /></h2>
           </div>
         </div>
       </div>

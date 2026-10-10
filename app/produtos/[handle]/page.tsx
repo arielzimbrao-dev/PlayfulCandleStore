@@ -14,6 +14,7 @@ import { getProduct } from '@/lib/shopify';
 import { getStock } from '@/lib/shopify/admin';
 import { seasonalCollection } from '@/lib/shopify/types';
 import Link from 'next/link';
+import TwoTone from '@/components/TwoTone';
 
 export const revalidate = 3600;
 
@@ -96,7 +97,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
           <div className="product__info">
             {product.productType && <p className="eyebrow">{product.productType}</p>}
             <div className="product__title-row">
-              <h1 className="script-title script-title--pink">{product.title}</h1>
+              <h1 className="script-title"><TwoTone text={product.title} /></h1>
               {product.weight && <span className="product__weight">{product.weight}</span>}
             </div>
             <div className="product__meta">

@@ -78,7 +78,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
           </span>
         )}
         {onSale && variant?.compareAtPrice && (
-          <span className="price-old" style={{ fontSize: '1.1rem' }}>{formatMoney(variant.compareAtPrice)}</span>
+          <span className="price-old" style={{ fontSize: '16px' }}>{formatMoney(variant.compareAtPrice)}</span>
         )}
       </div>
 

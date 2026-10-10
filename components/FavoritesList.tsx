@@ -12,7 +12,7 @@ export default function FavoritesList({ products }: { products: Product[] }) {
   const favs = items.map((h) => products.find((p) => p.handle === h)).filter(Boolean) as Product[];
   if (favs.length === 0) {
     return (
-      <p style={{ textAlign: 'center', color: 'var(--ink-soft)', margin: '2.5rem 0' }}>
+      <p style={{ textAlign: 'center', color: 'var(--ink-soft)', margin: '40px 0' }}>
         Ainda não tens favoritos. Explora a <Link href="/produtos">loja</Link> e carrega no ♥ dos que gostares.
       </p>
     );

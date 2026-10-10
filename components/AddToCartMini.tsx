@@ -6,9 +6,17 @@ import { useT } from './LanguageProvider';
 import { ecommerceEvent } from '@/lib/analytics';
 import type { Product } from '@/lib/shopify/types';
 
-// Botão-ícone "Adicionar ao carrinho" (círculo branco, como o coração) para os cards dos carrosséis (adiciona a 1ª variante disponível).
+// Botão "Adicionar ao carrinho" (laranja, toda a largura) dos cards — adiciona a 1ª variante disponível.
 // Leaf client dentro do ProductCardBig (que continua server-rendered).
-export default function AddToCartMini({ product }: { product: Product }) {
+export default function AddToCartMini({
+  product,
+  soldOut = false,
+  soldoutLabel,
+}: {
+  product: Product;
+  soldOut?: boolean;
+  soldoutLabel?: string;
+}) {
   const { addItem, loading } = useCart();
   const toast = useToast();
   const t = useT();
@@ -35,12 +43,17 @@ export default function AddToCartMini({ product }: { product: Product }) {
     <button
       type="button"
       className="bcard__add"
-      disabled={loading || !variant}
+      disabled={soldOut || loading || !variant}
       onClick={add}
-      aria-label={`${t.product.choose}: ${product.title}`}
-      title={t.product.choose}
+      aria-label={soldOut ? undefined : `${t.product.choose}: ${product.title}`}
     >
-      <i className="fa-solid fa-cart-shopping" aria-hidden="true" />
+      {soldOut ? (
+        soldoutLabel ?? t.product.soldout
+      ) : (
+        <>
+          <i className="fa-solid fa-cart-shopping" aria-hidden="true" /> {t.product.choose}
+        </>
+      )}
     </button>
   );
 }

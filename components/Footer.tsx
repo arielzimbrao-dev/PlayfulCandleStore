@@ -27,7 +27,7 @@ export default function Footer() {
               <Image src="/images/logo.png" alt="Playful Candles" title="Playful Candles" width={1615} height={341} unoptimized />
             </span>
             <p>{t.footer.tagline}</p>
-            <div className="ft__social" style={{ marginTop: '1rem' }}>
+            <div className="ft__social" style={{ marginTop: '16px' }}>
               <a href={SITE.social.instagram} aria-label="Instagram" title="Instagram" target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-instagram" aria-hidden="true" /></a>
               <a href={SITE.social.tiktok} aria-label="TikTok" title="TikTok" target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-tiktok" aria-hidden="true" /></a>
               <a href={SITE.social.pinterest} aria-label="Pinterest" title="Pinterest" target="_blank" rel="noopener noreferrer"><i className="fa-brands fa-pinterest" aria-hidden="true" /></a>

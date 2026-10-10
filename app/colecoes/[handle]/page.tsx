@@ -56,7 +56,7 @@ export default async function ColecaoPage({
   const shortTitle = collection.title.replace(/^Cole[çc][ãa]o de\s+/i, '');
   const crumbs = [
     { name: 'Início', url: '/' },
-    { name: 'Coleção', url: '/colecoes' },
+    { name: 'Coleções', url: '/colecoes' },
     { name: shortTitle, url: `/colecoes/${handle}` },
   ];
 

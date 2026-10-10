@@ -9,6 +9,8 @@ import { useT } from '@/components/LanguageProvider';
 import { formatMoney } from '@/lib/format';
 import { ecommerceEvent } from '@/lib/analytics';
 import { SITE } from '@/lib/site';
+import TwoTone from '@/components/TwoTone';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 const FREE = SITE.freeShippingThreshold;
 
@@ -24,8 +26,9 @@ export default function CarrinhoPage() {
   if (!cart || cart.lines.length === 0) {
     return (
       <section className="container cart-empty">
+        <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: t.cart.title, url: '/carrinho' }]} />
         <span className="cart-empty__mark" aria-hidden="true">🕯️</span>
-        <h1 className="script-title">{t.cart.title}</h1>
+        <h1 className="script-title"><TwoTone text={t.cart.title} /></h1>
         <p className="cart-empty__msg">{t.cart.empty} {t.cart.emptyCta}</p>
         <Link className="btn btn--primary btn--lg" href="/produtos">{t.cart.browse}</Link>
         <ul className="buybox__trust cart-empty__trust">
@@ -67,9 +70,10 @@ export default function CarrinhoPage() {
 
   return (
     <section className="container cart-page">
+      <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: t.cart.title, url: '/carrinho' }]} />
       <div className="sec__head">
         <div>
-          <h1 className="script-title">{t.cart.title}</h1>
+          <h1 className="script-title"><TwoTone text={t.cart.title} /></h1>
         </div>
       </div>
       <div className="cart-page__grid">

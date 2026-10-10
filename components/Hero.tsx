@@ -11,9 +11,9 @@ export default function Hero() {
   return (
     <section className="hero" aria-label={t.hero.eyebrow}>
       <PhotoBanner
-        desktop="/images/banners/cat-wax-melts-desktop.jpg"
-        mobile="/images/banners/cat-wax-melts-mobile.jpg"
-        alt="Wax melt Cinnamon Rolls em pote de kraft ao lado de um queimador dourado com vela de chá acesa."
+        desktop="/images/banners/hero-groovy-desktop.jpg"
+        mobile="/images/banners/hero-groovy-mobile-45.jpg"
+        alt="Velas de copo Lemon & Raspberry e Purple Vanilla acesas, entre limões, framboesas, flores e baunilha."
         href={href}
         priority
       >

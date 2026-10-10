@@ -51,7 +51,7 @@ export default async function CategoriaPage({
         <Breadcrumbs items={crumbs} />
         <p className="eyebrow">Em breve</p>
         <h1>{info.title}</h1>
-        <p className="lead" style={{ maxWidth: '46ch', margin: '1rem auto 1.5rem', color: 'var(--ink-soft)' }}>
+        <p className="lead" style={{ maxWidth: '46ch', margin: '16px auto 24px', color: 'var(--ink-soft)' }}>
           Esta categoria está a chegar em breve. 🕯️ Entretanto, dá uma vista de olhos no resto da loja.
         </p>
         <Link className="btn btn--primary" href="/produtos">Ver a loja</Link>

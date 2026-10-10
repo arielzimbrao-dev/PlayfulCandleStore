@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE } from '@/lib/site';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'Contacto',
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export default function ContactoPage() {
   return (
     <article className="container prose">
+      <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Contacto', url: '/contacto' }]} />
       <h1>Contacto</h1>
       <p className="lead">Dúvidas sobre encomendas, aromas ou parcerias? Fala connosco.</p>
 

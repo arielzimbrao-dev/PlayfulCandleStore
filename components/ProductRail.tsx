@@ -4,10 +4,11 @@ import Link from 'next/link';
 import ProductCarousel from './ProductCarousel';
 import { useT } from './LanguageProvider';
 import type { Product } from '@/lib/shopify/types';
+import TwoTone from '@/components/TwoTone';
 
-type Props = { variant: 'best' | 'latest'; products: Product[]; id?: string; wave?: string };
+type Props = { variant: 'best' | 'latest' | 'autumn'; products: Product[]; href?: string; id?: string; wave?: string };
 
-export default function ProductRail({ variant, products, id, wave }: Props) {
+export default function ProductRail({ variant, products, href = '/produtos', id, wave }: Props) {
   const t = useT();
   if (products.length === 0) return null;
   const c = t.rail[variant];
@@ -16,9 +17,9 @@ export default function ProductRail({ variant, products, id, wave }: Props) {
       <div className="wrap">
         <div className="sec__head">
           <div>
-            <h2 className="script-title">{c.title} <span className="script-spark" aria-hidden="true">✦</span></h2>
+            <h2 className="script-title"><TwoTone text={c.title} /> <span className="script-spark" aria-hidden="true">✦</span></h2>
           </div>
-          <Link className="sec__link" href="/produtos">{c.link} →</Link>
+          <Link className="sec__link" href={href}>{c.link} →</Link>
         </div>
       </div>
       <ProductCarousel products={products} firstBadge={c.badge} />

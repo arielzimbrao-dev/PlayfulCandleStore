@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import FavoritesList from '@/components/FavoritesList';
 import { getProducts } from '@/lib/shopify';
+import TwoTone from '@/components/TwoTone';
 
 export const revalidate = 3600;
 
@@ -19,7 +20,7 @@ export default async function FavoritosPage() {
       <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Favoritos', url: '/favoritos' }]} />
       <div className="sec__head">
         <div>
-          <h1 className="script-title script-title--sec">Os teus favoritos <span className="script-spark" aria-hidden="true" /></h1>
+          <h1 className="script-title script-title--sec"><TwoTone text="Os teus favoritos" /> <span className="script-spark" aria-hidden="true" /></h1>
         </div>
       </div>
       <FavoritesList products={products} />

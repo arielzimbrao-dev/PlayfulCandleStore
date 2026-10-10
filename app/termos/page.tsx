@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE } from '@/lib/site';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'Termos & condições',
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 export default function TermosPage() {
   return (
     <article className="container prose">
+      <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Termos & condições', url: '/termos' }]} />
       <h1>Termos &amp; condições</h1>
       <p className="lead">
         Estes termos regulam a utilização do site e a compra de produtos da {SITE.name}. Ao encomendar, aceita estas condições.

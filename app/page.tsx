@@ -1,13 +1,16 @@
 import Hero from '@/components/Hero';
 import Appeals from '@/components/Appeals';
+import CategoryNav from '@/components/CategoryNav';
 import ProductRail from '@/components/ProductRail';
-import NovidadesOutono from '@/components/NovidadesOutono';
+import PackBanner from '@/components/PackBanner';
 import CategoryBento from '@/components/CategoryBento';
-import { getProducts } from '@/lib/shopify';
+import { getProducts, getCollection } from '@/lib/shopify';
+
+const AUTUMN = 'colecao-de-outono';
 
 export default async function HomePage() {
-  const [best, latest] = await Promise.all([
-    getProducts(10, { sortKey: 'BEST_SELLING' }),
+  const [autumn, latest] = await Promise.all([
+    getCollection(AUTUMN, 12).catch(() => null),
     getProducts(12, { sortKey: 'CREATED_AT', reverse: true }),
   ]);
 
@@ -15,10 +18,9 @@ export default async function HomePage() {
     <>
       <Hero />
       <Appeals />
-      <ProductRail variant="best" products={best.products} />
-      {/* ponytail: "Novidades de Outono" e a 2ª fila partilham o pool "latest";
-          numa loja com catálogo real não se sobrepõem — reavaliar se ficar repetido. */}
-      <NovidadesOutono products={latest.products.slice(0, 6)} />
+      <CategoryNav />
+      <ProductRail variant="autumn" products={autumn?.products ?? []} href={`/colecoes/${AUTUMN}`} />
+      <PackBanner />
       <CategoryBento />
       <ProductRail variant="latest" products={latest.products} />
     </>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE } from '@/lib/site';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'Política de privacidade',
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export default function PrivacidadePage() {
   return (
     <article className="container prose">
+      <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Política de privacidade', url: '/privacidade' }]} />
       <h1>Política de privacidade</h1>
       <p className="lead">Respeitamos a sua privacidade e cumprimos o RGPD. Aqui explicamos que dados tratamos e porquê.</p>
 

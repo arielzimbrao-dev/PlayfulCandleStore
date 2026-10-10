@@ -9,7 +9,7 @@ export default function SearchResultsHeader({ q, count }: { q: string; count: nu
       <>
         <p className="eyebrow-strong">{t.search.resultsFor}</p>
         <h1>
-          “{q}” <span style={{ color: 'var(--ink-soft)', fontWeight: 400, fontSize: '1rem' }}>· {count}</span>
+          “{q}” <span style={{ color: 'var(--ink-soft)', fontWeight: 400, fontSize: '16px' }}>· {count}</span>
         </h1>
       </>
     );

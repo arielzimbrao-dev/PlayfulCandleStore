@@ -4,6 +4,7 @@ import BundleAddButton from './BundleAddButton';
 import { getBundle } from '@/lib/bundle';
 import { formatMoney } from '@/lib/format';
 import type { Product } from '@/lib/shopify/types';
+import TwoTone from '@/components/TwoTone';
 
 // Secção "Leva junto" da PDP: produto atual + par(es) = preço do conjunto. Regras em lib/bundle.
 export default async function LevaJuntoBundle({ product }: { product: Product }) {
@@ -16,7 +17,7 @@ export default async function LevaJuntoBundle({ product }: { product: Product })
     <section className="sec bundle" aria-labelledby="bundle-h">
       <div className="wrap">
         <div className="sec__head">
-          <h2 id="bundle-h" className="script-title">Leva junto <span className="script-spark" aria-hidden="true" /></h2>
+          <h2 id="bundle-h" className="script-title"><TwoTone text="Leva junto" /> <span className="script-spark" aria-hidden="true" /></h2>
         </div>
         <div className="bundle__row">
           <div className="bundle__items" role="list">

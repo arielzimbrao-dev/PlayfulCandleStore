@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'Trocas & devoluções',
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 export default function DevolucoesPage() {
   return (
     <article className="container prose">
+      <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Trocas & devoluções', url: '/devolucoes' }]} />
       <h1>Trocas &amp; devoluções</h1>
       <p className="lead">Se alguma coisa não correr bem com a sua encomenda, resolvemos.</p>
 
