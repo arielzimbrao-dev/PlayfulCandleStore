@@ -1,133 +1,252 @@
-# Playful Candles — Design System (Tokens v1)
+# Playful Candles — Design System
 
-The contract for `styles/abstracts/`. Groovy 70s-revival bubblegum: fun, ludic, bubbly — but shoppable and legible. Brand heroes are bubblegum **pink** + tangerine **orange** on a blush-white ground, with a **grape** third for the liquid-blob motif. Body copy is a warm plum-black ink so nothing important ever rides on low-contrast candy colors.
+Referência dos tokens, utilitários e classes do site. A fonte da verdade é o código:
+quando este documento e o `.scss` divergirem, vale o `.scss` (e este documento deve ser corrigido).
 
-Existing `_variables.scss` already commits `#ff5ca6 / #f88e2f / #1A1A1A / #FAFAFA / #e0e0e0` — this spec preserves those heroes and adds the AA-safe text shades + support ramp around them.
-
----
-
-## 1. Color
-
-All contrast ratios verified against WCAG AA (body ≥4.5:1, large ≥3:1).
-
-### Brand — fills & accents (NOT for body text on white)
-| Token | Hex | Use |
-|---|---|---|
-| `--pink` | `#ff5ca6` | Hero brand #1. Button fills, blobs, tags, "Playful" wordmark. |
-| `--orange` | `#f88e2f` | Hero brand #2. Blobs, accents, "Candles" wordmark, marquee. |
-| `--grape` | `#7c2fb0` | Third blob color; also AA as text (7.3:1). Purple accents, links. |
-| `--grape-bright` | `#a24bd6` | Blob/gradient fill only (decorative). |
-| `--teal` | `#2bb6a3` | Support blob/tile fill only (70s groovy accent). Never text on white. |
-| `--lemon` | `#ffd24c` | Support blob/star/badge fill only. Never text on white. |
-
-### Ink — text (AA-safe)
-| Token | Hex | On | Ratio | Use |
-|---|---|---|---|---|
-| `--ink` | `#2a1b24` | blush/white | 15.6 | Body copy, headings. Warm plum-black, not pure black. |
-| `--ink-soft` | `#63505b` | blush/white | 7.1 | Secondary text, captions, meta. |
-| `--pink-deep` | `#c01e63` | white | 5.8 | Pink used AS text/links, price sale color. |
-| `--orange-deep` | `#b8560f` | white | 4.8 | Orange used AS text (rare — labels). |
-| `--on-brand` | `#2a1b24` | pink `#ff5ca6` (5.7), orange (7.0) | — | Text/icon color that sits ON a bright brand fill. |
-| `--on-deep` | `#ffffff` | grape/pink-deep (5.8+) | — | White text on deep/saturated fills. |
-
-### Surface & structure
-| Token | Hex | Use |
-|---|---|---|
-| `--bg` | `#fff7fb` | Body ground. Blush white (tinted toward pink hue, NOT beige). |
-| `--surface` | `#ffffff` | Cards, header, inputs. |
-| `--surface-sink` | `#fff0f6` | Alt section band, tile bases. |
-| `--line` | `#f4d9e6` | Soft pink hairline borders (decorative). |
-| `--line-strong` | `#e9c2d4` | Interactive borders (outline buttons, inputs). |
-
-### State
-`--sale` = `--pink-deep`; `--success` = `#1f8f6b`; `--sold-out` uses `--ink-soft` on `--surface-sink`.
-
-**Rule:** brand pink/orange are FILLS. The moment a color becomes readable text on white, switch to its `-deep` ink. Never body copy in `--pink`/`--orange`.
+Estilo: groovy anos 70, divertido e "bubbly", mas fácil de comprar e de ler. Rosa e laranja da
+logo em destaque, fundos claros rosados, títulos manuscritos em Genty.
 
 ---
 
-## 2. Typography
+## 1. Onde fica cada coisa
 
-Google Fonts, both rounded but contrasting on role/weight (chunky display vs. humanist text) — not two lookalike geometrics.
+```
+styles/
+  global.scss     → ponto de entrada (importado só no app/layout.tsx)
+  _tokens.scss    → variáveis CSS: cores, fontes, espaços, cantos, sombras, animação, z-index
+  _mixins.scss    → breakpoints e mixins Sass (não geram CSS sozinhos)
+  _base.scss      → reset e elementos HTML sem classe (body, h1–h3, a, button…)
+  _shared.scss    → utilitários usados em vários lugares (.wrap, .btn, .script-title…)
+  _prose.scss     → texto corrido (.prose) e acordeões (.accordion)
 
-| Token | Stack | Role |
-|---|---|---|
-| `--font-display` | `'Genty', 'Fredoka', 'Baloo 2', system-ui, sans-serif` | Headings, buttons, prices, card names. **Genty** is the brand identity face (self-hosted at `design/fonts/Genty.otf`; falls back to Fredoka until loaded). |
-| `--font-body` | `'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif` | Body, nav, labels, inputs. Weights 400/600/700/800. |
+components/Footer/
+  Footer.tsx      → o componente importa o seu próprio estilo: import './Footer.scss';
+  Footer.scss
+```
 
-> **Genty licensing:** the supplied file is *GentyDemo (personal-use)*. A **commercial license** must be secured before launch. Convert to `.woff2` for production (smaller payload).
-
-**Fluid scale** (`clamp`, ratio ≈1.25, display max ≤6rem per craft ceiling):
-| Token | clamp | Use |
-|---|---|---|
-| `--fs-hero` | `clamp(2.6rem, 7vw, 5rem)` | h1 hero. |
-| `--fs-h2` | `clamp(1.9rem, 4vw, 3rem)` | Section headings. |
-| `--fs-h3` | `clamp(1.25rem, 2vw, 1.6rem)` | Card/subsection. |
-| `--fs-lead` | `clamp(1.05rem, 1.6vw, 1.3rem)` | Hero subcopy. |
-| `--fs-body` | `1rem` (16px) | Body. Line-height 1.6, max 68ch. |
-| `--fs-sm` | `0.875rem` | Meta, tags. |
-| `--fs-xs` | `0.75rem` | Badges. |
-
-Display letter-spacing `-0.02em` (floor −0.04em respected). `text-wrap: balance` on h1–h3; `pretty` on prose.
-
----
-
-## 3. Spacing (4px base)
-`--sp-1:4px · --sp-2:8px · --sp-3:12px · --sp-4:16px · --sp-5:24px · --sp-6:32px · --sp-7:48px · --sp-8:64px · --sp-9:96px · --sp-10:128px`.
-Section vertical rhythm: `clamp(3.5rem, 8vw, 7rem)`. Content max-width `--wrap: 1200px`; gutter `clamp(1rem, 4vw, 2.5rem)`.
-
-## 4. Radii (generous — the brand is round)
-`--r-sm:10px · --r-md:16px · --r-lg:24px · --r-xl:32px · --r-2xl:44px · --r-pill:999px · --r-blob:42% 58% 63% 37% / 41% 44% 56% 59%` (organic liquid-blob shape).
-Buttons & inputs = pill. Cards = `--r-xl`. Tiles = `--r-2xl`.
-
-## 5. Shadows (soft, brand-tinted — no harsh gray)
-| Token | Value | Use |
-|---|---|---|
-| `--sh-sm` | `0 2px 8px -2px rgba(42,27,36,.12)` | Resting cards. |
-| `--sh-md` | `0 14px 30px -14px rgba(255,92,166,.45)` | Raised / hover, pink glow. |
-| `--sh-lg` | `0 26px 60px -22px rgba(248,142,47,.5)` | Hero candle, key CTA. |
-| `--sh-focus` | `0 0 0 3px var(--bg), 0 0 0 6px var(--pink-deep)` | Focus ring. |
-
-## 6. Motion
-Easing `--ease: cubic-bezier(.22,1,.36,1)` (ease-out-quart, no bounce). Durations `--t-fast:150ms · --t:280ms · --t-slow:600ms`. Blobs float 12–18s ease-in-out infinite; USP marquee 30s linear; hover lift `translateY(-4px)` + `--sh-md`. **All wrapped in `@media (prefers-reduced-motion: reduce)` → transitions ~1ms, marquee & float paused.**
-
-## 7. Z-index scale
-`--z-base:1 · --z-blob:0 · --z-sticky:100 · --z-header:200 · --z-menu:300 · --z-toast:400`.
+- **Uma pasta por componente**, com o `.tsx` e o `.scss` dele. Um subcomponente usado por um só
+  pai fica numa subpasta (ex.: `Header/SearchBox/`, `ProductCard/QuickAddButton/`).
+- **Páginas** com estilo próprio têm o `.scss` ao lado do `page.tsx`
+  (`app/carrinho/cart-page.scss`, `app/colecoes/collections-page.scss`,
+  `app/produtos/[handle]/product-page.scss`).
+- **Camadas (`@layer`)**: `_base` e `_shared`/`_prose` ficam em camadas CSS. O CSS dos componentes
+  fica fora de camadas, por isso **sempre vence** um utilitário global, independentemente da ordem
+  em que o Next carrega os arquivos. Para ajustar um `.btn` dentro de um componente, basta uma classe.
+- **Nomes de classe em BEM, por extenso**: `.bloco`, `.bloco__elemento`, `.bloco--variante`;
+  estado com `.is-open`, `.is-active`, `.is-visible`. Nada de abreviações (`.product-card`, não `.bcard`).
+- **Medidas em px, múltiplos de 8** (exceções mínimas, ex.: 4px).
+- Comentários do código em pt-BR; a copy da loja em pt-PT.
 
 ---
 
-## 8. Component notes
+## 2. Cores (`styles/_tokens.scss`)
 
-**Buttons** (min touch 44×44, pill, `--font-display` 600):
-- *Primary* — `--pink` fill, `--on-brand` (ink) text. Hover: lift + `--sh-md`.
-- *Secondary/outline* — transparent, 2px `--pink-deep` border, `--pink-deep` text. Hover: fill `--surface-sink`.
-- *Ghost/icon* — 44px circle, `--ink` glyph; hover `--surface-sink`.
+### Marca (Figma)
+| Token | Hex | Uso |
+|---|---|---|
+| `--color-pink` | `#ff5ca6` | Cor principal: títulos em Genty, links, ícones, preço no card. |
+| `--color-orange` | `#faa455` | Destaque: botões "Adicionar ao carrinho" e "Explorar coleção". |
+| `--color-yellow` | `#ecc94b` | Detalhes: estrelas das avaliações, botão "Comprar agora". |
+| `--color-logo-orange` | `#f7902f` | 2.ª palavra dos títulos em duas cores (como na logo), números do Pack. |
 
-**Announcement bar** — pink→orange gradient band, `--on-brand` ink text (AA 5.7+), centered, rotating messages (CSS translateY cycle). Lead: portes grátis + entrega 24/72h.
+### Apoio
+| Token | Hex | Uso |
+|---|---|---|
+| `--color-coral` | `#ff4d7d` | Setas do carrossel, barra de frete grátis, contador do header. |
+| `--color-coral-dark` | `#cc1a52` | Hover dos rosas; rosa como texto pequeno (links, eyebrow); `.btn--primary`. |
+| `--color-coral-darker` | `#a81244` | Hover do `.btn--primary` e do botão de checkout. |
+| `--color-tangerine` | `#ff7a1f` | Hover dos botões laranja. |
+| `--color-tangerine-dark` | `#d95c00` | Palavra destacada no título do banner de foto. |
+| `--color-gold` | `#ffc42e` | `.btn--gold` (hero), hover das redes sociais no footer. |
+| `--color-success` | `#1f8f6b` | Cupom aplicado, "Compra verificada". |
 
-**Product card** — `--surface`, `--r-xl`, `--sh-sm`. Anatomy: gradient/blob thumb (4:5 real-photo ratio later) → **type-label tag** (pill, tinted) → product name (`--font-display`) → star rating (`--lemon` stars + count) → price row (regular; sale = `--pink-deep` price + struck original + `−%` badge) → "Escolher" affordance. States: default, **SALE** (badge + strike), **Esgotado** (desaturated thumb, disabled button, badge). Lives in a scroll-snap carousel inside `overflow-x:auto`.
+### Texto, fundos e bordas
+| Token | Hex | Uso |
+|---|---|---|
+| `--color-ink` | `#2a1524` | Texto principal (ameixa-escuro, não preto puro). |
+| `--color-ink-soft` | `#6d5563` | Texto secundário: legendas, contagens, preço riscado. |
+| `--color-page` | `#fafafa` | Fundo do `<body>`. |
+| `--color-paper` | `#fdeef5` | Fundo rosado do header. |
+| `--color-surface` | `#fffbfd` | Cartões, gavetas, popovers, inputs. |
+| `--color-blush` | `#fbdcec` | Placeholders de imagem, realces, resumo do carrinho. |
+| `--color-border` | `#f4d3e2` | Linhas e bordas decorativas. |
+| `--color-border-strong` | `#e9c2d4` | Bordas de elementos interativos (inputs, pílulas). |
 
-**Badge/tag** — pill, `--fs-xs`, `--font-body` 800. Type tag: tinted bg (pink/orange/grape @ ~14%) + matching `-deep` text. Sale badge: `--pink-deep` fill + white. Esgotado: `--ink-soft` on `--surface-sink`.
-
-**Category tile** — `--r-2xl`, colored gradient wash + blob, playful one-liner + "Explorar →". Hover: blob drifts + lift.
-
-**USP marquee** — full-bleed pink band, duplicated track, `--on-brand`/white pills separated by ✦, seamless loop in `overflow:hidden`.
-
-**Inputs** — pill, `--surface`, 2px `--line-strong` border, `--ink` text, placeholder `--ink-soft` (AA). Focus: `--sh-focus`.
-
-**Wavy dividers** — inline SVG `<path>` liquid waves between sections, filled with the adjacent band color; the recurring blob/liquid motif that carries the groovy voice.
+**Regra:** para texto pequeno em rosa sobre fundo claro, preferir `--color-coral-dark`
+(mais contraste) em vez de `--color-pink`.
 
 ---
 
-## 9. Iconography — FontAwesome
+## 3. Tipografia
 
-All UI glyphs use **FontAwesome 6** (search, account, cart/bag, bell, chevrons, arrows, truck, leaf, heart, gem, gift, category icons, social/payment brands). The mockup loads the FA **JS/SVG** build from cdnjs (the only artifact-CSP-allowed route). **Production (Next.js):** use `@fortawesome/fontawesome-svg-core` + React components (tree-shaken, no layout shift), or the self-hosted CSS+webfont build. Keep brand illustration (candle jar, mood emoji) as-is — free FA has no candle glyph.
+| Token | Fonte | Uso |
+|---|---|---|
+| `--font-sans` | Poppins (400–800, via `next/font` em `app/fonts.ts`) | Todo o texto, botões, UI. Definida no `<body>` — os elementos herdam. |
+| `--font-script` | Genty (local, `app/fonts/Genty.otf`) | Títulos "fun": `.script-title`, `.photo-banner__title`, preços grandes, h1 das páginas de conteúdo. |
 
-## 10. Logo
-Header + footer use the raster wordmark `public/images/logo.png` (1615×341). Referenced in the mockup as a published asset; in the app it's `/images/logo.png` via `next/image` (set `priority` on the header instance). Footer sits it on a white pill for contrast on the dark band.
+| Token | Desktop | Celular | Uso |
+|---|---|---|---|
+| `--font-size-page-title` | 48px | 32px | h1 das páginas internas (`.container h1`). |
+| `--font-size-lead` | 24px | 16px | Parágrafo de abertura (`.prose .lead`, carrinho vazio). |
 
-## 11. Carousels (arrows + dots)
-Two patterns, both with prev/next **arrows** and **dots**, driven by ~70 lines of dependency-free vanilla JS:
-- **Hero** — full-viewport (`100dvh − announce − header`) media carousel; each slide is an `<img>`/`<video>` (mockup uses gradient placeholders) under a readability scrim with overlaid copy + CTA. Transform-based track, 6s autoplay, pauses on hover/focus, respects `prefers-reduced-motion`, dots as tablist.
-- **Product row** — native `overflow-x` scroll-snap lane; arrows `scrollBy` one card, dots = pages, active syncs on scroll, arrows disable at the ends.
-- Controls: `.car-arrow` (48px pill, white/ink), `.car-dots .dot` (10px → 26px pill when active).
+- Todo `h2` tem no máximo 32px (24px no celular).
+- h1–h3: peso 800, `letter-spacing: -0.02em`, `text-wrap: balance`.
+- **A Genty (Demo) não tem acentos** (ç, ã, é…): evitar acentos em títulos com `.script-title`.
+- **Licença:** o arquivo é *GentyDemo (uso pessoal)* — garantir a licença comercial antes do lançamento.
+
+---
+
+## 4. Layout, cantos, sombras, animação e camadas
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--site-max-width` | 1920px | Largura máxima do conteúdo (`.wrap`, `.container`). |
+| `--gutter` | 40px (16px no celular) | Margem lateral mínima. |
+| `--section-spacing` | 48px (24px no celular) | Espaço vertical das `.section`. |
+| `--header-height` | 80px | Referência para elementos `sticky` abaixo do header. |
+| `--radius-sm / -md / -lg / -xl / -pill` | 8 / 16 / 24 / 32 / 999px | Cantos. Botões e inputs = pílula; cards = 32px com foto 24px. |
+| `--shadow-sm / -md / -lg` | — | Repouso / hover / elementos elevados. |
+| `--shadow-popover` | — | Menus suspensos e hover dos blocos de aroma. |
+| `--focus-ring` | anel branco + rosa | Foco por teclado (aplicado em `:focus-visible` no `_base`). |
+| `--ease-out` | `cubic-bezier(.22,1,.36,1)` | Curva padrão (sem "bounce"). |
+| `--duration-fast / --duration / --duration-slow` | 150 / 280 / 600ms | Transições. |
+| `--z-sticky / -header / -menu / -drawer / -consent / -toast` | 100 / 200 / 300 / 400 / 450 / 460 | Ordem das camadas fixas. |
+
+**Movimento reduzido:** o `_base` corta todas as animações/transições com
+`prefers-reduced-motion: reduce`; os componentes com animação contínua também a desligam.
+
+---
+
+## 5. Breakpoints (`styles/_mixins.scss`)
+
+```scss
+@use '../../styles/mixins' as *;   // caminho relativo a partir do .scss do componente
+
+@include small-phone { … }   // até 600px
+@include mobile { … }        // até 760px  (o mais usado)
+@include tablet { … }        // até 900px
+@include below(1200px) { … } // valor pontual
+@include above($tablet) { … } // a partir de 900px
+@include has-hover { … }     // só dispositivos com mouse
+@include reduced-motion { … }
+@include hide-scrollbar;     // carrosséis com scroll-snap
+@include visually-hidden;
+```
+
+Header: `$header-compact` (1535px — a pesquisa vira só a lupa) e `$header-mobile`
+(1279px — o menu vira gaveta lateral).
+
+---
+
+## 6. Utilitários globais (`_shared.scss`, `_prose.scss`)
+
+| Classe | Uso |
+|---|---|
+| `.wrap` | Largura do conteúdo (90%, até `--site-max-width`). |
+| `.container` | `.wrap` + espaço vertical de página interna; o `h1` dentro dele usa `--font-size-page-title`. |
+| `.section`, `.section__head`, `.section__link` | Seção com espaçamento padrão; cabeçalho com título à esquerda e "Ver tudo →" à direita. |
+| `.script-title` | Título em Genty rosa; o `<em>` fica laranja (use o componente `TwoToneTitle`). |
+| `.script-title--compact` | h1 de página no tamanho de título de seção (32px), ex.: `/favoritos`. |
+| `.script-spark` | Estrelinhas decorativas depois do título. |
+| `.eyebrow`, `.eyebrow--large` | Texto pequeno acima de um título. |
+| `.btn` + cor | `--primary` (rosa escuro), `--outline`, `--orange` (adicionar ao carrinho), `--yellow` (comprar agora), `--gold` (hero). |
+| `.btn` + tamanho | `--compact` (menos padding lateral), `--large` (56px), `--block` (largura toda). |
+| `.price-old` | Preço riscado de promoção. |
+| `.empty-state` | Mensagem centralizada de "nada para mostrar". |
+| `.status-page`, `.status-page__text` | Páginas de erro, 404 e "categoria em breve". |
+| `.visually-hidden` | Esconde visualmente, mantém para leitores de tela (o link "Saltar para o conteúdo" aparece no foco). |
+| `.groovy-ribbon` | Faixa de 4px com gradiente animado no topo do site. |
+| `.prose` | Páginas de conteúdo/jurídicas: h1 em Genty com gradiente, h2 rosa com ✦, listas com bolinha laranja. |
+| `.accordion` | Acordeão com `<details>`/`<summary>` (FAQ e informações do produto). |
+
+---
+
+## 7. Componentes e as suas classes
+
+### Estrutura do site
+| Componente | Classes |
+|---|---|
+| `AnnounceBar` | `.announce` · `__arrow`, `__viewport`, `__track` |
+| `Header` | `.header` (`.is-open` = gaveta aberta) · `__inner`, `__logo`, `__nav`, `__menu`, `__link` (`.is-active`), `__tools`, `__icon-button`, `__badge`, `__burger`, `__drawer-head`, `__drawer-extra`, `__overlay`, `__desktop-only` |
+| `Header/SearchBox` | `.search` (`.is-open`) · `__form`, `__input`, `__results`, `__item`, `__thumb`, `__name`, `__price`, `__message` |
+| `Header/AccountMenu` | `.account-menu` · `__popover`, `__title`, `__row`, `__button` (`--shop`, `--main`, `--ghost`) |
+| `Footer` | `.footer` · `__inner`, `__grid`, `__logo`, `__social`, `__cookies`, `__bottom`, `__copyright`, `__payment`, `__payment-label`, `__payment-methods`, `__legal-id` |
+| `Footer/VipBanner` | `.vip` · `__inner`, `__content`, `__eyebrow`, `__cta` |
+| `CookieConsent` | `.consent` · `__body`, `__text`, `__categories`, `__category`, `__actions` |
+| `Toast` | `.toasts` (pilha) · `.toast` (`--success`, `--error`) |
+| `BackToTop` | `.back-to-top` (`.is-visible`) |
+| `Breadcrumbs` | `.breadcrumbs` (item atual com `[aria-current]`) |
+| `ScrollReveal` | sem classes próprias: anima `main > section` e `[data-reveal]` quando o `<html>` tem `.reveal-ready` |
+
+### Home
+| Componente | Classes |
+|---|---|
+| `Hero` | `.hero` (ajustes do `PhotoBanner` no celular) |
+| `PhotoBanner` | `.photo-banner` (`--text-right`) · `__link`, `__picture`, `__image`, `__content`, `__title`, `__lead` |
+| `Appeals` | `.appeals` · `__inner`, `__star`, `__track`, `__item`, `__icon` |
+| `CategoryNav` | `.category-nav` · `__inner`, `__title`, `__list`, `__item`, `__photo`, `__name` |
+| `PackBanner` | `.pack` · `__frame`, `__card`, `__body`, `__eyebrow`, `__title`, `__lead`, `__list`, `__number`, `__cta`, `__media`, `__tag`, `__tag-label`, `__decoration` (`--1` a `--6`) |
+| `ScentGrid` | `.scent-grid` · `__head`, `__list` · bloco de cada aroma: `.scent-tile` |
+
+### Produtos e listagens
+| Componente | Classes |
+|---|---|
+| `ProductCard` | `.product-card` (`--sold-out`) · `__media`, `__image`, `__hover-image`, `__placeholder`, `__badge`, `__body`, `__type`, `__name`, `__price` |
+| `ProductCard/QuickAddButton` | `.quick-add` (`--sold-out`) |
+| `WishlistButton` | `.wish-button` (`--card`, `--gallery`, `.is-active`) |
+| `ProductGrid` | `.product-grid` (também usada pelo `SkeletonGrid`) |
+| `ProductGridPaged` | `.load-more` · `__button` |
+| `SkeletonGrid` | `.skeleton-card` |
+| `PagedCarousel` | `.carousel` · `__stage`, `__viewport`, `__track`, `__arrow` (`--prev`, `--next`), `__dots`, `__dot` |
+| `ProductRail` | `.rail` (larguras dos cards dentro do `.carousel`) |
+| `ShopLayout` | `.shop-layout` · `__sidebar`, `__filters-title`, `__toolbar`, `__count` |
+| `ShopLayout/SortSelect` | `.sort-select` · `__button`, `__menu`, `__option`, `__check` |
+| `ProductFilters` | `.filters` · `__clear` · grupo: `.filter-group` · `__title`, `__chevron`, `__options`, `__option` (`.is-active`), `__checkbox` · botão no celular: `.filters-toggle` · `__checkbox`, `__button` |
+| `ProductListing` | `.listing-banner` (`--photo`) · `__art` |
+| `SearchResultsHeader` | `.search-results__count` |
+
+### Página de produto
+| Componente | Classes |
+|---|---|
+| página (`product-page.scss`) | `.product` · `__grid`, `__info`, `__title-row`, `__weight`, `__meta`, `__collection`, `__rating`, `__description`, `__accordion` |
+| `ProductGallery` | `.gallery` · `__track`, `__item`, `__placeholder` |
+| `BuyBox` | `.buybox` · `__price`, `__amount`, `__quantity`, `__stock`, `__variant` · `.quantity-stepper` · barra fixa no celular: `.mobile-buy-bar` · `__price`, `__button` |
+| `BundleOffer` | `.bundle` · `__row`, `__items`, `__operator`, `__total`, `__price`, `__promo` |
+| `ProductReviews` | `.stars` (`--large`) · `.reviews-summary` · `__score`, `__average`, `__count`, `__empty`, `__cta` · `.reviews-distribution` · `__bar`, `__count` · `.review-form` · `__field`, `__counter`, `__honeypot`, `__note`, `__actions` · `.star-picker` (`.is-invalid`) · `__row`, `__star` (`.is-on`), `__label` · `.reviews-list` · `.review` · `__top`, `__verified`, `__text`, `__author` |
+
+### Carrinho
+| Componente | Classes |
+|---|---|
+| `CartDrawer` | `.drawer` (`.is-open`) · `__overlay`, `__header`, `__close`, `__lines`, `__line`, `__thumb`, `__line-info`, `__line-name`, `__line-price`, `__footer`, `__total` |
+| `cart/FreeShippingBar` | `.free-shipping` · `__text`, `__track` |
+| `cart/DiscountForm` | `.discount` · `__input`, `__applied` |
+| `cart/LineQuantity` | `.line-quantity` · `__step`, `__remove` |
+| `cart/CheckoutButton` | `.checkout-button` |
+| `cart/TrustList` | `.trust-list` (`--inline`) |
+| página (`cart-page.scss`) | `.cart-page` (`--loading`) · `__grid`, `__lines`, `__summary`, `__total`, `__continue` · `.cart-line` · `__thumb`, `__info`, `__name`, `__price` · `.gift-note` · `__input` · `.cart-empty` · `__icon`, `__message` |
+
+### Coleções
+| Componente | Classes |
+|---|---|
+| página (`collections-page.scss`) | `.collections` · `__head`, `__eyebrow`, `__lead`, `__empty`, `__grid` · `.collection-card` · `__image`, `__placeholder`, `__body`, `__name`, `__description`, `__cta` |
+
+---
+
+## 8. Como criar um componente novo
+
+1. Criar `components/NomeDoComponente/NomeDoComponente.tsx` e `NomeDoComponente.scss`.
+2. No `.tsx`: `import './NomeDoComponente.scss';` (depois dos outros imports).
+3. No `.scss`: `@use '../../styles/mixins' as *;` (ajustar a quantidade de `../`) e um bloco BEM
+   com o nome do componente em kebab-case (`.nome-do-componente`).
+4. Usar só os tokens (`var(--color-…)`, `var(--radius-…)`…), nunca cores soltas — a não ser que
+   seja uma cor única daquele componente (ex.: o roxo oficial do botão "Shop").
+5. Reaproveitar `.btn`, `.script-title`, `.section` etc. antes de criar estilos novos.
+
+---
+
+## 9. Ícones e logo
+
+- **Ícones:** Font Awesome 6 Free (CSS importado no `app/layout.tsx`), ex.:
+  `<i className="fa-solid fa-cart-shopping" aria-hidden="true" />`. Sempre `aria-hidden` e um
+  `aria-label` no botão quando o ícone é o único conteúdo.
+- **Logo:** `public/images/logo.png` (1615×341) via `next/image`, no header (com `priority`) e no footer.
