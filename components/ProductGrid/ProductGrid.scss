@@ -11,4 +11,12 @@
   @include tablet {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  @include small-phone {
+    .product-card {
+      .quick-add {
+        font-size: 10px;
+      }
+    }
+  }
 }

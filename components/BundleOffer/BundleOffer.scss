@@ -7,6 +7,7 @@
   .section__head {
     justify-content: center;
     text-align: center;
+    margin-bottom: 16px;
   }
 
   &__row {
@@ -46,8 +47,8 @@
     display: flex;
     flex: 0 0 300px;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    align-items: center;
+    gap: 8px;
 
     @include mobile {
       flex: 0 0 220px;
@@ -91,13 +92,21 @@
 
       .product-card {
         flex: 1 1 0;
-        max-width: 360px;
+        width: 100%;
       }
 
       > .bundle__operator {
         flex-basis: 100%;
         text-align: center;
       }
+    }
+
+    &__items {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      width: 100%;
     }
 
     &__total {

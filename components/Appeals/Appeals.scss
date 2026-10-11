@@ -19,11 +19,16 @@
     margin-inline: auto;
     padding: 16px 0;
 
-    @include mobile {
-      grid-template-columns: auto 1fr auto;
-      gap: 8px;
+    @include tablet {
+      display: flex;
+      gap: 40px;
       width: 100%;
-      padding: 16px;
+      padding: 16px 5%;
+      justify-content: flex-start;
+
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      @include hide-scrollbar;
     }
   }
 
@@ -38,13 +43,7 @@
     display: contents;
 
     @include mobile {
-      display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: 100%;
-      overflow-x: auto;
-      overscroll-behavior-x: contain;
-      scroll-snap-type: x mandatory;
-      @include hide-scrollbar;
+      
     }
   }
 
@@ -57,9 +56,10 @@
     font-size: 16px;
     color: var(--color-pink);
 
-    @include mobile {
+    @include tablet {
       scroll-snap-align: center;
       scroll-snap-stop: always;
+      min-width: max-content;
     }
   }
 

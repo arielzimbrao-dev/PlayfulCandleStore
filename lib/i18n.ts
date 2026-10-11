@@ -15,7 +15,7 @@ const pt = {
   ],
   nav: { velas: 'Velas de Copo', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Queimadores', autumn: 'Coleção de Outono' },
   header: {
-    account: 'A minha conta',
+    account: 'Minha conta',
     search: 'Pesquisar',
     cart: 'Carrinho',
     items: 'artigos',
@@ -96,7 +96,7 @@ const pt = {
       badge: 'Nº1',
     },
     autumn: { eyebrow: 'Coleção de Outono', title: 'Novidades de Outono', link: 'Ver todos', badge: '' },
-    latest: { eyebrow: 'Acabadas de sair da cozinha', title: 'Novidades', link: 'Ver novidades', badge: 'Novo' },
+    latest: { eyebrow: 'Acabadas de sair da cozinha', title: 'Best-Sellers', link: 'Ver todos', badge: 'Novo' },
   },
   bento: {
     eyebrow: 'Escolhe o teu vício',

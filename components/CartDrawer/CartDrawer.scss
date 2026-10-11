@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   width: min(416px, 92vw);
-  padding: 16px;
+  //padding: 16px;
   overflow-y: auto;
   background: var(--color-surface);
   box-shadow: -8px 0 40px rgba(42, 27, 36, 0.22);
@@ -45,9 +45,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: var(--color-pink);
+    padding: 12px 24px;
 
     strong {
       font-size: 24px;
+      font-family: var(--font-script);
+      color: #fff;
+      height: 32px;
     }
   }
 
@@ -56,10 +61,39 @@
     height: 40px;
     border-radius: var(--radius-pill);
     font-size: 16px;
+    color: #fff;
 
     &:hover {
       background: var(--color-blush);
     }
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 16px;
+    padding: 32px 16px;
+
+    .fa-cart-shopping {
+      font-size: 48px;
+      color: var(--color-ink-soft);
+    }
+
+    &-message {
+      font-size: 16px;
+      text-align: center;
+      color: var(--color-ink-soft);
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 16px 24px;
   }
 
   &__lines {

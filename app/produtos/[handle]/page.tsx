@@ -166,10 +166,10 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
         </div>
       </section>
 
-      <ProductReviews productId={product.id} reviews={reviews} />
-
       <BundleOffer product={product} />
 
+      <ProductReviews productId={product.id} reviews={reviews} />
+      
       <RelatedProducts product={product} />
     </>
   );

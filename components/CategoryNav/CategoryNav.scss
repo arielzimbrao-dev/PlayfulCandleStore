@@ -13,7 +13,7 @@
   &__inner {
     width: 58%;
 
-    @include mobile {
+    @include tablet {
       width: 90%;
     }
   }

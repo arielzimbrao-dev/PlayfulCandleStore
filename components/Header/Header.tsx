@@ -63,7 +63,7 @@ export default function Header({ autumnHandle = 'colecao-de-outono' }: { autumnH
 
         <nav className="header__nav" aria-label="Navegação principal">
           <div className="header__drawer-head">
-            <strong>Menu</strong>
+            <span>Menu</span>
             <button type="button" className="header__icon-button" onClick={closeDrawer} aria-label={t.cart.close}>
               <i className="fa-solid fa-xmark" aria-hidden="true" />
             </button>

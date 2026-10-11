@@ -26,13 +26,19 @@
     }
 
     h1.script-title {
-      margin: 4px 0;
+      margin: 0;
       font-size: 48px;
       line-height: 1.05;
 
       @include mobile {
         font-size: 32px;
       }
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      font-size: 16px;
     }
   }
 
@@ -43,6 +49,7 @@
     align-items: baseline;
     justify-content: space-between;
     gap: 16px;
+    margin-bottom: 8px;
   }
 
   &__weight {
@@ -102,6 +109,7 @@
     margin-top: 16px;
     line-height: 1.7;
     color: var(--color-ink);
+    font-size: 16px;
 
     p {
       margin: 8px 0;

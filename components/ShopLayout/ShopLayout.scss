@@ -8,14 +8,14 @@
   grid-template-columns: 1fr;
   align-items: start;
   gap: 40px;
-  margin-top: 16px;
+  padding-top: 40px;
 
   @include mobile {
     gap: 24px;
   }
 
   @include above($tablet) {
-    grid-template-columns: 224px minmax(0, 1fr);
+    grid-template-columns: 240px minmax(0, 1fr);
   }
 
   &__sidebar {
@@ -45,6 +45,7 @@
 
   &__count {
     font-size: 16px;
-    color: var(--color-ink-soft);
+    color: var(--color-coral-dark);
+    font-weight: 600;
   }
 }

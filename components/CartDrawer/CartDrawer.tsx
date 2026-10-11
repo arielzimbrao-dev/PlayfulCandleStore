@@ -82,9 +82,12 @@ export default function CartDrawer() {
         </header>
 
         {isEmpty ? (
-          <p>{t.cart.empty}</p>
+          <div className="drawer__empty">
+            <i className="fa-solid fa-cart-shopping" aria-hidden="true" />
+            <p className="drawer__empty-message">{t.cart.empty}</p>  
+          </div>
         ) : (
-          <>
+          <div className="drawer__content">
             <FreeShippingBar subtotal={cart.cost.subtotalAmount} />
 
             <ul className="drawer__lines">
@@ -130,7 +133,7 @@ export default function CartDrawer() {
               <CheckoutButton cart={cart} />
               <TrustList items={['freeShip', 'securePay']} />
             </footer>
-          </>
+          </div>
         )}
       </aside>
     </>

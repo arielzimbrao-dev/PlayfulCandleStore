@@ -39,6 +39,12 @@
     height: 48px;
     font-size: 24px;
     box-shadow: 0 8px 16px -8px rgba(42, 21, 36, 0.35);
+
+    @include small-phone {
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+    }
   }
 
   // Galeria da PDP: 40px no canto superior direito da 1.ª foto.

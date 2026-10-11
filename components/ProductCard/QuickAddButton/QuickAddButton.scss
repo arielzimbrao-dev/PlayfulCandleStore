@@ -19,7 +19,7 @@
   transition: background var(--duration) var(--ease-out);
 
   i {
-    font-size: 24px;
+    font-size: 16px;
   }
 
   &:hover {
@@ -32,7 +32,12 @@
   }
 
   @include small-phone {
-    height: 48px;
+    height: 40px;
+    font-size: 14px;
+
+    i {
+      display: none;
+    }
   }
 
   // Produto esgotado: botão cinza com o texto "Esgotado".

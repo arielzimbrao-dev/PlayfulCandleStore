@@ -53,21 +53,19 @@
   }
 }
 
-main > section {
+main>section {
   position: relative;
 }
 
 // Faixa fina com gradiente animado nas 3 cores da marca (topo da página).
 .groovy-ribbon {
   height: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--color-pink),
-    var(--color-tangerine),
-    var(--color-orange),
-    var(--color-gold),
-    var(--color-pink)
-  );
+  background: linear-gradient(90deg,
+      var(--color-pink),
+      var(--color-tangerine),
+      var(--color-orange),
+      var(--color-gold),
+      var(--color-pink));
   background-size: 300% 100%;
   animation: groovy-ribbon-flow 9s linear infinite;
 
@@ -138,6 +136,7 @@ main > section {
 
   @include mobile {
     font-size: 24px;
+    min-height: 32px;
   }
 
   em {
