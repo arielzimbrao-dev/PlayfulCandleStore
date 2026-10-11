@@ -14,7 +14,7 @@ export function pushEvent(event: string, data: Record<string, unknown> = {}) {
   dataLayer()?.push({ event, ...data });
 }
 
-export type EcommItem = {
+export type EcommerceItem = {
   item_id: string;
   item_name: string;
   price?: number;
@@ -26,7 +26,7 @@ export type EcommItem = {
 // senão os itens do evento anterior vazam para este.
 export function ecommerceEvent(
   event: 'view_item' | 'add_to_cart' | 'begin_checkout' | 'view_item_list',
-  items: EcommItem[],
+  items: EcommerceItem[],
   extra: Record<string, unknown> = {},
 ) {
   const layer = dataLayer();

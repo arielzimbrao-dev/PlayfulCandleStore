@@ -39,10 +39,10 @@ export const SITE = {
   },
 } as const;
 
-export const sameAs = Object.values(SITE.social);
+export const SOCIAL_PROFILE_URLS = Object.values(SITE.social);
 
 // Converte caminho relativo em URL absoluta (exigida em JSON-LD, OG e sitemap).
-export function abs(path: string): string {
+export function absoluteUrl(path: string): string {
   if (!path) return SITE.url;
   if (path.startsWith('http')) return path;
   return `${SITE.url}${path.startsWith('/') ? '' : '/'}${path}`;

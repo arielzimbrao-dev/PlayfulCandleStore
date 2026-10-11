@@ -63,7 +63,9 @@ type VariantStockNode = {
 // unauthenticated_read_product_inventory). null = sem limite (estoque não controlado ou "continuar
 // vendendo sem estoque"). Em caso de falha → {} (a UI fica sem limite; o carrinho da Shopify
 // continua cortando no estoque real).
-export async function getStock(variantIds: string[]): Promise<Record<string, number | null>> {
+export async function getVariantStock(
+  variantIds: string[],
+): Promise<Record<string, number | null>> {
   if (!variantIds.length) return {};
   try {
     const data = await adminFetch<{ nodes: VariantStockNode[] }>(
@@ -88,15 +90,15 @@ export async function getStock(variantIds: string[]): Promise<Record<string, num
 
 // ── Promoções ativas (descontos em produtos e "Compre X leve Y") ────────────────────────────────
 export type PromoEffect =
-  { kind: 'amount'; amount: number; each: boolean } | { kind: 'percent'; pct: number };
+  { kind: 'amount'; amount: number; each: boolean } | { kind: 'percent'; percentage: number };
 export type Promo = {
   title: string;
   automatic: boolean; // false = só com código (o preço do conjunto não leva o desconto)
-  handles: string[]; // produtos abrangidos (buys + gets no BXGY)
-  collections: string[]; // coleções abrangidas
+  productHandles: string[]; // produtos abrangidos (buys + gets no BXGY)
+  collectionHandles: string[]; // coleções abrangidas
   effect: PromoEffect | null;
-  /** BXGY: só estes recebem o efeito, e no máximo `qty` unidades. */
-  gets?: { handles: string[]; collections: string[]; qty: number };
+  /** BXGY: só estes recebem o efeito, e no máximo `quantity` unidades. */
+  gets?: { productHandles: string[]; collectionHandles: string[]; quantity: number };
 };
 
 // Fragmentos GraphQL reaproveitados nos quatro tipos de desconto (automático/código × básico/BXGY).
@@ -139,7 +141,7 @@ const itemCollectionHandles = (items?: RawItems) =>
   items?.collections?.nodes.map((node) => node.handle) ?? [];
 const toEffect = (value?: RawValue): PromoEffect | null =>
   value?.percentage != null
-    ? { kind: 'percent', pct: value.percentage }
+    ? { kind: 'percent', percentage: value.percentage }
     : value?.amount
       ? { kind: 'amount', amount: Number(value.amount.amount), each: !!value.appliesOnEachItem }
       : null;
@@ -167,21 +169,23 @@ export async function getActivePromos(): Promise<Promo[]> {
         promos.push({
           title: discount.title ?? '',
           automatic,
-          handles: [...new Set([...itemProductHandles(buysItems), ...getsHandles])],
-          collections: [...new Set([...itemCollectionHandles(buysItems), ...getsCollections])],
+          productHandles: [...new Set([...itemProductHandles(buysItems), ...getsHandles])],
+          collectionHandles: [
+            ...new Set([...itemCollectionHandles(buysItems), ...getsCollections]),
+          ],
           effect: toEffect(value.effect),
           gets: {
-            handles: getsHandles,
-            collections: getsCollections,
-            qty: Number(value.quantity?.quantity ?? 1),
+            productHandles: getsHandles,
+            collectionHandles: getsCollections,
+            quantity: Number(value.quantity?.quantity ?? 1),
           },
         });
       } else {
         promos.push({
           title: discount.title ?? '',
           automatic,
-          handles: getsHandles,
-          collections: getsCollections,
+          productHandles: getsHandles,
+          collectionHandles: getsCollections,
           effect: toEffect(discount.customerGets.value),
         });
       }

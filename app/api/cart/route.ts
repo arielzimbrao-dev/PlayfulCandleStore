@@ -9,7 +9,7 @@ import {
   updateCartLines,
   updateCartNote,
 } from '@/lib/shopify';
-import { getStock } from '@/lib/shopify/admin';
+import { getVariantStock } from '@/lib/shopify/admin';
 import type { Cart, CartLineInput } from '@/lib/shopify/types';
 
 const CART_COOKIE = 'cartId';
@@ -18,7 +18,7 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 dias
 // Anexa o estoque de cada linha para a UI não deixar subir a quantidade acima do disponível.
 async function withStock(cart: Cart | null) {
   if (!cart) return NextResponse.json({ cart });
-  const stock = await getStock(cart.lines.map((line) => line.merchandise.id));
+  const stock = await getVariantStock(cart.lines.map((line) => line.merchandise.id));
   const lines = cart.lines.map((line) => ({
     ...line,
     merchandise: { ...line.merchandise, quantityAvailable: stock[line.merchandise.id] },

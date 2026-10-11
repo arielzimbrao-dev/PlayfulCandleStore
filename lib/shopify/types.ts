@@ -110,10 +110,10 @@ export type CartLineInput = { merchandiseId: string; quantity: number };
 export type CartLineUpdateInput = { id: string; quantity: number };
 
 // Handles que representam TIPOS de produto (não coleções curadas/sazonais).
-export const TYPE_HANDLES = ['velas-de-copo', 'wax-melts', 'snapbars', 'queimadores'] as const;
+export const PRODUCT_TYPE_HANDLES = ['velas-de-copo', 'wax-melts', 'snapbars', 'queimadores'] as const;
 
 // Primeira coleção curada/sazonal a que o produto pertence (ignora os tipos). null se nenhuma.
-export function seasonalCollection(product: Product): { title: string; handle: string } | null {
-  const typeHandles: readonly string[] = TYPE_HANDLES;
+export function getSeasonalCollection(product: Product): { title: string; handle: string } | null {
+  const typeHandles: readonly string[] = PRODUCT_TYPE_HANDLES;
   return product.collections?.find((c) => !typeHandles.includes(c.handle)) ?? null;
 }

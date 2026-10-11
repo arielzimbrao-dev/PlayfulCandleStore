@@ -1,9 +1,9 @@
 // Categorias (tipos de produto) — servidas em /categorias/[handle]. Cada uma traz a copy do banner
 // (pt-PT; essas páginas renderizam sempre em PT). Coleções de verdade ficam em /colecoes/.
-import { TYPE_HANDLES } from './shopify/types';
-import type { TypeKey } from './filters';
+import { PRODUCT_TYPE_HANDLES } from './shopify/types';
+import type { CategoryKey } from './filters';
 
-export type Category = { title: string; query: string; text: string; type: TypeKey };
+export type Category = { title: string; query: string; text: string; type: CategoryKey };
 
 // Sufixo de versão quando a foto de uma categoria é trocada (nome novo = sem cache antigo).
 const BANNER_VERSION: Record<string, string> = { 'velas-de-copo': '-v2' };
@@ -53,7 +53,7 @@ export const CATEGORY_HANDLES = Object.keys(CATEGORIES);
 // Coleções que NÃO são coleções curadas: os tipos de produto (têm páginas em /categorias/)
 // e a "Home page" que a Shopify cria por padrão. Usado em /colecoes e no sitemap.
 export const NON_COLLECTION_HANDLES = new Set<string>([
-  ...TYPE_HANDLES,
+  ...PRODUCT_TYPE_HANDLES,
   'frontpage',
   'home-page',
   'homepage',

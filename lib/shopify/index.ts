@@ -1,5 +1,5 @@
 import { shopifyFetch } from './client';
-import { relatedProducts, productCategory } from '../filters';
+import { fallbackRelatedProducts, productCategory } from '../filters';
 import type { CollectionSortKey, ProductSortKey } from '../sort';
 import {
   COLLECTION_BY_HANDLE_QUERY,
@@ -197,7 +197,7 @@ export async function getProductRecommendations(
 // Produtos relacionados para a PDP, em cascata:
 // 1) complementares do Shopify (Search & Discovery, "Leve junto" nativo);
 // 2) se não estiverem configurados, os relacionados (RELATED — melhor quando a loja tem histórico);
-// 3) por fim, o fallback determinístico do catálogo (ver relatedProducts em lib/filters).
+// 3) por fim, o fallback determinístico do catálogo (ver fallbackRelatedProducts em lib/filters).
 export async function getRelatedProducts(product: Product, limit = 4): Promise<Product[]> {
   const complementary = await getProductRecommendations(
     product.handle,
@@ -216,7 +216,7 @@ export async function getRelatedProducts(product: Product, limit = 4): Promise<P
   const needsBurner = category === 'wax' || category === 'snap';
 
   let candidates =
-    recommendations.length > 0 ? recommendations : relatedProducts(product, catalog, limit + 4);
+    recommendations.length > 0 ? recommendations : fallbackRelatedProducts(product, catalog, limit + 4);
 
   // Wax melt / snapbar: garantir sempre um queimador em primeiro (o complemento natural).
   if (needsBurner) {
@@ -242,7 +242,7 @@ export async function getRelatedProducts(product: Product, limit = 4): Promise<P
   };
   addUnique(candidates);
   // Completa com o catálogo até o limite — a seção nunca fica vazia (nem curta).
-  if (related.length < limit) addUnique(relatedProducts(product, catalog, limit));
+  if (related.length < limit) addUnique(fallbackRelatedProducts(product, catalog, limit));
   if (related.length < limit) addUnique(catalog.filter((other) => other.id !== product.id));
   return related;
 }

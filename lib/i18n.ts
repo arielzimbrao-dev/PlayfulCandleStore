@@ -1,4 +1,4 @@
-// Dicionário trilíngue — PT é o padrão; ES/EN seguem o mesmo formato (tipado por `Dict`).
+// Dicionário trilíngue — PT é o padrão; ES/EN seguem o mesmo formato (tipado por `Dictionary`).
 // ES/EN cobrem a estrutura da home; revisão de marketing pode passar pelo agente copywriter.
 
 export type Locale = 'pt' | 'es' | 'en';
@@ -204,9 +204,9 @@ const pt = {
   },
 };
 
-export type Dict = typeof pt;
+export type Dictionary = typeof pt;
 
-const es: Dict = {
+const es: Dictionary = {
   langHtml: 'es',
   announce: [
     '15% de descuento en tu primera compra con el código PRIMEIRACOMPRA15',
@@ -403,7 +403,7 @@ const es: Dict = {
   },
 };
 
-const en: Dict = {
+const en: Dictionary = {
   langHtml: 'en',
   announce: [
     '15% off your first order with code PRIMEIRACOMPRA15',
@@ -591,4 +591,4 @@ const en: Dict = {
   },
 };
 
-export const dictionaries: Record<Locale, Dict> = { pt, es, en };
+export const dictionaries: Record<Locale, Dictionary> = { pt, es, en };

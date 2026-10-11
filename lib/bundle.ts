@@ -4,7 +4,12 @@ import { productCategory } from '@/lib/filters';
 import type { Product, ProductVariant } from '@/lib/shopify/types';
 
 export type BundleItem = { product: Product; variant: ProductVariant; price: number };
-export type Bundle = { items: BundleItem[]; original: number; total: number; promo: string | null };
+export type Bundle = {
+  items: BundleItem[];
+  originalTotal: number; // soma dos preços sem desconto
+  total: number;
+  promoTitle: string | null; // nome da promoção aplicada, se houver
+};
 
 // Variante que vai para o carrinho: a primeira disponível.
 const buyableItem = (product: Product): BundleItem | null => {
@@ -42,14 +47,16 @@ function discountFor(promo: Promo, items: BundleItem[]): number {
   // Compre X leve Y: o desconto só vale para os itens "leve", e a Shopify aplica nos mais baratos.
   const discountedItems = promo.gets
     ? items
-        .filter((item) => isInPromo(item.product, promo.gets!.handles, promo.gets!.collections))
+        .filter((item) =>
+          isInPromo(item.product, promo.gets!.productHandles, promo.gets!.collectionHandles),
+        )
         .sort((a, b) => a.price - b.price)
-        .slice(0, promo.gets.qty)
+        .slice(0, promo.gets.quantity)
     : items;
   const discountBase = discountedItems.reduce((sum, item) => sum + item.price, 0);
   const discount =
     effect.kind === 'percent'
-      ? discountBase * effect.pct
+      ? discountBase * effect.percentage
       : effect.each
         ? effect.amount * discountedItems.length
         : effect.amount;
@@ -75,7 +82,7 @@ export async function getBundle(product: Product): Promise<Bundle | null> {
   const otherProducts = catalog.filter((candidate) => candidate.id !== product.id);
 
   const promo = promos.find((candidate) =>
-    isInPromo(product, candidate.handles, candidate.collections),
+    isInPromo(product, candidate.productHandles, candidate.collectionHandles),
   );
   let partners: Product[];
   if (promo) {
@@ -83,7 +90,8 @@ export async function getBundle(product: Product): Promise<Bundle | null> {
     partners = otherProducts
       .filter(
         (candidate) =>
-          isInPromo(candidate, promo.handles, promo.collections) && buyableItem(candidate),
+          isInPromo(candidate, promo.productHandles, promo.collectionHandles) &&
+          buyableItem(candidate),
       )
       .slice(0, 3);
   } else {
@@ -100,12 +108,12 @@ export async function getBundle(product: Product): Promise<Bundle | null> {
   if (!partners.length) return null;
 
   const items = [mainItem, ...partners.map((partner) => buyableItem(partner)!)];
-  const original = items.reduce((sum, item) => sum + item.price, 0);
+  const originalTotal = items.reduce((sum, item) => sum + item.price, 0);
   const discount = promo ? discountFor(promo, items) : 0;
   return {
     items,
-    original,
-    total: original - discount,
-    promo: discount > 0 ? promo!.title : null,
+    originalTotal,
+    total: originalTotal - discount,
+    promoTitle: discount > 0 ? promo!.title : null,
   };
 }

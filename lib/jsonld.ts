@@ -1,4 +1,4 @@
-import { SITE, abs, sameAs } from './site';
+import { SITE, absoluteUrl, SOCIAL_PROFILE_URLS } from './site';
 import type { Product } from './shopify/types';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -14,8 +14,8 @@ export function organizationLd() {
     legalName: SITE.legalName,
     taxID: SITE.nif,
     url: SITE.url,
-    logo: abs(SITE.logo),
-    image: abs(SITE.logo),
+    logo: absoluteUrl(SITE.logo),
+    image: absoluteUrl(SITE.logo),
     description: SITE.description,
     email: SITE.email || undefined,
     telephone: SITE.telephone || undefined,
@@ -36,7 +36,7 @@ export function organizationLd() {
           addressLocality: address.addressLocality,
           addressCountry: address.addressCountry,
         },
-    sameAs,
+    sameAs: SOCIAL_PROFILE_URLS,
   };
 }
 
@@ -73,7 +73,7 @@ export function productLd(product: Product) {
     '@type': 'Product',
     name: product.title,
     description: product.seo.description || product.description,
-    image: imageUrls.length ? imageUrls : [abs(SITE.logo)],
+    image: imageUrls.length ? imageUrls : [absoluteUrl(SITE.logo)],
     sku: product.variants[0]?.id,
     brand: { '@type': 'Brand', name: product.vendor || SITE.name },
     // AggregateRating/Review só quando há avaliações reais (nunca inventar — risco de penalização
@@ -178,19 +178,19 @@ export function breadcrumbLd(items: { name: string; url: string }[]) {
       '@type': 'ListItem',
       position: index + 1,
       name: crumb.name,
-      item: abs(crumb.url),
+      item: absoluteUrl(crumb.url),
     })),
   };
 }
 
-export function faqLd(items: { q: string; a: string }[]) {
+export function faqLd(items: { question: string; answer: string }[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: items.map((faq) => ({
       '@type': 'Question',
-      name: faq.q,
-      acceptedAnswer: { '@type': 'Answer', text: faq.a },
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
     })),
   };
 }

@@ -42,8 +42,10 @@ export default async function BundleOffer({ product }: { product: Product }) {
             =
           </span>
           <div className="bundle__total">
-            {bundle.promo && <span className="bundle__promo">{bundle.promo}</span>}
-            {bundle.total < bundle.original && <span className="price-old">{money(bundle.original)}</span>}
+            {bundle.promoTitle && <span className="bundle__promo">{bundle.promoTitle}</span>}
+            {bundle.total < bundle.originalTotal && (
+              <span className="price-old">{money(bundle.originalTotal)}</span>
+            )}
             <span className="bundle__price">{money(bundle.total)}</span>
             <small>{isPair ? 'pelos dois' : `pelos ${bundle.items.length}`}</small>
             <BundleAddButton

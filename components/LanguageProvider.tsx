@@ -1,9 +1,9 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { DEFAULT_LOCALE, dictionaries, type Dict, type Locale } from '@/lib/i18n';
+import { DEFAULT_LOCALE, dictionaries, type Dictionary, type Locale } from '@/lib/i18n';
 
-type LanguageContextValue = { locale: Locale; setLocale: (locale: Locale) => void; t: Dict };
+type LanguageContextValue = { locale: Locale; setLocale: (locale: Locale) => void; t: Dictionary };
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 const STORAGE_KEY = 'pc-locale';
 
@@ -54,6 +54,6 @@ export function useLang(): LanguageContextValue {
   return context;
 }
 
-export function useT(): Dict {
+export function useT(): Dictionary {
   return useLang().t;
 }

@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect } from 'react';
-import { ecommerceEvent, type EcommItem } from '@/lib/analytics';
+import { ecommerceEvent, type EcommerceItem } from '@/lib/analytics';
 
 // Dispara view_item_list uma vez por lista renderizada (loja/coleção/pesquisa).
-export default function TrackListView({ items, listName }: { items: EcommItem[]; listName?: string }) {
+export default function TrackListView({ items, listName }: { items: EcommerceItem[]; listName?: string }) {
   const key = items.map((i) => i.item_id).join(',');
   useEffect(() => {
     if (items.length === 0) return;

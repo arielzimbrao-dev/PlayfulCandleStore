@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { PRICE_BUCKETS, TYPE_LABELS, type TypeKey } from '@/lib/filters';
+import { PRICE_BUCKETS, TYPE_LABELS, type CategoryKey } from '@/lib/filters';
 import './ProductFilters.scss';
 
 type SearchParams = Record<string, string | undefined>;
@@ -49,7 +49,7 @@ export default function ProductFilters({
   basePath: string;
   params: SearchParams;
   showType: boolean;
-  types: TypeKey[];
+  types: CategoryKey[];
   scents: string[];
   /** Mostra o grupo "Disponibilidade › Em stock" (parâmetro `stock=1`). */
   stockFilter?: boolean;

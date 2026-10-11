@@ -3,20 +3,20 @@
 // filtros no servidor (ProductFilter das coleções / Search API).
 import type { Product } from './shopify/types';
 
-export type TypeKey = 'velas' | 'wax' | 'snap' | 'burner' | 'pack';
+export type CategoryKey = 'velas' | 'wax' | 'snap' | 'burner' | 'pack';
 
-export const TYPE_LABELS: Record<TypeKey, string> = {
+export const TYPE_LABELS: Record<CategoryKey, string> = {
   velas: 'Velas de Copo',
   wax: 'Wax Melts',
   snap: 'Snapbars',
   burner: 'Queimadores',
   pack: 'Packs',
 };
-export const TYPE_ORDER: TypeKey[] = ['velas', 'wax', 'snap', 'burner', 'pack'];
+export const TYPE_ORDER: CategoryKey[] = ['velas', 'wax', 'snap', 'burner', 'pack'];
 
 // productType (texto livre do Shopify) → categoria da marca. Alinhado com ProductCard.typeLabel.
 // A ordem importa: "Pack de velas" tem de cair em pack, não em velas.
-export function productCategory(product: Product): TypeKey | null {
+export function productCategory(product: Product): CategoryKey | null {
   const type = (product.productType || '').toLowerCase();
   if (type.includes('pack')) return 'pack';
   if (type.includes('snap')) return 'snap';
@@ -32,7 +32,7 @@ export const PRICE_BUCKETS = [
   { key: '20-30', label: '€20–30', min: 20, max: 30 },
   { key: '30-40', label: '€30–40', min: 30, max: 40 },
 ] as const;
-export type PriceKey = (typeof PRICE_BUCKETS)[number]['key'];
+export type PriceBucketKey = (typeof PRICE_BUCKETS)[number]['key'];
 
 export type FilterState = { type?: string; scent?: string; price?: string };
 
@@ -60,8 +60,8 @@ export function applyFilters(products: Product[], filters: FilterState): Product
 }
 
 // Só oferecer chips que existem no conjunto atual (evita filtros que não retornam nada).
-export function availableTypes(products: Product[]): TypeKey[] {
-  const presentTypes = new Set(products.map(productCategory).filter(Boolean) as TypeKey[]);
+export function availableTypes(products: Product[]): CategoryKey[] {
+  const presentTypes = new Set(products.map(productCategory).filter(Boolean) as CategoryKey[]);
   return TYPE_ORDER.filter((type) => presentTypes.has(type));
 }
 export function availableScents(products: Product[]): string[] {
@@ -73,10 +73,10 @@ export function availableScents(products: Product[]): string[] {
 // Produtos relacionados (cross-sell) determinísticos — não dependem de tráfego/algoritmo.
 // Regra: wax melt/snapbar → queimador primeiro; queimador → wax + snapbars; depois o mesmo tipo;
 // depois o resto.
-export function relatedProducts(product: Product, catalog: Product[], limit = 4): Product[] {
+export function fallbackRelatedProducts(product: Product, catalog: Product[], limit = 4): Product[] {
   const candidates = catalog.filter((candidate) => candidate.id !== product.id);
   const category = productCategory(product);
-  const ofCategory = (type: TypeKey) =>
+  const ofCategory = (type: CategoryKey) =>
     candidates.filter((candidate) => productCategory(candidate) === type);
   const seen = new Set<string>();
   const related: Product[] = [];

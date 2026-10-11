@@ -12,8 +12,8 @@ import TrackProductView from '@/components/TrackProductView/TrackProductView';
 import { productLd } from '@/lib/jsonld';
 import { productCategory } from '@/lib/filters';
 import { getProduct } from '@/lib/shopify';
-import { getStock } from '@/lib/shopify/admin';
-import { seasonalCollection } from '@/lib/shopify/types';
+import { getVariantStock } from '@/lib/shopify/admin';
+import { getSeasonalCollection } from '@/lib/shopify/types';
 import TwoToneTitle from '@/components/TwoToneTitle/TwoToneTitle';
 import './product-page.scss';
 
@@ -70,14 +70,14 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   const shopifyProduct = await getProduct(handle);
   if (!shopifyProduct) notFound();
   // O estoque vem da Admin API (a Storefront API não o expõe com o nosso token).
-  const stockByVariant = await getStock(shopifyProduct.variants.map((variant) => variant.id));
+  const stockByVariant = await getVariantStock(shopifyProduct.variants.map((variant) => variant.id));
   const product = {
     ...shopifyProduct,
     variants: shopifyProduct.variants.map((variant) => ({ ...variant, quantityAvailable: stockByVariant[variant.id] })),
   };
 
   const images = product.images.length ? product.images : product.featuredImage ? [product.featuredImage] : [];
-  const collection = seasonalCollection(product);
+  const collection = getSeasonalCollection(product);
   const reviews = product.reviews ?? [];
   const averageRating = reviews.length ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0;
   const scents = product.scents ?? [];
