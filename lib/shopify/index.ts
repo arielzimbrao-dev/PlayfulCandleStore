@@ -1,5 +1,6 @@
 import { shopifyFetch } from './client';
 import { relatedProducts, productCategory } from '../filters';
+import type { CollectionSortKey, ProductSortKey } from '../sort';
 import {
   COLLECTION_BY_HANDLE_QUERY,
   COLLECTIONS_QUERY,
@@ -32,11 +33,14 @@ import type {
   SearchHit,
 } from './types';
 
-const REVALIDATE = 60 * 60; // 1h ISR for storefront reads
+const REVALIDATE = 60 * 60; // ISR de 1h para as leituras da loja
 
-// A API retorna conexoes { nodes: [] }; achatamos para arrays simples.
+// A API retorna conexões { nodes: [] }; achatamos para arrays simples.
 type Connection<T> = { nodes: T[] };
-type RawProduct = Omit<Product, 'images' | 'variants' | 'collections' | 'scents' | 'weight' | 'reviews'> & {
+type RawProduct = Omit<
+  Product,
+  'images' | 'variants' | 'collections' | 'scents' | 'weight' | 'reviews'
+> & {
   images: Connection<Image>;
   variants: Connection<ProductVariant>;
   collections: Connection<{ title: string; handle: string }>;
@@ -46,54 +50,79 @@ type RawProduct = Omit<Product, 'images' | 'variants' | 'collections' | 'scents'
 };
 type RawCart = Omit<Cart, 'lines'> & { lines: Connection<CartLine> };
 
-// custom.aromas é list.single_line_text_field → JSON '["Doce","Gourmand"]'. Valor único vem como string.
-function parseScents(mf: { value: string } | null): string[] {
-  if (!mf?.value) return [];
+type Metafield = { value: string } | null;
+
+// custom.aromas é list.single_line_text_field → JSON '["Doce","Gourmand"]'. Valor único vem como
+// string pura (JSON inválido), por isso o fallback no catch.
+function parseScents(metafield: Metafield): string[] {
+  if (!metafield?.value) return [];
   try {
-    const v = JSON.parse(mf.value);
-    return Array.isArray(v) ? v.map(String) : [String(v)];
+    const parsed = JSON.parse(metafield.value);
+    return Array.isArray(parsed) ? parsed.map(String) : [String(parsed)];
   } catch {
-    return [mf.value];
+    return [metafield.value];
   }
 }
 
-// custom.reviews é JSON: array de {author,rating,text,date,verified,approved}. Só mostramos as aprovadas.
-function parseReviews(mf: { value: string } | null): Product['reviews'] {
-  if (!mf?.value) return [];
+type RawReview = {
+  author?: string;
+  rating?: number;
+  text?: string;
+  date?: string;
+  verified?: boolean;
+  approved?: boolean;
+};
+
+// custom.reviews é JSON: array de {author,rating,text,date,verified,approved}
+// (ou { items: [...] }).
+// Só mostramos as aprovadas; o metafield pode ser editado à mão, então tudo é normalizado.
+function parseReviews(metafield: Metafield): Product['reviews'] {
+  if (!metafield?.value) return [];
   try {
-    const v = JSON.parse(mf.value);
-    const arr = Array.isArray(v) ? v : Array.isArray(v?.items) ? v.items : [];
-    return arr
-      .filter((r: { approved?: boolean; rating?: number }) => r && r.approved !== false && Number(r.rating) >= 1)
-      .map((r: { author?: string; rating: number; text?: string; date?: string; verified?: boolean; approved?: boolean }) => ({
-        author: String(r.author ?? 'Cliente'),
-        rating: Math.max(1, Math.min(5, Math.round(Number(r.rating)))),
-        text: String(r.text ?? ''),
-        date: r.date,
-        verified: r.verified,
-        approved: r.approved,
+    const parsed = JSON.parse(metafield.value);
+    const rawReviews: RawReview[] = Array.isArray(parsed)
+      ? parsed
+      : Array.isArray(parsed?.items)
+        ? parsed.items
+        : [];
+    return rawReviews
+      .filter((review) => review && review.approved !== false && Number(review.rating) >= 1)
+      .map((review) => ({
+        author: String(review.author ?? 'Cliente'),
+        rating: Math.max(1, Math.min(5, Math.round(Number(review.rating)))),
+        text: String(review.text ?? ''),
+        date: review.date,
+        verified: review.verified,
+        approved: review.approved,
       }));
   } catch {
     return [];
   }
 }
 
-// custom.peso é texto livre (ex.: "150g"). Fallback por tipo: vela 150g · wax melt 100g · snapbar 50g.
-const WEIGHT_BY_TYPE: [RegExp, string][] = [[/vela/i, '150g'], [/wax\s*melt/i, '100g'], [/snapbar/i, '50g']];
-const productWeight = (mf: { value: string } | null, productType: string): string =>
-  mf?.value?.trim() || WEIGHT_BY_TYPE.find(([re]) => re.test(productType))?.[1] || '';
+// custom.peso é texto livre (ex.: "150g"). Fallback por tipo: vela 150g · wax melt 100g ·
+// snapbar 50g.
+const WEIGHT_BY_TYPE: [RegExp, string][] = [
+  [/vela/i, '150g'],
+  [/wax\s*melt/i, '100g'],
+  [/snapbar/i, '50g'],
+];
+const productWeight = (metafield: Metafield, productType: string): string =>
+  metafield?.value?.trim() ||
+  WEIGHT_BY_TYPE.find(([pattern]) => pattern.test(productType))?.[1] ||
+  '';
 
-const normalizeProduct = ({ scent, peso, reviews, ...p }: RawProduct): Product => ({
-  ...p,
-  images: p.images.nodes,
-  variants: p.variants.nodes,
-  collections: p.collections?.nodes ?? [],
+const normalizeProduct = ({ scent, peso, reviews, ...product }: RawProduct): Product => ({
+  ...product,
+  images: product.images.nodes,
+  variants: product.variants.nodes,
+  collections: product.collections?.nodes ?? [],
   scents: parseScents(scent),
-  weight: productWeight(peso, p.productType),
+  weight: productWeight(peso, product.productType),
   reviews: parseReviews(reviews),
 });
 
-const normalizeCart = (c: RawCart): Cart => ({ ...c, lines: c.lines.nodes });
+const normalizeCart = (cart: RawCart): Cart => ({ ...cart, lines: cart.lines.nodes });
 
 type CartMutationResult = {
   cart: RawCart | null;
@@ -111,25 +140,32 @@ function unwrapCart(result: CartMutationResult | null | undefined): Cart {
   if (!result.cart) {
     throw new Error('Carrinho: a Shopify nao retornou o carrinho.');
   }
-  // A Shopify corta a quantidade ao stock disponível e devolve um aviso em vez de um erro —
-  // sem isto o cliente pedia 10 e levava 3 sem perceber.
+  // A Shopify corta a quantidade no estoque disponível e devolve um aviso em vez de um erro —
+  // sem repassar isso, o cliente pedia 10 e levava 3 sem perceber.
   return { ...normalizeCart(result.cart), warnings: result.warnings ?? [] };
 }
 
-type ProductSortKey = 'BEST_SELLING' | 'CREATED_AT' | 'TITLE' | 'PRICE' | 'RELEVANCE';
-type GetProductsOpts = { after?: string; sortKey?: ProductSortKey; reverse?: boolean; query?: string };
+type GetProductsOptions = {
+  after?: string;
+  sortKey?: ProductSortKey;
+  reverse?: boolean;
+  query?: string;
+};
 
-export async function getProducts(first = 12, opts: GetProductsOpts = {}): Promise<ProductsPage> {
+export async function getProducts(
+  first = 12,
+  options: GetProductsOptions = {},
+): Promise<ProductsPage> {
   const data = await shopifyFetch<{
     products: { nodes: RawProduct[]; pageInfo: PageInfo };
   }>(
     PRODUCTS_QUERY,
     {
       first,
-      after: opts.after ?? null,
-      sortKey: opts.sortKey ?? null,
-      reverse: opts.reverse ?? null,
-      query: opts.query ?? null,
+      after: options.after ?? null,
+      sortKey: options.sortKey ?? null,
+      reverse: options.reverse ?? null,
+      query: options.query ?? null,
     },
     { revalidate: REVALIDATE },
   );
@@ -158,64 +194,71 @@ export async function getProductRecommendations(
   return (data.productRecommendations ?? []).slice(0, limit).map(normalizeProduct);
 }
 
-// Produtos relacionados para a PDP.
-// 1) Tenta o endpoint do Shopify (productRecommendations — melhor quando a loja tem histórico).
-// 2) Se vier vazio (ou falhar), usa o fallback determinístico do catálogo (com a regra do
-//    queimador para wax melts/snapbars). Ver relatedProducts em lib/filters.
+// Produtos relacionados para a PDP, em cascata:
+// 1) complementares do Shopify (Search & Discovery, "Leve junto" nativo);
+// 2) se não estiverem configurados, os relacionados (RELATED — melhor quando a loja tem histórico);
+// 3) por fim, o fallback determinístico do catálogo (ver relatedProducts em lib/filters).
 export async function getRelatedProducts(product: Product, limit = 4): Promise<Product[]> {
-  // "Leve junto" nativo do Shopify: produtos complementares (Search & Discovery); se não estiverem
-  // configurados, cai nos relacionados (RELATED) e, por fim, no fallback determinístico do catálogo.
-  const complementary = await getProductRecommendations(product.handle, limit + 4, 'COMPLEMENTARY').catch(() => []);
-  const recs = complementary.length > 0
-    ? complementary
-    : await getProductRecommendations(product.handle, limit + 4, 'RELATED').catch(() => []);
-  // Catálogo é SEMPRE buscado (getProducts é cacheado) — garante que a secção nunca fica vazia.
-  const catalog = (
-    await getProducts(50).catch(() => ({ products: [] as Product[], pageInfo: { hasNextPage: false, endCursor: null } }))
-  ).products;
-  const cat = productCategory(product);
-  const needBurner = cat === 'wax' || cat === 'snap';
+  const complementary = await getProductRecommendations(
+    product.handle,
+    limit + 4,
+    'COMPLEMENTARY',
+  ).catch(() => []);
+  const recommendations =
+    complementary.length > 0
+      ? complementary
+      : await getProductRecommendations(product.handle, limit + 4, 'RELATED').catch(() => []);
+  // O catálogo é SEMPRE buscado (getProducts tem cache) — garante que a seção nunca fica vazia.
+  const catalog = await getProducts(50)
+    .then((page) => page.products)
+    .catch(() => [] as Product[]);
+  const category = productCategory(product);
+  const needsBurner = category === 'wax' || category === 'snap';
 
-  // Base: recomendações do Shopify quando existem; senão, fallback determinístico do catálogo.
-  let base = recs.length > 0 ? recs : relatedProducts(product, catalog, limit + 4);
+  let candidates =
+    recommendations.length > 0 ? recommendations : relatedProducts(product, catalog, limit + 4);
 
   // Wax melt / snapbar: garantir sempre um queimador em primeiro (o complemento natural).
-  if (needBurner) {
-    const b = base.find((p) => productCategory(p) === 'burner')
-      ?? catalog.find((p) => productCategory(p) === 'burner' && p.id !== product.id);
-    if (b) base = [b, ...base.filter((p) => p.id !== b.id)];
+  if (needsBurner) {
+    const burner =
+      candidates.find((candidate) => productCategory(candidate) === 'burner') ??
+      catalog.find(
+        (candidate) => productCategory(candidate) === 'burner' && candidate.id !== product.id,
+      );
+    if (burner) {
+      candidates = [burner, ...candidates.filter((candidate) => candidate.id !== burner.id)];
+    }
   }
 
   const seen = new Set<string>([product.id]);
-  const out: Product[] = [];
-  const push = (list: Product[]) => {
-    for (const p of list) {
-      if (out.length >= limit) return;
-      if (seen.has(p.id)) continue;
-      seen.add(p.id);
-      out.push(p);
+  const related: Product[] = [];
+  const addUnique = (list: Product[]) => {
+    for (const candidate of list) {
+      if (related.length >= limit) return;
+      if (seen.has(candidate.id)) continue;
+      seen.add(candidate.id);
+      related.push(candidate);
     }
   };
-  push(base);
-  // Preenche com o catálogo até ao limite — a secção nunca fica vazia (nem curta).
-  if (out.length < limit) push(relatedProducts(product, catalog, limit));
-  if (out.length < limit) push(catalog.filter((p) => p.id !== product.id));
-  return out;
+  addUnique(candidates);
+  // Completa com o catálogo até o limite — a seção nunca fica vazia (nem curta).
+  if (related.length < limit) addUnique(relatedProducts(product, catalog, limit));
+  if (related.length < limit) addUnique(catalog.filter((other) => other.id !== product.id));
+  return related;
 }
 
-type CollectionSortKey = 'BEST_SELLING' | 'CREATED' | 'TITLE' | 'PRICE' | 'MANUAL' | 'RELEVANCE';
-type GetCollectionOpts = { sortKey?: CollectionSortKey; reverse?: boolean };
+type GetCollectionOptions = { sortKey?: CollectionSortKey; reverse?: boolean };
 
 export async function getCollection(
   handle: string,
   first = 48,
-  opts: GetCollectionOpts = {},
+  options: GetCollectionOptions = {},
 ): Promise<Collection | null> {
   const data = await shopifyFetch<{
     collection: (Omit<Collection, 'products'> & { products: Connection<RawProduct> }) | null;
   }>(
     COLLECTION_BY_HANDLE_QUERY,
-    { handle, first, sortKey: opts.sortKey ?? null, reverse: opts.reverse ?? null },
+    { handle, first, sortKey: options.sortKey ?? null, reverse: options.reverse ?? null },
     { revalidate: REVALIDATE },
   );
   if (!data.collection) return null;
@@ -231,27 +274,28 @@ export async function getCollections(first = 50): Promise<CollectionSummary[]> {
   return data.collections.nodes;
 }
 
-// Escapa o termo para a query syntax do Storefront (aspas/backslash) e restringe a título/tipo/tag.
+// Troca aspas/barra invertida por espaço para o termo não quebrar a sintaxe de query do Storefront.
 export async function searchProducts(term: string, first = 12): Promise<Product[]> {
-  const clean = term.trim().replace(/["\\]/g, ' ').slice(0, 80);
-  if (!clean) return [];
-  const { products } = await getProducts(first, { query: clean, sortKey: 'RELEVANCE' });
+  const sanitizedTerm = term.trim().replace(/["\\]/g, ' ').slice(0, 80);
+  if (!sanitizedTerm) return [];
+  const { products } = await getProducts(first, { query: sanitizedTerm, sortKey: 'RELEVANCE' });
   return products;
 }
 
-// Sugestões do dropdown do header: tolerante a gralhas ("velaa", "cappucino").
+// Sugestões do dropdown do header: tolerante a erros de digitação ("velaa", "cappucino").
+// O limite é travado em 10, o máximo aceito pela predictiveSearch.
 export async function predictiveSearch(term: string, limit = 6): Promise<SearchHit[]> {
-  const clean = term.trim().slice(0, 80);
-  if (!clean) return [];
+  const trimmedTerm = term.trim().slice(0, 80);
+  if (!trimmedTerm) return [];
   const data = await shopifyFetch<{ predictiveSearch: { products: SearchHit[] } | null }>(
     PREDICTIVE_SEARCH_QUERY,
-    { q: clean, limit: Math.min(limit, 10) },
+    { q: trimmedTerm, limit: Math.min(limit, 10) },
     { revalidate: 60 },
   );
   return data.predictiveSearch?.products ?? [];
 }
 
-// ---- Cart (sempre fresco: no-store) ----
+// ---- Carrinho (sempre fresco: no-store) ----
 export async function getCart(id: string): Promise<Cart | null> {
   const data = await shopifyFetch<{ cart: RawCart | null }>(CART_QUERY, { id });
   return data.cart ? normalizeCart(data.cart) : null;
@@ -270,10 +314,7 @@ export async function addCartLines(cartId: string, lines: CartLineInput[]): Prom
   return unwrapCart(data.cartLinesAdd);
 }
 
-export async function updateCartLines(
-  cartId: string,
-  lines: CartLineUpdateInput[],
-): Promise<Cart> {
+export async function updateCartLines(cartId: string, lines: CartLineUpdateInput[]): Promise<Cart> {
   const data = await shopifyFetch<{ cartLinesUpdate: CartMutationResult }>(CART_LINES_UPDATE, {
     cartId,
     lines,
@@ -289,7 +330,10 @@ export async function removeCartLines(cartId: string, lineIds: string[]): Promis
   return unwrapCart(data.cartLinesRemove);
 }
 
-export async function updateCartDiscountCodes(cartId: string, discountCodes: string[]): Promise<Cart> {
+export async function updateCartDiscountCodes(
+  cartId: string,
+  discountCodes: string[],
+): Promise<Cart> {
   const data = await shopifyFetch<{ cartDiscountCodesUpdate: CartMutationResult }>(
     CART_DISCOUNT_CODES_UPDATE,
     { cartId, discountCodes },
@@ -298,6 +342,9 @@ export async function updateCartDiscountCodes(cartId: string, discountCodes: str
 }
 
 export async function updateCartNote(cartId: string, note: string): Promise<Cart> {
-  const data = await shopifyFetch<{ cartNoteUpdate: CartMutationResult }>(CART_NOTE_UPDATE, { cartId, note });
+  const data = await shopifyFetch<{ cartNoteUpdate: CartMutationResult }>(CART_NOTE_UPDATE, {
+    cartId,
+    note,
+  });
   return unwrapCart(data.cartNoteUpdate);
 }

@@ -1,0 +1,53 @@
+// Coração de favoritos: círculo branco com ícone rosa; preenchido de rosa quando ativo.
+
+@use '../../styles/mixins' as *;
+
+.wish-button {
+  position: absolute;
+  z-index: 3;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--color-pink);
+  cursor: pointer;
+  transition:
+    transform var(--duration) var(--ease-out),
+    color var(--duration),
+    background var(--duration);
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  &.is-active {
+    background: var(--color-pink);
+    color: #fff;
+  }
+
+  @include reduced-motion {
+    &:hover {
+      transform: none;
+    }
+  }
+
+  // Card de produto: 48px no canto inferior direito da foto.
+  &--card {
+    right: 16px;
+    bottom: 16px;
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+    box-shadow: 0 8px 16px -8px rgba(42, 21, 36, 0.35);
+  }
+
+  // Galeria da PDP: 40px no canto superior direito da 1.ª foto.
+  &--gallery {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+}

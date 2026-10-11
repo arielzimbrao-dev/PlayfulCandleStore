@@ -1,0 +1,145 @@
+// Caixa de compra da PDP (Figma Frame 61): preço em Genty, quantidade, 2 botões (laranja + amarelo).
+
+@use '../../styles/mixins' as *;
+
+.buybox {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+
+  &__price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  &__amount {
+    font-family: var(--font-script);
+    font-size: 32px;
+    line-height: 1;
+    color: var(--color-pink);
+
+    @include mobile {
+      font-size: 24px;
+    }
+  }
+
+  &__quantity {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-weight: 700;
+    color: var(--color-pink);
+  }
+
+  &__stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: -4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #157a49;
+  }
+
+  // Seletor de variante (só quando o produto tem mais de uma).
+  &__variant {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 16px;
+    font-weight: 700;
+
+    select {
+      min-height: 48px;
+      padding: 0 16px;
+      border: 2px solid var(--color-border-strong);
+      border-radius: var(--radius-pill);
+      background: var(--color-surface);
+      font: inherit;
+      font-weight: 600;
+      color: var(--color-ink);
+    }
+  }
+}
+
+// Pílula com contorno rosa: (−) número (+).
+.quantity-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px;
+  border: 2px solid var(--color-pink);
+  border-radius: var(--radius-pill);
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-pink);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--color-coral-dark);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: var(--color-pink);
+    }
+  }
+
+  span {
+    min-width: 2ch;
+    font-weight: 700;
+    text-align: center;
+  }
+}
+
+// Barra de compra fixa no rodapé, só no celular.
+.mobile-buy-bar {
+  display: none;
+
+  @include mobile {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-sticky);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 24px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+    box-shadow: 0 -8px 24px -12px rgba(42, 21, 36, 0.3);
+
+    &__price {
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    &__button {
+      margin-left: auto;
+    }
+  }
+}
+
+// Com a barra fixa na página: o banner de cookies sobe para não cobrir o botão,
+// e o conteúdo ganha espaço no fim para não ficar escondido atrás dela.
+@include mobile {
+  body:has(.mobile-buy-bar) .consent {
+    bottom: 72px;
+  }
+
+  main:has(.mobile-buy-bar) {
+    padding-bottom: 72px;
+  }
+}

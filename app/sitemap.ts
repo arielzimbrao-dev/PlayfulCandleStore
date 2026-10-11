@@ -7,8 +7,6 @@ import { productCategory } from '@/lib/filters';
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = SITE.url;
-
   const staticRoutes: MetadataRoute.Sitemap = [
     '',
     '/produtos',
@@ -20,7 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/termos',
     '/privacidade',
   ].map((path) => ({
-    url: `${base}${path}`,
+    url: `${SITE.url}${path}`,
     changeFrequency: path === '' ? 'daily' : 'weekly',
     priority: path === '' ? 1 : 0.6,
   }));
@@ -30,30 +28,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [{ products }, collections] = await Promise.all([getProducts(250), getCollections(50)]);
     // Só listar categorias com produtos: as vazias renderizam "em breve" com noindex
     // (ver generateMetadata em /categorias/[handle]) e dariam erro no Search Console.
-    const filled = new Set(products.map(productCategory).filter(Boolean));
+    const categoriesWithProducts = new Set(products.map(productCategory).filter(Boolean));
     dynamicRoutes = [
-      ...products.map((p) => ({
-        url: `${base}/produtos/${p.handle}`,
+      ...products.map((product) => ({
+        url: `${SITE.url}/produtos/${product.handle}`,
         changeFrequency: 'weekly' as const,
         priority: 0.8,
       })),
       // categorias (tipos) em /categorias/
-      ...CATEGORY_HANDLES.filter((h) => filled.has(CATEGORIES[h].type)).map((h) => ({
-        url: `${base}/categorias/${h}`,
+      ...CATEGORY_HANDLES.filter((handle) =>
+        categoriesWithProducts.has(CATEGORIES[handle].type),
+      ).map((handle) => ({
+        url: `${SITE.url}/categorias/${handle}`,
         changeFrequency: 'weekly' as const,
         priority: 0.7,
       })),
       // coleções curadas em /colecoes/ (exclui tipos de produto e a "Home page" da Shopify)
       ...collections
-        .filter((c) => !NON_COLLECTION_HANDLES.has(c.handle))
-        .map((c) => ({
-          url: `${base}/colecoes/${c.handle}`,
+        .filter((collection) => !NON_COLLECTION_HANDLES.has(collection.handle))
+        .map((collection) => ({
+          url: `${SITE.url}/colecoes/${collection.handle}`,
           changeFrequency: 'weekly' as const,
           priority: 0.7,
         })),
     ];
   } catch {
-    // Shopify indisponível no build → devolve só as rotas estáticas.
+    // Shopify fora do ar no build → retorna só as rotas estáticas.
   }
 
   return [...staticRoutes, ...dynamicRoutes];

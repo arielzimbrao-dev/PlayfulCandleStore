@@ -1,0 +1,56 @@
+// Galeria da PDP: coluna de fotos no desktop; carrossel horizontal com scroll-snap até 899px.
+
+@use '../../styles/mixins' as *;
+
+.gallery {
+  position: relative;
+
+  &__track {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__item {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--color-blush);
+    box-shadow: var(--shadow-sm);
+  }
+
+  // Produto sem fotos: vela gigante no lugar.
+  &__placeholder {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 2 / 3;
+    font-size: 64px;
+  }
+
+  @include below(899px) {
+    &__track {
+      flex-direction: row;
+      align-items: start;
+      gap: 4px;
+      // Sangra até as bordas da tela.
+      margin-inline: calc(-1 * var(--gutter));
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      @include hide-scrollbar;
+    }
+
+    // Cada foto ocupa 90% da tela: o pedaço da seguinte mostra que dá para deslizar.
+    &__item {
+      flex: 0 0 90%;
+      scroll-snap-align: start;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    // O coração acompanha o canto da 1.ª foto (que agora encosta na borda da tela).
+    .wish-button--gallery {
+      top: 16px;
+      right: calc(10vw - var(--gutter) + 16px);
+    }
+  }
+}

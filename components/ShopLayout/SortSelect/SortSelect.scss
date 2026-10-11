@@ -1,0 +1,59 @@
+// Menu de ordenação: botão de texto simples + lista suspensa alinhada à direita.
+
+.sort-select {
+  position: relative;
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0;
+    color: var(--color-ink);
+
+    i {
+      font-size: 12px;
+      color: var(--color-ink-soft);
+    }
+
+    &:hover {
+      color: var(--color-coral-dark);
+    }
+  }
+
+  &__menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 20;
+    min-width: 240px;
+    margin: 4px 0 0;
+    padding: 8px 0;
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-popover);
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 16px;
+    color: var(--color-ink);
+    text-align: left;
+    white-space: nowrap;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--color-blush);
+    }
+  }
+
+  // Coluna fixa do ✓, para os textos ficarem alinhados.
+  &__check {
+    flex: none;
+    width: 16px;
+    text-align: center;
+  }
+}

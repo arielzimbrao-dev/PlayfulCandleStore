@@ -1,0 +1,33 @@
+// Card fantasma com um brilho que atravessa da esquerda para a direita.
+
+@use '../../styles/mixins' as *;
+
+.skeleton-card {
+  position: relative;
+  height: 360px;
+  overflow: hidden;
+  background: var(--color-blush);
+
+  @include mobile {
+    height: 304px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    animation: skeleton-shimmer 1.3s infinite;
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

@@ -15,11 +15,14 @@ import type { Cart, CartLineInput } from '@/lib/shopify/types';
 const CART_COOKIE = 'cartId';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 dias
 
-// Junta o stock de cada linha para o UI não deixar subir a quantidade acima do disponível.
+// Anexa o estoque de cada linha para a UI não deixar subir a quantidade acima do disponível.
 async function withStock(cart: Cart | null) {
   if (!cart) return NextResponse.json({ cart });
-  const stock = await getStock(cart.lines.map((l) => l.merchandise.id));
-  const lines = cart.lines.map((l) => ({ ...l, merchandise: { ...l.merchandise, quantityAvailable: stock[l.merchandise.id] } }));
+  const stock = await getStock(cart.lines.map((line) => line.merchandise.id));
+  const lines = cart.lines.map((line) => ({
+    ...line,
+    merchandise: { ...line.merchandise, quantityAvailable: stock[line.merchandise.id] },
+  }));
   return NextResponse.json({ cart: { ...cart, lines } });
 }
 
@@ -39,103 +42,121 @@ async function writeCartId(id: string): Promise<void> {
 
 export async function GET() {
   try {
-    const id = await readCartId();
-    const cart = id ? await getCart(id) : null;
+    const cartId = await readCartId();
+    const cart = cartId ? await getCart(cartId) : null;
     return withStock(cart);
   } catch {
-    // Shopify indisponível: o site continua a navegar com o carrinho vazio em vez de rebentar.
+    // Shopify fora do ar: o site continua navegável com o carrinho vazio em vez de quebrar.
     return NextResponse.json({ cart: null }, { status: 200 });
   }
 }
 
-// Converte um throw das mutações Shopify (userErrors/cart nulo) numa resposta 422 com a mensagem real,
-// em vez de deixar rebentar num 500 opaco.
 // Corpo inválido (bot, fetch truncado) não deve dar 500.
-async function readJson<T>(req: Request): Promise<T | null> {
+async function readJson<T>(request: Request): Promise<T | null> {
   try {
-    return (await req.json()) as T;
+    return (await request.json()) as T;
   } catch {
     return null;
   }
 }
 
-function fail(e: unknown) {
-  const msg = e instanceof Error ? e.message.replace(/^Shopify(\sGraphQL)?:\s*/, '') : 'Erro no carrinho';
-  return NextResponse.json({ error: msg }, { status: 422 });
+// Converte um throw das mutações Shopify (userErrors/cart nulo) em uma resposta 422 com a mensagem
+// real, em vez de deixar estourar um 500 opaco.
+function fail(error: unknown) {
+  const message =
+    error instanceof Error
+      ? error.message.replace(/^Shopify(\sGraphQL)?:\s*/, '')
+      : 'Erro no carrinho';
+  return NextResponse.json({ error: message }, { status: 422 });
 }
 
-export async function POST(req: Request) {
-  const body = await readJson<{ merchandiseId?: string; quantity?: number; buyNow?: boolean; lines?: CartLineInput[] }>(req);
+export async function POST(request: Request) {
+  const body = await readJson<{
+    merchandiseId?: string;
+    quantity?: number;
+    buyNow?: boolean;
+    lines?: CartLineInput[];
+  }>(request);
   const { merchandiseId, quantity = 1, buyNow } = body ?? {};
-  // `lines` adiciona vários artigos numa só chamada (secção "Leva junto").
+  // `lines` adiciona vários itens numa só chamada (seção "Leva junto").
   const lines = Array.isArray(body?.lines)
-    ? body.lines.filter((l) => typeof l?.merchandiseId === 'string').map((l) => ({ merchandiseId: l.merchandiseId, quantity: Math.max(1, Number(l.quantity) || 1) }))
-    : merchandiseId ? [{ merchandiseId, quantity }] : [];
+    ? body.lines
+        .filter((line) => typeof line?.merchandiseId === 'string')
+        .map((line) => ({
+          merchandiseId: line.merchandiseId,
+          quantity: Math.max(1, Number(line.quantity) || 1),
+        }))
+    : merchandiseId
+      ? [{ merchandiseId, quantity }]
+      : [];
   if (!lines.length) {
     return NextResponse.json({ error: 'merchandiseId obrigatorio' }, { status: 400 });
   }
 
   try {
-    // "Comprar agora": carrinho descartável só com este artigo — o carrinho do cliente fica intacto
-    // (senão levava para o checkout o que já lá tinha, sem o dizer).
+    // "Comprar agora": carrinho descartável só com este item — o carrinho do cliente fica intacto
+    // (senão levaria para o checkout o que já estava lá, sem avisar).
     if (buyNow) {
       const cart = await createCart(lines);
       return withStock(cart);
     }
 
-    // Carrinho pode ter expirado (ex.: checkout concluido) -> recria.
-    let id = await readCartId();
-    if (id && !(await getCart(id))) id = null;
+    // O carrinho pode ter expirado (ex.: checkout concluído) → recria.
+    let cartId = await readCartId();
+    if (cartId && !(await getCart(cartId))) cartId = null;
 
-    const cart = id
-      ? await addCartLines(id, lines)
-      : await createCart(lines);
+    const cart = cartId ? await addCartLines(cartId, lines) : await createCart(lines);
 
-    if (!id) await writeCartId(cart.id);
+    if (!cartId) await writeCartId(cart.id);
     return withStock(cart);
-  } catch (e) {
-    return fail(e);
+  } catch (error) {
+    return fail(error);
   }
 }
 
-export async function PATCH(req: Request) {
-  const body = await readJson<{ lineId?: string; quantity?: number; discountCodes?: string[]; note?: string }>(req);
-  const id = await readCartId();
+export async function PATCH(request: Request) {
+  const body = await readJson<{
+    lineId?: string;
+    quantity?: number;
+    discountCodes?: string[];
+    note?: string;
+  }>(request);
+  const cartId = await readCartId();
   if (!body) {
     return NextResponse.json({ error: 'corpo inválido' }, { status: 400 });
   }
-  if (!id) {
+  if (!cartId) {
     return NextResponse.json({ error: 'sem carrinho' }, { status: 400 });
   }
   try {
     if (typeof body.note === 'string') {
-      const cart = await updateCartNote(id, body.note.slice(0, 500));
+      const cart = await updateCartNote(cartId, body.note.slice(0, 500));
       return withStock(cart);
     }
     if (Array.isArray(body.discountCodes)) {
-      const cart = await updateCartDiscountCodes(id, body.discountCodes);
+      const cart = await updateCartDiscountCodes(cartId, body.discountCodes);
       return withStock(cart);
     }
     if (!body.lineId || body.quantity == null) {
       return NextResponse.json({ error: 'lineId e quantity obrigatorios' }, { status: 400 });
     }
-    const cart = await updateCartLines(id, [{ id: body.lineId, quantity: body.quantity }]);
+    const cart = await updateCartLines(cartId, [{ id: body.lineId, quantity: body.quantity }]);
     return withStock(cart);
-  } catch (e) {
-    return fail(e);
+  } catch (error) {
+    return fail(error);
   }
 }
 
-export async function DELETE(req: Request) {
-  const { lineId } = (await readJson<{ lineId?: string }>(req)) ?? {};
-  const id = await readCartId();
-  if (!id || !lineId) {
+export async function DELETE(request: Request) {
+  const { lineId } = (await readJson<{ lineId?: string }>(request)) ?? {};
+  const cartId = await readCartId();
+  if (!cartId || !lineId) {
     return NextResponse.json({ error: 'cartId e lineId obrigatorios' }, { status: 400 });
   }
   try {
-    const cart = await removeCartLines(id, [lineId]);
+    const cart = await removeCartLines(cartId, [lineId]);
     return withStock(cart);
-  } catch (e) {
-    return fail(e);
+  } catch (error) {
+    return fail(error);
   }
 }

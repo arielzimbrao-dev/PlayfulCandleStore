@@ -1,0 +1,42 @@
+// Botão laranja "Adicionar ao carrinho" na largura toda do card, sempre colado ao fundo dele.
+
+@use '../../../styles/mixins' as *;
+
+.quick-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 56px;
+  margin-top: auto;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  background: var(--color-orange);
+  color: #fff;
+  font-size: 16px;
+  line-height: 24px;
+  transition: background var(--duration) var(--ease-out);
+
+  i {
+    font-size: 24px;
+  }
+
+  &:hover {
+    background: var(--color-tangerine);
+  }
+
+  &[disabled] {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  @include small-phone {
+    height: 48px;
+  }
+
+  // Produto esgotado: botão cinza com o texto "Esgotado".
+  &--sold-out {
+    background: var(--color-ink-soft);
+  }
+}

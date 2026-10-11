@@ -1,0 +1,123 @@
+// Gaveta do carrinho: desliza da direita por cima de um fundo escurecido.
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: calc(var(--z-drawer) + 1);
+  display: flex;
+  flex-direction: column;
+  width: min(416px, 92vw);
+  padding: 16px;
+  overflow-y: auto;
+  background: var(--color-surface);
+  box-shadow: -8px 0 40px rgba(42, 27, 36, 0.22);
+  transform: translateX(100%);
+  visibility: hidden;
+  // visibility só muda no fim da animação de saída, para a gaveta não sumir de repente.
+  transition:
+    transform var(--duration-slow) var(--ease-out),
+    visibility 0s linear var(--duration-slow);
+
+  &.is-open {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-drawer);
+    background: rgba(20, 10, 16, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration) var(--ease-out);
+
+    &.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    strong {
+      font-size: 24px;
+    }
+  }
+
+  &__close {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-pill);
+    font-size: 16px;
+
+    &:hover {
+      background: var(--color-blush);
+    }
+  }
+
+  &__lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 16px 0;
+  }
+
+  // Cada produto: miniatura · nome + quantidade · preço.
+  &__line {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: start;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  &__thumb {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    overflow: hidden;
+    background: var(--color-blush);
+    font-size: 24px;
+  }
+
+  &__line-info small {
+    color: var(--color-ink-soft);
+  }
+
+  &__line-name {
+    display: block;
+    font-weight: 700;
+    line-height: 1.2;
+
+    &:hover {
+      color: var(--color-coral-dark);
+    }
+  }
+
+  &__line-price {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  &__footer {
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  &__total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

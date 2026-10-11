@@ -1,0 +1,355 @@
+// Banner Pack Gourmand (home): cartão creme r32 com texto + lista + botão à esquerda
+// e foto 4:3 com etiquetas numeradas à direita. Folhas de outono flutuam em volta.
+
+@use '../../styles/mixins' as *;
+
+.pack {
+  padding-block: 48px;
+
+  @include tablet {
+    padding-block: 32px;
+  }
+
+  // Referência de posição para as decorações (que saem um pouco para fora do cartão).
+  &__frame {
+    position: relative;
+  }
+
+  &__card {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 5fr 6fr;
+    align-items: stretch;
+    overflow: hidden;
+    border-radius: 32px;
+    background: #fff4ec;
+
+    @include tablet {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 24px;
+    padding: 56px;
+
+    @include below(1200px) {
+      padding: 40px;
+    }
+
+    @include tablet {
+      gap: 16px;
+      padding: 32px 24px;
+    }
+  }
+
+  &__eyebrow {
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--color-pink);
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 56px;
+    line-height: 64px;
+
+    @include below(1200px) {
+      font-size: 40px;
+      line-height: 48px;
+    }
+
+    @include tablet {
+      font-size: 32px;
+      line-height: 40px;
+    }
+  }
+
+  &__lead {
+    max-width: 48ch;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-ink);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 16px;
+      line-height: 24px;
+      color: var(--color-ink);
+    }
+
+    strong {
+      font-weight: 700;
+      color: var(--color-pink);
+    }
+  }
+
+  // Bolinha laranja com o número do item (igual à etiqueta na foto).
+  &__number {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-logo-orange);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    height: 56px;
+    padding: 0 32px;
+    border-radius: var(--radius-pill);
+    background: var(--color-pink);
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 16px 24px -16px rgba(204, 26, 82, 0.6);
+    transition:
+      background var(--duration) var(--ease-out),
+      transform var(--duration) var(--ease-out);
+
+    i {
+      transition: transform var(--duration) var(--ease-out);
+    }
+
+    &:hover {
+      background: var(--color-coral-dark);
+      transform: translateY(-2px);
+
+      i {
+        transform: translateX(4px);
+      }
+    }
+
+    @include tablet {
+      justify-content: center;
+      width: 100%;
+    }
+  }
+
+  &__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+
+    // No tablet/celular a foto vem antes do texto.
+    @include tablet {
+      order: -1;
+    }
+
+    img {
+      transition: transform 0.8s var(--ease-out);
+    }
+
+    &:hover img {
+      transform: scale(1.03);
+    }
+  }
+
+  // Etiqueta branca sobre cada produto da foto. A posição (left/top) vem do componente.
+  &__tag {
+    position: absolute;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 16px 4px 4px;
+    border-radius: var(--radius-pill);
+    background: #fff;
+    box-shadow: 0 8px 16px -8px rgba(42, 21, 36, 0.35);
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    color: var(--color-ink);
+    transform: translate(-50%, -50%);
+
+    b {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--color-logo-orange);
+      color: #fff;
+      font-size: 12px;
+    }
+
+    // Em telas menores fica só o número.
+    @include below(1200px) {
+      padding: 4px;
+    }
+  }
+
+  &__tag-label {
+    @include below(1200px) {
+      display: none;
+    }
+  }
+
+  // ---- Decorações de outono ----
+  // Dois movimentos independentes, lentos e de vai-e-vem: deslizar (translate) e balançar
+  // (rotate), com durações diferentes → trajeto orgânico e contínuo, sem paradas.
+  // Cada decoração ajusta o movimento com variáveis CSS:
+  //   --tilt: rotação de base · --glide-duration: duração do deslize
+  //   --drift-x / --drift-y: distância do deslize · --delay: atraso (negativo = já começa em movimento)
+  &__decoration {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 8px rgba(143, 58, 23, 0.18));
+    rotate: var(--tilt, 0deg);
+    animation:
+      pack-glide var(--glide-duration, 12s) ease-in-out infinite alternate,
+      pack-sway calc(var(--glide-duration, 12s) * 0.7) ease-in-out infinite alternate;
+    animation-delay: var(--delay, 0s);
+
+    @include reduced-motion {
+      animation: none;
+    }
+
+    // Folha de bordo laranja, canto superior esquerdo.
+    &--1 {
+      top: -32px;
+      left: -24px;
+      width: 80px;
+      color: var(--color-logo-orange);
+      --tilt: -24deg;
+      --glide-duration: 7s;
+      --drift-x: 24px;
+      --drift-y: 16px;
+
+      @include tablet {
+        left: -8px;
+        width: 56px;
+      }
+    }
+
+    // Folha dourada, embaixo.
+    &--2 {
+      bottom: -24px;
+      left: 32%;
+      width: 48px;
+      color: var(--color-gold);
+      --tilt: 32deg;
+      --glide-duration: 6s;
+      --drift-x: 24px;
+      --drift-y: 16px;
+      --delay: -4s;
+    }
+
+    // Bolota, em cima.
+    &--3 {
+      top: -24px;
+      left: 44%;
+      width: 48px;
+      --tilt: -12deg;
+      --glide-duration: 8s;
+      --drift-x: 8px;
+      --drift-y: 16px;
+      --delay: -2s;
+
+      @include tablet {
+        width: 40px;
+      }
+    }
+
+    // Folha de bordo vermelha, lado direito.
+    &--4 {
+      top: 40%;
+      right: -24px;
+      width: 56px;
+      color: #d9481f;
+      --tilt: 16deg;
+      --glide-duration: 6.5s;
+      --drift-x: 16px;
+      --drift-y: 24px;
+      --delay: -6s;
+    }
+
+    // Abóbora, canto inferior direito.
+    &--5 {
+      bottom: -32px;
+      right: -16px;
+      width: 88px;
+      --tilt: 8deg;
+      --glide-duration: 9s;
+      --drift-x: 8px;
+      --drift-y: 8px;
+      --delay: -8s;
+
+      @include tablet {
+        right: -8px;
+        width: 64px;
+      }
+    }
+
+    // Folha dourada pequena, canto superior direito.
+    &--6 {
+      top: -16px;
+      right: 16%;
+      width: 40px;
+      color: var(--color-gold);
+      --tilt: -40deg;
+      --glide-duration: 5.5s;
+      --drift-x: 24px;
+      --drift-y: 16px;
+      --delay: -3s;
+    }
+
+    // Em telas menores, menos decoração para não poluir.
+    &--2,
+    &--4 {
+      @include tablet {
+        display: none;
+      }
+    }
+  }
+}
+
+@keyframes pack-glide {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: var(--drift-x, 16px) calc(var(--drift-y, 16px) * -1);
+  }
+}
+
+@keyframes pack-sway {
+  from {
+    rotate: calc(var(--tilt, 0deg) - 8deg);
+  }
+  to {
+    rotate: calc(var(--tilt, 0deg) + 8deg);
+  }
+}

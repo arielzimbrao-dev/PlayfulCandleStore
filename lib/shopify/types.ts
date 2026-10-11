@@ -13,7 +13,7 @@ export type ProductVariant = {
   id: string;
   title: string;
   availableForSale: boolean;
-  /** Stock disponível (Admin API); null/undefined = sem limite. */
+  /** Estoque disponível (Admin API); null/undefined = sem limite. */
   quantityAvailable?: number | null;
   price: Money;
   compareAtPrice: Money | null;
@@ -39,7 +39,7 @@ export type Product = {
   tags: string[];
   vendor: string;
   availableForSale: boolean;
-  scents: string[]; // metafield custom.scent (lista) já parseado
+  scents: string[]; // metafield custom.aromas (lista) já parseado
   weight: string; // metafield custom.peso (ex.: "150g"); fallback por tipo. '' se desconhecido
   reviews: Review[]; // metafield custom.reviews (JSON) já parseado (só aprovadas)
   collections: { title: string; handle: string }[];
@@ -93,7 +93,7 @@ export type Cart = {
   discountCodes: { code: string; applicable: boolean }[];
   cost: { subtotalAmount: Money; totalAmount: Money };
   lines: CartLine[];
-  /** Avisos da última mutação (ex.: quantidade reduzida ao stock). Não vem do objeto Cart da Shopify. */
+  /** Avisos da última mutação (ex.: quantidade reduzida ao estoque). Não vem do Cart da Shopify. */
   warnings?: { code: string; message: string }[];
 };
 
@@ -112,7 +112,8 @@ export type CartLineUpdateInput = { id: string; quantity: number };
 // Handles que representam TIPOS de produto (não coleções curadas/sazonais).
 export const TYPE_HANDLES = ['velas-de-copo', 'wax-melts', 'snapbars', 'queimadores'] as const;
 
-// Primeira coleção curada/sazonal a que o produto pertence (ignora os 4 tipos). null se nenhuma.
+// Primeira coleção curada/sazonal a que o produto pertence (ignora os tipos). null se nenhuma.
 export function seasonalCollection(product: Product): { title: string; handle: string } | null {
-  return product.collections?.find((c) => !TYPE_HANDLES.includes(c.handle as (typeof TYPE_HANDLES)[number])) ?? null;
+  const typeHandles: readonly string[] = TYPE_HANDLES;
+  return product.collections?.find((c) => !typeHandles.includes(c.handle)) ?? null;
 }

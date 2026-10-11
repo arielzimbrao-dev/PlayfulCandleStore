@@ -1,0 +1,308 @@
+// Classes utilitárias usadas por vários componentes e páginas.
+// O que pertence a um só componente fica no .scss desse componente.
+
+@use 'mixins' as *;
+
+// ============ Layout ============
+
+// Largura do conteúdo do site (90% da tela, até o máximo do design).
+.wrap {
+  width: 90%;
+  max-width: var(--site-max-width);
+  margin-inline: auto;
+}
+
+// Página "interna" (loja, produto, carrinho, conteúdo): .wrap + espaço vertical.
+.container {
+  width: 90%;
+  max-width: var(--site-max-width);
+  margin-inline: auto;
+  padding-block: 56px;
+
+  @include mobile {
+    padding-block: 32px;
+  }
+
+  h1 {
+    font-size: var(--font-size-page-title);
+    margin-bottom: 16px;
+  }
+}
+
+.visually-hidden {
+  @include visually-hidden;
+
+  // O link "Saltar para o conteúdo" aparece quando recebe foco pelo teclado.
+  &:focus,
+  &:focus-visible {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: var(--z-menu);
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 8px 16px;
+    clip: auto;
+    white-space: normal;
+    background: var(--color-coral-dark);
+    color: #fff;
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-md);
+    font-weight: 700;
+  }
+}
+
+main > section {
+  position: relative;
+}
+
+// Faixa fina com gradiente animado nas 3 cores da marca (topo da página).
+.groovy-ribbon {
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--color-pink),
+    var(--color-tangerine),
+    var(--color-orange),
+    var(--color-gold),
+    var(--color-pink)
+  );
+  background-size: 300% 100%;
+  animation: groovy-ribbon-flow 9s linear infinite;
+
+  @include reduced-motion {
+    animation: none;
+  }
+}
+
+@keyframes groovy-ribbon-flow {
+  to {
+    background-position: 300% 0;
+  }
+}
+
+// ============ Seções ============
+
+.section {
+  position: relative;
+  padding-block: var(--section-spacing);
+}
+
+// Cabeçalho de seção: título à esquerda, link "Ver tudo →" à direita.
+.section__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 40px;
+
+  @include mobile {
+    margin-bottom: 24px;
+  }
+}
+
+.section__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  font-weight: 700;
+  color: var(--color-coral-dark);
+}
+
+// ============ Títulos e textos ============
+
+// Texto pequeno acima de um título.
+.eyebrow {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--color-coral-dark);
+}
+
+.eyebrow--large {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+// Título em Genty (manuscrito), em duas cores como a logo: rosa + laranja no <em>
+// (o componente <TwoToneTitle> faz essa divisão).
+.script-title {
+  font-family: var(--font-script);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  color: var(--color-pink);
+
+  @include mobile {
+    font-size: 24px;
+  }
+
+  em {
+    font-style: normal;
+    color: var(--color-logo-orange);
+  }
+
+  &:is(h2) {
+    padding-left: 4px;
+  }
+}
+
+// h1 de página no tamanho de título de seção (o .container h1 usa 48px), ex.: /favoritos.
+.container h1.script-title--compact {
+  font-size: 32px;
+
+  @include mobile {
+    font-size: 24px;
+  }
+}
+
+// Estrelinhas decorativas depois de um título.
+.script-spark {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  vertical-align: middle;
+  background: url(/icons/stars.svg) center / contain no-repeat;
+  font-size: 0;
+  color: transparent;
+}
+
+// Preço riscado (promoção).
+.price-old {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-ink-soft);
+  text-decoration: line-through;
+}
+
+// Mensagem centralizada de "nada para mostrar" (filtros sem resultados, favoritos vazios).
+.empty-state {
+  margin: 40px 0;
+  text-align: center;
+  color: var(--color-ink-soft);
+}
+
+// Páginas de estado: erro, 404, categoria ainda sem produtos.
+.status-page {
+  min-height: 48vh;
+  text-align: center;
+
+  &__text {
+    max-width: 40ch;
+    margin: 16px auto 24px;
+    color: var(--color-ink-soft);
+  }
+}
+
+// ============ Botões ============
+// Uso: <a className="btn btn--primary">. O modificador define a cor; .btn define forma e tamanho.
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 8px 24px;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 16px;
+  transition:
+    transform var(--duration) var(--ease-out),
+    box-shadow var(--duration) var(--ease-out),
+    background var(--duration) var(--ease-out),
+    color var(--duration) var(--ease-out);
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+
+  &:active {
+    transform: translateY(-1px) scale(0.985);
+  }
+
+  &[disabled] {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+  }
+
+  @include reduced-motion {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// Rosa escuro, ação principal.
+.btn--primary {
+  background: var(--color-coral-dark);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+
+  &:hover {
+    background: var(--color-coral-darker);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+// Contorno rosa, ação secundária.
+.btn--outline {
+  background: transparent;
+  color: var(--color-coral-dark);
+  box-shadow: inset 0 0 0 2px var(--color-coral-dark);
+
+  &:hover {
+    background: var(--color-blush);
+  }
+}
+
+// Laranja: "Adicionar ao carrinho".
+.btn--orange {
+  background: var(--color-orange);
+  color: #fdefe4;
+
+  &:hover {
+    background: var(--color-tangerine);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+// Amarelo: "Comprar agora".
+.btn--yellow {
+  background: var(--color-yellow);
+  color: var(--color-ink);
+
+  &:hover {
+    background: #e0bd33;
+    box-shadow: var(--shadow-md);
+  }
+}
+
+// Dourado: CTA do hero sobre a foto.
+.btn--gold {
+  background: var(--color-gold);
+  color: var(--color-ink);
+
+  &:hover {
+    background: #ffb400;
+  }
+}
+
+// Tamanhos e larguras.
+.btn--compact {
+  padding-inline: 16px;
+}
+
+.btn--large {
+  min-height: 56px;
+  padding: 16px 32px;
+}
+
+.btn--block {
+  width: 100%;
+}

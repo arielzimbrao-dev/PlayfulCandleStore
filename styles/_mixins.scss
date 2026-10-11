@@ -1,0 +1,81 @@
+// Breakpoints e mixins compartilhados. Cada .scss de componente importa com:
+//   @use '<caminho>/styles/mixins' as *;
+// (só gera CSS onde for usado, então pode ser importado à vontade).
+
+$small-phone: 600px;
+$mobile: 760px;
+$tablet: 900px;
+
+// Header: até aqui a pesquisa vira só uma lupa…
+$header-compact: 1535px;
+// …e até aqui o menu vira uma gaveta lateral (burger).
+$header-mobile: 1279px;
+
+// Telas até `$width` (inclusive).
+@mixin below($width) {
+  @media (max-width: $width) {
+    @content;
+  }
+}
+
+// Telas a partir de `$width` (inclusive).
+@mixin above($width) {
+  @media (min-width: $width) {
+    @content;
+  }
+}
+
+// Atalhos para os breakpoints mais usados.
+@mixin small-phone {
+  @include below($small-phone) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @include below($mobile) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @include below($tablet) {
+    @content;
+  }
+}
+
+// Só em dispositivos com mouse (no toque não existe hover).
+@mixin has-hover {
+  @media (hover: hover) {
+    @content;
+  }
+}
+
+// Para quem pediu ao sistema menos animação.
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+// Esconde a barra de rolagem mantendo a rolagem (carrosséis com scroll-snap).
+@mixin hide-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Esconde o elemento visualmente, mas o mantém para leitores de tela.
+@mixin visually-hidden {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  padding: 0;
+  margin: -4px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

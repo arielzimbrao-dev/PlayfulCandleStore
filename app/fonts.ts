@@ -1,7 +1,7 @@
 import localFont from 'next/font/local';
 import { Poppins } from 'next/font/google';
 
-// Fontes do Figma: Genty (Demo) nos títulos de secção, Poppins em todo o resto (UI/corpo).
+// Fontes do Figma: Genty (Demo) nos títulos de seção, Poppins em todo o resto (UI/corpo).
 export const genty = localFont({
   src: './fonts/Genty.otf',
   variable: '--font-genty',

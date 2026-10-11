@@ -1,0 +1,141 @@
+// Card de produto: cartão branco r32 · foto 3:4 r24 com coração · tipo · nome · preço · botão laranja.
+
+@use '../../styles/mixins' as *;
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 8px;
+  border-radius: 32px;
+  background: #fff;
+
+  &__media {
+    position: relative;
+  }
+
+  &__image {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: 24px;
+    background: var(--color-blush);
+
+    img {
+      object-fit: cover;
+      transition:
+        transform 0.6s var(--ease-out),
+        opacity 0.35s var(--ease-out);
+    }
+  }
+
+  &:hover &__image img {
+    transform: scale(1.04);
+  }
+
+  // 2.ª foto por cima da principal, revelada no hover. No toque não há hover → fica a principal.
+  &__hover-image {
+    z-index: 1;
+    opacity: 0;
+  }
+
+  @include has-hover {
+    &:hover &__hover-image {
+      opacity: 1;
+    }
+  }
+
+  // Produto sem foto: nome em destaque no lugar da imagem.
+  &__placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 100%;
+    padding: 16px;
+    text-align: center;
+
+    b {
+      font-weight: 800;
+      font-size: 24px;
+      line-height: 32px;
+      color: var(--color-coral-darker);
+    }
+
+    small {
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-ink-soft);
+    }
+  }
+
+  // Etiqueta "Esgotado".
+  &__badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 2;
+    padding: 4px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--color-ink);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 16px;
+    text-transform: uppercase;
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 8px 8px;
+  }
+
+  &__type {
+    font-size: 12px;
+    line-height: 16px;
+    text-transform: uppercase;
+    color: var(--color-pink);
+  }
+
+  &__name {
+    max-width: 100%;
+    margin-top: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 32px;
+    color: var(--color-pink);
+    transition: color var(--duration) var(--ease-out);
+
+    &:hover {
+      color: var(--color-coral-dark);
+    }
+
+    @include small-phone {
+      font-size: 16px;
+      line-height: 24px;
+    }
+  }
+
+  &__price {
+    margin: 8px 0 16px;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-pink);
+  }
+
+  // Esgotado: foto desbotada.
+  &--sold-out &__image img {
+    filter: saturate(0.5) opacity(0.85);
+  }
+}

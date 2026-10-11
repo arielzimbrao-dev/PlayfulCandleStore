@@ -1,0 +1,95 @@
+// "Navega por categoria": 4 colunas no desktop; no celular desliza com o dedo
+// (2 círculos + um pedaço do 3.º, sem setas nem bolinhas).
+
+@use '../../styles/mixins' as *;
+
+.category-nav {
+  padding-block: 48px;
+
+  @include mobile {
+    padding-block: 32px;
+  }
+
+  &__inner {
+    width: 58%;
+
+    @include mobile {
+      width: 90%;
+    }
+  }
+
+  &__title {
+    margin: 0 0 32px;
+    font-size: 40px;
+    text-align: center;
+
+    @include mobile {
+      margin-bottom: 24px;
+      font-size: 24px;
+    }
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+
+    @include mobile {
+      display: flex;
+      gap: 16px;
+      // Sangra até a borda direita da tela.
+      margin-right: calc(50% - 50vw);
+      padding-top: 8px;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      @include hide-scrollbar;
+
+      > li {
+        flex: 0 0 40%;
+        scroll-snap-align: start;
+      }
+    }
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+
+    @include mobile {
+      gap: 8px;
+    }
+  }
+
+  &__photo {
+    position: relative;
+    width: 100%;
+    max-width: 240px;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--color-blush);
+    transition:
+      transform var(--duration) var(--ease-out),
+      box-shadow var(--duration) var(--ease-out);
+  }
+
+  &__name {
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-pink);
+  }
+
+  &__item:hover &__photo {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &__item:hover &__name {
+    color: var(--color-coral-dark);
+  }
+}

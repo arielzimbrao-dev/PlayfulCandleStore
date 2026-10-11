@@ -1,0 +1,14 @@
+// Grade de produtos com 3 colunas fixas (Figma Frame 60): o catálogo enche sem linhas incompletas.
+// Também é usada pelo SkeletonGrid durante o carregamento.
+
+@use '../../styles/mixins' as *;
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

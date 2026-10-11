@@ -1,0 +1,95 @@
+// Carrossel paginado (desliza por transform, sem barra de rolagem).
+
+@use '../../styles/mixins' as *;
+
+.carousel {
+  width: 90%;
+  max-width: var(--site-max-width);
+  margin-inline: auto;
+
+  &__stage {
+    position: relative;
+  }
+
+  &__viewport {
+    overflow: hidden;
+  }
+
+  &__track {
+    display: flex;
+    gap: 16px;
+    padding-block: 8px 24px;
+    will-change: transform;
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+
+  // Setas redondas rosas, fora da área dos itens (nas laterais).
+  &__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 6;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-pill);
+    background: var(--color-coral);
+    color: #fff;
+    font-size: 16px;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-50%);
+    transition:
+      background var(--duration-fast) var(--ease-out),
+      transform var(--duration) var(--ease-out),
+      opacity var(--duration) var(--ease-out);
+
+    &:hover {
+      background: var(--color-coral-dark);
+      transform: translateY(-50%) scale(1.06);
+    }
+
+    &[disabled] {
+      opacity: 0.35;
+      cursor: default;
+      transform: translateY(-50%);
+    }
+
+    &--prev {
+      left: -64px;
+    }
+
+    &--next {
+      right: -64px;
+    }
+
+    @include below(719px) {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  &__dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  // Bolinha de página; a atual estica e fica rosa.
+  &__dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-border-strong);
+    transition:
+      width var(--duration) var(--ease-out),
+      background var(--duration) var(--ease-out);
+
+    &[aria-current='true'] {
+      width: 40px;
+      background: var(--color-coral-dark);
+    }
+  }
+}

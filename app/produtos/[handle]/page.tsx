@@ -1,25 +1,27 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import ProductGallery from '@/components/ProductGallery';
-import AddToCartButton from '@/components/AddToCartButton';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import LeveJunto from '@/components/LeveJunto';
-import LevaJuntoBundle from '@/components/LevaJuntoBundle';
-import ProductReviews from '@/components/ProductReviews';
-import JsonLd from '@/components/JsonLd';
-import TrackProductView from '@/components/TrackProductView';
+import Link from 'next/link';
+import ProductGallery from '@/components/ProductGallery/ProductGallery';
+import BuyBox from '@/components/BuyBox/BuyBox';
+import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
+import RelatedProducts from '@/components/RelatedProducts/RelatedProducts';
+import BundleOffer from '@/components/BundleOffer/BundleOffer';
+import ProductReviews from '@/components/ProductReviews/ProductReviews';
+import JsonLd from '@/components/JsonLd/JsonLd';
+import TrackProductView from '@/components/TrackProductView/TrackProductView';
 import { productLd } from '@/lib/jsonld';
 import { productCategory } from '@/lib/filters';
 import { getProduct } from '@/lib/shopify';
 import { getStock } from '@/lib/shopify/admin';
 import { seasonalCollection } from '@/lib/shopify/types';
-import Link from 'next/link';
-import TwoTone from '@/components/TwoTone';
+import TwoToneTitle from '@/components/TwoToneTitle/TwoToneTitle';
+import './product-page.scss';
 
 export const revalidate = 3600;
 
-// Copy do acordeão por tipo: o queimador é cerâmica (não tem cera nem pavio) e melts/snapbars não têm chama.
-const INFO: Record<string, { about: string; care: string }> = {
+// Textos do acordeão por categoria: o queimador é de cerâmica (sem cera nem pavio)
+// e wax melts/snapbars não têm chama, por isso cada um tem a sua copy.
+const PRODUCT_INFO: Record<string, { about: string; care: string }> = {
   velas: {
     about:
       'Vela de copo artesanal, feita à mão em Lisboa com cera 100% vegetal e fragrância premium de longa duração. O copo é reutilizável depois de acabar.',
@@ -45,35 +47,41 @@ const INFO: Record<string, { about: string; care: string }> = {
     care: 'Segue as indicações de cada produto do pack. Usa sempre com supervisão, longe de materiais inflamáveis, crianças e animais.',
   },
 };
-const DEFAULT_INFO = INFO.velas;
+const DEFAULT_PRODUCT_INFO = PRODUCT_INFO.velas;
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
-  const p = await getProduct(handle);
-  if (!p) return { title: 'Produto não encontrado' };
-  const img = p.featuredImage?.url ?? p.images[0]?.url;
+  const product = await getProduct(handle);
+  if (!product) return { title: 'Produto não encontrado' };
+  const imageUrl = product.featuredImage?.url ?? product.images[0]?.url;
+  const description =
+    product.seo.description || product.description || `${product.title} — vela artesanal Playful Candles.`;
   return {
-    // seo.title da Shopify já traz "| Playful Candles" — absolute evita o sufixo do template.
-    title: p.seo.title ? { absolute: p.seo.title } : p.title,
-    description: (p.seo.description || p.description || `${p.title} — vela artesanal Playful Candles.`).slice(0, 155),
+    // O seo.title da Shopify já traz "| Playful Candles" — `absolute` evita repetir o sufixo do template.
+    title: product.seo.title ? { absolute: product.seo.title } : product.title,
+    description: description.slice(0, 155),
     alternates: { canonical: `/produtos/${handle}` },
-    openGraph: img ? { type: 'website', images: [{ url: img }] } : undefined,
+    openGraph: imageUrl ? { type: 'website', images: [{ url: imageUrl }] } : undefined,
   };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params;
-  const found = await getProduct(handle);
-  if (!found) notFound();
-  const stock = await getStock(found.variants.map((v) => v.id));
-  const product = { ...found, variants: found.variants.map((v) => ({ ...v, quantityAvailable: stock[v.id] })) };
+  const shopifyProduct = await getProduct(handle);
+  if (!shopifyProduct) notFound();
+  // O estoque vem da Admin API (a Storefront API não o expõe com o nosso token).
+  const stockByVariant = await getStock(shopifyProduct.variants.map((variant) => variant.id));
+  const product = {
+    ...shopifyProduct,
+    variants: shopifyProduct.variants.map((variant) => ({ ...variant, quantityAvailable: stockByVariant[variant.id] })),
+  };
 
   const images = product.images.length ? product.images : product.featuredImage ? [product.featuredImage] : [];
-  const coll = seasonalCollection(product);
+  const collection = seasonalCollection(product);
   const reviews = product.reviews ?? [];
-  const avg = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
+  const averageRating = reviews.length ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0;
   const scents = product.scents ?? [];
-  const info = INFO[productCategory(product) ?? ''] ?? DEFAULT_INFO;
+  const info = PRODUCT_INFO[productCategory(product) ?? ''] ?? DEFAULT_PRODUCT_INFO;
 
   return (
     <>
@@ -97,26 +105,36 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
           <div className="product__info">
             {product.productType && <p className="eyebrow">{product.productType}</p>}
             <div className="product__title-row">
-              <h1 className="script-title"><TwoTone text={product.title} /></h1>
+              <h1 className="script-title">
+                <TwoToneTitle text={product.title} />
+              </h1>
               {product.weight && <span className="product__weight">{product.weight}</span>}
             </div>
             <div className="product__meta">
-              {coll && (
-                <Link href={`/colecoes/${coll.handle}`} className="product__coll">
-                  {coll.title}
+              {collection && (
+                <Link href={`/colecoes/${collection.handle}`} className="product__collection">
+                  {collection.title}
                 </Link>
               )}
-              <div className="product__rating" aria-label={reviews.length ? `${avg.toFixed(1)} de 5 (${reviews.length})` : 'Sem avaliações'}>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <i key={n} className={`fa-star ${avg >= n - 0.25 ? 'fa-solid' : 'fa-regular'}`} aria-hidden="true" />
+              <div
+                className="product__rating"
+                aria-label={reviews.length ? `${averageRating.toFixed(1)} de 5 (${reviews.length})` : 'Sem avaliações'}
+              >
+                {/* Estrela cheia a partir de x,75 (ex.: 4,8 mostra 5 estrelas). */}
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <i
+                    key={star}
+                    className={`fa-star ${averageRating >= star - 0.25 ? 'fa-solid' : 'fa-regular'}`}
+                    aria-hidden="true"
+                  />
                 ))}
               </div>
             </div>
 
-            <AddToCartButton product={product} />
+            <BuyBox product={product} />
 
             {(product.descriptionHtml || product.description) && (
-              <div className="product__desc prose">
+              <div className="product__description prose">
                 {product.descriptionHtml ? (
                   <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
                 ) : (
@@ -125,7 +143,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
               </div>
             )}
 
-            <div className="faq product__acc">
+            <div className="accordion product__accordion">
               <details open>
                 <summary>Informações do produto</summary>
                 <p>
@@ -150,9 +168,9 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
       <ProductReviews productId={product.id} reviews={reviews} />
 
-      <LevaJuntoBundle product={product} />
+      <BundleOffer product={product} />
 
-      <LeveJunto product={product} />
+      <RelatedProducts product={product} />
     </>
   );
 }

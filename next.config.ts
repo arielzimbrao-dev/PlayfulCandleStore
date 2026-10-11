@@ -8,17 +8,22 @@ const config: NextConfig = {
     // 75 é o default do Next e chega para thumbnails; 90 é para as imagens grandes de marca
     // (hero, banners, fotos de produto), onde a compressão a 75 se nota nos gradientes rosa.
     qualities: [75, 90],
-    // ponytail: sem AVIF — o Next converte q90 em AVIF q56, que apaga a textura das fotos (kraft, papel).
-    // WebP q90 pesa ~2,5x mais mas mantém o detalhe das fotos profissionais.
+    // ponytail: sem AVIF — o Next converte q90 em AVIF q56, que apaga a textura das fotos
+    // (kraft, papel). WebP q90 pesa ~2,5x mais, mas mantém o detalhe das fotos profissionais.
     formats: ['image/webp'],
   },
-  // Produtos renomeados (Out 2026) — manter os URLs antigos a funcionar.
+  // Produtos renomeados (out/2026) — manter as URLs antigas funcionando.
   async redirects() {
-    return [
-      { source: '/produtos/queimador-branco', destination: '/produtos/queimador-grecia', permanent: true },
-      { source: '/produtos/queimador-chiquissimo', destination: '/produtos/queimador-dubai', permanent: true },
-      { source: '/produtos/queimador-rosa', destination: '/produtos/queimador-amsterda', permanent: true },
+    const renamedProducts: [oldHandle: string, newHandle: string][] = [
+      ['queimador-branco', 'queimador-grecia'],
+      ['queimador-chiquissimo', 'queimador-dubai'],
+      ['queimador-rosa', 'queimador-amsterda'],
     ];
+    return renamedProducts.map(([oldHandle, newHandle]) => ({
+      source: `/produtos/${oldHandle}`,
+      destination: `/produtos/${newHandle}`,
+      permanent: true,
+    }));
   },
 };
 

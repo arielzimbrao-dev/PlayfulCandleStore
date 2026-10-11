@@ -1,0 +1,47 @@
+// Banner das listagens: só imagem, largura total, colado ao header.
+// Sai da largura do .container para 100vw (o overflow-x: clip do body evita rolagem lateral).
+
+@use '../../styles/mixins' as *;
+
+.listing-banner {
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  // Anula o padding-top do .container para encostar no header.
+  margin-block: -56px 32px;
+  line-height: 0;
+
+  @include mobile {
+    margin-block: -32px 24px;
+  }
+
+  // Imagem-arte com texto embutido: altura natural.
+  &__art {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  // Foto simples da coleção: altura fixa com recorte.
+  &--photo {
+    position: relative;
+    height: 520px;
+    overflow: hidden;
+
+    @include mobile {
+      height: 256px;
+    }
+  }
+
+  // Título do banner no tamanho de título de página (menor que o do hero da home).
+  .photo-banner__title {
+    margin-bottom: 16px;
+    font-size: var(--font-size-page-title);
+  }
+
+  // No desktop o banner de categoria é mais baixo que o hero da home.
+  .photo-banner__image {
+    @include above(761px) {
+      aspect-ratio: 3 / 1;
+    }
+  }
+}

@@ -1,15 +1,7 @@
-// Trilingual dictionary — PT is the default; ES/EN follow the same shape.
-// ES/EN cover the homepage chrome; polish/marketing review can go through the copywriter agent.
+// Dicionário trilíngue — PT é o padrão; ES/EN seguem o mesmo formato (tipado por `Dict`).
+// ES/EN cobrem a estrutura da home; revisão de marketing pode passar pelo agente copywriter.
 
 export type Locale = 'pt' | 'es' | 'en';
-
-// `country` is the ISO code used by flag-icons (SVG flags that render on every OS,
-// unlike emoji flags which Windows shows as letter pairs).
-export const LOCALES: { code: Locale; label: string; country: string }[] = [
-  { code: 'pt', label: 'Português', country: 'pt' },
-  { code: 'es', label: 'Español', country: 'es' },
-  { code: 'en', label: 'English', country: 'gb' },
-];
 
 export const DEFAULT_LOCALE: Locale = 'pt';
 

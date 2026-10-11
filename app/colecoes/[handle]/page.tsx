@@ -1,14 +1,15 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
-import ProductListing from '@/components/ProductListing';
+import ProductListing from '@/components/ProductListing/ProductListing';
 import { getCollection } from '@/lib/shopify';
 import { resolveSort } from '@/lib/sort';
 import { CATEGORIES } from '@/lib/categories';
 
 export const revalidate = 3600;
 
-// Banners-arte por coleção (texto embutido na imagem). ponytail: mapa fixo; passar para metafield se crescer.
-const ART: Record<string, { src: string; alt: string; width: number; height: number }> = {
+// Banners-arte por coleção (com o texto embutido na imagem).
+// ponytail: mapa fixo; passar para um metafield se crescer.
+const ART_BANNERS: Record<string, { src: string; alt: string; width: number; height: number }> = {
   'colecao-de-outono': {
     src: '/images/hero-colecao-outono.png',
     alt: 'Trio Outono — três novas sugestões para um outono três vezes mais aconchegante. Velas Pumpkin Spice e Cappuccino entre pinhas e folhas.',
@@ -20,17 +21,18 @@ const ART: Record<string, { src: string; alt: string; width: number; height: num
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
   if (CATEGORIES[handle]) return {}; // é uma categoria — a página redireciona
-  const c = await getCollection(handle, 1);
-  if (!c) return { title: 'Coleção não encontrada', robots: { index: false, follow: true } };
+  const collection = await getCollection(handle, 1);
+  if (!collection) return { title: 'Coleção não encontrada', robots: { index: false, follow: true } };
   return {
-    title: c.seo.title || c.title,
-    description: c.seo.description || c.description || `${c.title} — velas artesanais Playful Candles.`,
+    title: collection.seo.title || collection.title,
+    description:
+      collection.seo.description || collection.description || `${collection.title} — velas artesanais Playful Candles.`,
     alternates: { canonical: `/colecoes/${handle}` },
-    openGraph: c.image ? { images: [{ url: c.image.url }] } : undefined,
+    openGraph: collection.image ? { images: [{ url: collection.image.url }] } : undefined,
   };
 }
 
-export default async function ColecaoPage({
+export default async function CollectionPage({
   params,
   searchParams,
 }: {
@@ -38,20 +40,25 @@ export default async function ColecaoPage({
   searchParams: Promise<{ sort?: string; stock?: string; type?: string; scent?: string; price?: string }>;
 }) {
   const { handle } = await params;
-  // Handles de categoria/tipo mudaram para /categorias/ — redireciona links antigos.
+  // As categorias já viveram em /colecoes/ antes de irem para /categorias/ — redireciona links antigos.
   if (CATEGORIES[handle]) redirect(`/categorias/${handle}`);
 
-  const sp = await searchParams;
-  const sort = resolveSort(sp.sort);
-  const stock = sp.stock === '1';
-  const facets = { type: sp.type, scent: sp.scent, price: sp.price };
-  const params_ = { sort: sort.key, stock: stock ? '1' : undefined, ...facets };
+  const query = await searchParams;
+  const sort = resolveSort(query.sort);
+  const onlyInStock = query.stock === '1';
+  const facets = { type: query.type, scent: query.scent, price: query.price };
+  const filterParams = { sort: sort.key, stock: onlyInStock ? '1' : undefined, ...facets };
 
   const collection = await getCollection(handle, 250, { sortKey: sort.collection, reverse: sort.reverse });
   if (!collection) notFound();
 
-  // Banner: usa a imagem da coleção; se não tiver (comum no Shopify), cai numa foto de marca.
-  const bannerImage = collection.image ?? { url: '/images/instagram/ig1.jpg', altText: collection.title, width: null, height: null };
+  // Banner: usa a imagem da coleção; se não tiver (comum na Shopify), usa uma foto da marca.
+  const bannerImage = collection.image ?? {
+    url: '/images/instagram/ig1.jpg',
+    altText: collection.title,
+    width: null,
+    height: null,
+  };
   // Breadcrumb curto: "Coleção de Outono" → "Outono".
   const shortTitle = collection.title.replace(/^Cole[çc][ãa]o de\s+/i, '');
   const crumbs = [
@@ -64,15 +71,15 @@ export default async function ColecaoPage({
     <ProductListing
       title={collection.title}
       image={bannerImage}
-      art={ART[handle]}
+      art={ART_BANNERS[handle]}
       crumbs={crumbs}
       basePath={`/colecoes/${handle}`}
       products={collection.products}
       showType
       sort={sort}
-      stock={stock}
+      onlyInStock={onlyInStock}
       facets={facets}
-      params={params_}
+      params={filterParams}
       listName={collection.title}
     />
   );

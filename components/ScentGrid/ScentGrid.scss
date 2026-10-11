@@ -1,0 +1,114 @@
+// Grade de aromas: 6 colunas em largura total (3 até 1200px, 2 no celular),
+// fotos 3:4 com o nome em Genty e a frase por cima.
+
+@use '../../styles/mixins' as *;
+
+.scent-grid {
+  padding-block: 48px;
+
+  @include mobile {
+    padding-block: 24px;
+  }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 40px;
+    text-align: left;
+
+    @include mobile {
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-pink);
+    }
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+
+    @include below(1200px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include small-phone {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+.scent-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  padding: 24px;
+  color: #fff;
+  transition:
+    transform 0.3s var(--ease-out),
+    box-shadow 0.3s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-popover);
+  }
+
+  @include mobile {
+    padding: 16px;
+  }
+
+  @include small-phone {
+    aspect-ratio: 1 / 1;
+  }
+
+  // A foto fica atrás; aumenta um pouco no hover.
+  > img {
+    z-index: 0;
+    transition: transform 0.5s ease;
+  }
+
+  &:hover > img {
+    transform: scale(1.06);
+  }
+
+  // Texto por cima da foto, com sombra para ler bem sobre qualquer imagem.
+  h3,
+  p {
+    position: relative;
+    z-index: 2;
+    color: #fbfbfb;
+    text-shadow: 0 1px 6px rgba(42, 21, 36, 0.35);
+  }
+
+  h3 {
+    font-family: var(--font-script);
+    font-weight: 400;
+    font-size: 24px;
+    letter-spacing: 0.01em;
+
+    @include mobile {
+      font-size: 16px;
+    }
+  }
+
+  p {
+    max-width: 100%;
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0.95;
+
+    @include mobile {
+      font-size: 9px;
+    }
+  }
+}

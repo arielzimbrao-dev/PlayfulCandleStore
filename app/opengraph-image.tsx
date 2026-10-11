@@ -4,7 +4,7 @@ export const alt = 'Playful Candles — Velas artesanais feitas em Lisboa';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-// Imagem social partilhada por OG e Twitter (rácio 1200×630).
+// Imagem social compartilhada por OG e Twitter (proporção 1200×630).
 export default function OgImage() {
   return new ImageResponse(
     (

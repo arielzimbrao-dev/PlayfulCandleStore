@@ -1,16 +1,16 @@
-import Hero from '@/components/Hero';
-import Appeals from '@/components/Appeals';
-import CategoryNav from '@/components/CategoryNav';
-import ProductRail from '@/components/ProductRail';
-import PackBanner from '@/components/PackBanner';
-import CategoryBento from '@/components/CategoryBento';
+import Hero from '@/components/Hero/Hero';
+import Appeals from '@/components/Appeals/Appeals';
+import CategoryNav from '@/components/CategoryNav/CategoryNav';
+import ProductRail from '@/components/ProductRail/ProductRail';
+import PackBanner from '@/components/PackBanner/PackBanner';
+import ScentGrid from '@/components/ScentGrid/ScentGrid';
 import { getProducts, getCollection } from '@/lib/shopify';
 
-const AUTUMN = 'colecao-de-outono';
+const AUTUMN_COLLECTION = 'colecao-de-outono';
 
 export default async function HomePage() {
-  const [autumn, latest] = await Promise.all([
-    getCollection(AUTUMN, 12).catch(() => null),
+  const [autumnCollection, newArrivals] = await Promise.all([
+    getCollection(AUTUMN_COLLECTION, 12).catch(() => null),
     getProducts(12, { sortKey: 'CREATED_AT', reverse: true }),
   ]);
 
@@ -19,10 +19,14 @@ export default async function HomePage() {
       <Hero />
       <Appeals />
       <CategoryNav />
-      <ProductRail variant="autumn" products={autumn?.products ?? []} href={`/colecoes/${AUTUMN}`} />
+      <ProductRail
+        variant="autumn"
+        products={autumnCollection?.products ?? []}
+        href={`/colecoes/${AUTUMN_COLLECTION}`}
+      />
       <PackBanner />
-      <CategoryBento />
-      <ProductRail variant="latest" products={latest.products} />
+      <ScentGrid />
+      <ProductRail variant="latest" products={newArrivals.products} />
     </>
   );
 }

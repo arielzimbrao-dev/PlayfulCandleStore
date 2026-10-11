@@ -1,0 +1,50 @@
+// Listagem de produtos: barra de filtros fixa à esquerda (desktop) e produtos à direita.
+// Até 899px os filtros ficam em cima, atrás do botão "Filtros".
+
+@use '../../styles/mixins' as *;
+
+.shop-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 40px;
+  margin-top: 16px;
+
+  @include mobile {
+    gap: 24px;
+  }
+
+  @include above($tablet) {
+    grid-template-columns: 224px minmax(0, 1fr);
+  }
+
+  &__sidebar {
+    @include above($tablet) {
+      position: sticky;
+      top: calc(var(--header-height) + 16px);
+    }
+  }
+
+  // Título "Filtros" em Genty; no celular o botão "Filtros" faz esse papel.
+  &__filters-title {
+    margin-bottom: 8px;
+
+    @include tablet {
+      display: none;
+    }
+  }
+
+  // Barra "10 itens   Ordenar ⌄", alinhada à direita.
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 24px;
+    margin: 16px 0 24px;
+  }
+
+  &__count {
+    font-size: 16px;
+    color: var(--color-ink-soft);
+  }
+}

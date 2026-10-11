@@ -3,24 +3,26 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { DEFAULT_LOCALE, dictionaries, type Dict, type Locale } from '@/lib/i18n';
 
-type Ctx = { locale: Locale; setLocale: (l: Locale) => void; t: Dict };
-const LanguageContext = createContext<Ctx | null>(null);
+type LanguageContextValue = { locale: Locale; setLocale: (locale: Locale) => void; t: Dict };
+const LanguageContext = createContext<LanguageContextValue | null>(null);
 const STORAGE_KEY = 'pc-locale';
 
-function isLocale(v: unknown): v is Locale {
-  return v === 'pt' || v === 'es' || v === 'en';
+function isLocale(value: unknown): value is Locale {
+  return value === 'pt' || value === 'es' || value === 'en';
 }
 
+// Idioma da loja (PT/ES/EN). Uso nos componentes: const t = useT(); t.cart.title
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
 
-  // Apply the stored choice after mount (server always renders the default → no hydration mismatch).
+  // Aplica o idioma guardado só depois de montar: o servidor sempre renderiza o padrão,
+  // então não há diferença de hidratação.
   useEffect(() => {
     let stored: string | null = null;
     try {
       stored = localStorage.getItem(STORAGE_KEY);
     } catch {
-      /* private mode / blocked storage */
+      /* modo privado / armazenamento bloqueado */
     }
     if (isLocale(stored)) {
       setLocaleState(stored);
@@ -28,15 +30,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const setLocale = (l: Locale) => {
-    setLocaleState(l);
+  const setLocale = (newLocale: Locale) => {
+    setLocaleState(newLocale);
     try {
-      localStorage.setItem(STORAGE_KEY, l);
+      localStorage.setItem(STORAGE_KEY, newLocale);
     } catch {
-      /* ignore */
+      /* armazenamento bloqueado: o idioma vale só nesta visita */
     }
-    document.cookie = `NEXT_LOCALE=${l};path=/;max-age=31536000;samesite=lax`;
-    document.documentElement.lang = dictionaries[l].langHtml;
+    document.cookie = `NEXT_LOCALE=${newLocale};path=/;max-age=31536000;samesite=lax`; // 1 ano
+    document.documentElement.lang = dictionaries[newLocale].langHtml;
   };
 
   return (
@@ -46,10 +48,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useLang(): Ctx {
-  const ctx = useContext(LanguageContext);
-  if (!ctx) throw new Error('useLang precisa estar dentro de <LanguageProvider>');
-  return ctx;
+export function useLang(): LanguageContextValue {
+  const context = useContext(LanguageContext);
+  if (!context) throw new Error('useLang precisa estar dentro de <LanguageProvider>');
+  return context;
 }
 
 export function useT(): Dict {

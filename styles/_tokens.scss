@@ -1,0 +1,80 @@
+// Design tokens da Playful Candles (variáveis CSS globais).
+// Medidas em px e, sempre que possível, múltiplos de 8.
+
+@use 'mixins' as *;
+
+:root {
+  // ---- Texto ----
+  --color-ink: #2a1524; // texto principal
+  --color-ink-soft: #6d5563; // texto secundário (legendas, contagens)
+
+  // ---- Fundos e bordas ----
+  --color-page: #fafafa; // fundo do <body>
+  --color-paper: #fdeef5; // fundo rosado do header
+  --color-surface: #fffbfd; // cartões, gavetas, popovers
+  --color-blush: #fbdcec; // rosa clarinho para placeholders e realces
+  --color-border: #f4d3e2;
+  --color-border-strong: #e9c2d4;
+
+  // ---- Cores da marca (Figma) ----
+  --color-pink: #ff5ca6; // cor principal: títulos, links, ícones
+  --color-orange: #faa455; // destaque: botões "Adicionar ao carrinho"
+  --color-yellow: #ecc94b; // detalhes: estrelas, botão "Comprar agora"
+  --color-logo-orange: #f7902f; // laranja da 2.ª palavra dos títulos (como na logo)
+
+  // ---- Cores de apoio ----
+  --color-coral: #ff4d7d;
+  --color-coral-dark: #cc1a52; // hover dos rosas e texto rosa com bom contraste
+  --color-coral-darker: #a81244;
+  --color-tangerine: #ff7a1f; // hover dos botões laranja
+  --color-tangerine-dark: #d95c00;
+  --color-gold: #ffc42e;
+  --color-success: #1f8f6b;
+
+  // ---- Tipografia (fontes carregadas pelo next/font em app/fonts.ts) ----
+  --font-sans: var(--font-poppins), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-script: var(--font-genty), 'Poppins', system-ui, sans-serif; // Genty: títulos "fun"
+  --font-size-page-title: 48px;
+  --font-size-lead: 24px;
+
+  // ---- Layout ----
+  --site-max-width: 1920px;
+  --gutter: 40px; // margem lateral mínima
+  --section-spacing: 48px; // espaço vertical entre seções
+  --header-height: 80px;
+
+  // ---- Cantos ----
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  // ---- Sombras ----
+  --shadow-sm: 0 2px 8px -2px rgba(42, 21, 36, 0.12);
+  --shadow-md: 0 16px 38px -18px rgba(42, 21, 36, 0.28);
+  --shadow-lg: 0 22px 48px -24px rgba(42, 21, 36, 0.34);
+  --shadow-popover: 0 16px 38px -18px rgba(42, 21, 36, 0.4);
+  --focus-ring: 0 0 0 3px #fff, 0 0 0 6px var(--color-coral-dark);
+
+  // ---- Animação ----
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration: 280ms;
+  --duration-slow: 600ms;
+
+  // ---- Camadas (z-index), da mais baixa para a mais alta ----
+  --z-sticky: 100; // barra de compra fixa, botão "voltar ao topo"
+  --z-header: 200;
+  --z-menu: 300; // gaveta do menu, popovers do header
+  --z-drawer: 400; // gaveta do carrinho
+  --z-consent: 450; // banner de cookies
+  --z-toast: 460;
+
+  @include mobile {
+    --gutter: 16px;
+    --section-spacing: 24px;
+    --font-size-page-title: 32px;
+    --font-size-lead: 16px;
+  }
+}

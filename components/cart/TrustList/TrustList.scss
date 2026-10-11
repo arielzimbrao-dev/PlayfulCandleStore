@@ -1,0 +1,36 @@
+// Lista de selos de confiança. Padrão: em coluna, com linha separadora em cima.
+// --inline: lado a lado e centralizada (carrinho vazio).
+
+.trust-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--color-border);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+  }
+
+  i {
+    width: 16px;
+    font-size: 16px;
+    text-align: center;
+    color: var(--color-coral-dark);
+  }
+
+  &--inline {
+    flex-flow: row wrap;
+    justify-content: center;
+    gap: 8px 24px;
+    margin-top: 16px;
+    padding-top: 0;
+    border-top: none;
+  }
+}

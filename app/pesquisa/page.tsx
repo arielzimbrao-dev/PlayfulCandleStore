@@ -1,38 +1,46 @@
 import type { Metadata } from 'next';
 import { getProducts, searchProducts } from '@/lib/shopify';
-import ProductGrid from '@/components/ProductGrid';
-import ProductRail from '@/components/ProductRail';
-import ProductFilters from '@/components/ProductFilters';
-import SearchResultsHeader from '@/components/SearchResultsHeader';
+import ProductGrid from '@/components/ProductGrid/ProductGrid';
+import ProductRail from '@/components/ProductRail/ProductRail';
+import ProductFilters from '@/components/ProductFilters/ProductFilters';
+import ShopLayout from '@/components/ShopLayout/ShopLayout';
+import SearchResultsHeader from '@/components/SearchResultsHeader/SearchResultsHeader';
 import { applyFilters, availableScents, availableTypes } from '@/lib/filters';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'Pesquisa',
-  robots: { index: false, follow: true }, // search result pages shouldn't be indexed
+  robots: { index: false, follow: true }, // páginas de resultado de pesquisa não devem ser indexadas
 };
 
+// /pesquisa?q=: resultados com filtros. Sem resultados, sugere os mais vendidos.
 export default async function SearchPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; type?: string; scent?: string; price?: string }>;
 }) {
-  const sp = await searchParams;
-  const term = (sp.q ?? '').trim();
+  const query = await searchParams;
+  const term = (query.q ?? '').trim();
   const results = term ? await searchProducts(term, 50) : [];
-  const params = { q: term, type: sp.type, scent: sp.scent, price: sp.price };
+  const params = { q: term, type: query.type, scent: query.scent, price: query.price };
   const filtered = applyFilters(results, params);
-  const noResults = results.length === 0;
-  const suggestions = noResults ? (await getProducts(10, { sortKey: 'BEST_SELLING' })).products : [];
+  const hasNoResults = results.length === 0;
+  const bestSellers = hasNoResults ? (await getProducts(10, { sortKey: 'BEST_SELLING' })).products : [];
 
   return (
     <>
       <section className="container">
-        <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Pesquisa', url: '/pesquisa' }]} />
-        <SearchResultsHeader q={term} count={filtered.length} />
-        {results.length > 0 && (
-          <div className="shop-layout">
-            <aside className="shop-layout__aside">
+        <Breadcrumbs
+          items={[
+            { name: 'Início', url: '/' },
+            { name: 'Pesquisa', url: '/pesquisa' },
+          ]}
+        />
+        <SearchResultsHeader term={term} count={filtered.length} />
+        {!hasNoResults && (
+          <ShopLayout
+            resultCount={filtered.length}
+            filters={
               <ProductFilters
                 basePath="/pesquisa"
                 params={params}
@@ -40,20 +48,13 @@ export default async function SearchPage({
                 types={availableTypes(results)}
                 scents={availableScents(results)}
               />
-            </aside>
-            <div className="shop-layout__main">
-              {filtered.length > 0 ? (
-                <ProductGrid products={filtered} listName={`Pesquisa: ${term}`} />
-              ) : (
-                <p style={{ textAlign: 'center', color: 'var(--ink-soft)', margin: '40px 0' }}>
-                  Nada com estes filtros. Experimenta limpar. ✨
-                </p>
-              )}
-            </div>
-          </div>
+            }
+          >
+            <ProductGrid products={filtered} listName={`Pesquisa: ${term}`} />
+          </ShopLayout>
         )}
       </section>
-      {noResults && <ProductRail variant="best" products={suggestions} />}
+      {hasNoResults && <ProductRail variant="best" products={bestSellers} />}
     </>
   );
 }

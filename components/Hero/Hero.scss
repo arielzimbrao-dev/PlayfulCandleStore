@@ -1,0 +1,21 @@
+// Ajustes do PhotoBanner só para o hero da home, no celular.
+
+@use '../../styles/mixins' as *;
+
+.hero {
+  @include mobile {
+    // As velas estão no fundo da foto: o recorte 4:5 fica ancorado embaixo.
+    .photo-banner__image {
+      object-position: center bottom;
+    }
+
+    // Em 4:5 o parágrafo não cabe sem cobrir as velas.
+    .photo-banner__lead {
+      display: none;
+    }
+
+    .photo-banner__content {
+      padding-top: 32px;
+    }
+  }
+}

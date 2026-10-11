@@ -1,0 +1,181 @@
+// Footer com o bloco Playful VIP no topo; um único fundo groovy (imagem) cobre os dois.
+
+@use '../../styles/mixins' as *;
+
+$footer-text: rgba(255, 255, 255, 0.85);
+
+.footer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding-top: 64px;
+  padding-bottom: 16px;
+  background: var(--color-pink) url(/images/footer-groovy.png) center / cover no-repeat;
+  color: #fff;
+
+  @include mobile {
+    padding-top: 40px;
+  }
+
+  // Só o conteúdo do próprio footer (o bloco VIP acima tem estilos próprios).
+  &__inner {
+    position: relative;
+    z-index: 2;
+
+    h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    a {
+      display: block;
+      padding: 4px 0;
+      font-size: 16px;
+      color: $footer-text;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+
+    p {
+      color: $footer-text;
+    }
+  }
+
+  // Marca + 4 colunas de links. No celular: marca em cima, links em 2 colunas.
+  &__grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
+    gap: 32px;
+
+    @include below(820px) {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 32px;
+
+      > div:first-child {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  // A caixa tem 32px e a logo 40px: os 8px a mais ocupam parte da margem de baixo.
+  &__logo {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    margin-bottom: 16px;
+
+    img {
+      display: block;
+      width: auto;
+      height: 40px;
+    }
+  }
+
+  &__social {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+
+    // Vem depois de `.footer__inner a` no arquivo, então sobrescreve com a mesma especificidade.
+    a {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+
+      &:hover {
+        background: var(--color-gold);
+        color: var(--color-ink);
+      }
+    }
+  }
+
+  // "Gerir cookies" é um botão no meio dos links — mesmo visual que eles.
+  &__cookies {
+    display: block;
+    padding: 4px 0;
+    font-size: 16px;
+    color: $footer-text;
+    text-align: left;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  &__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 32px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    color: $footer-text;
+  }
+
+  &__copyright {
+    line-height: 1.5;
+
+    // Link "Feito com Shopify".
+    a {
+      color: #fff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+
+      &:hover {
+        color: var(--color-gold);
+      }
+    }
+  }
+
+  &__payment {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  &__payment-label {
+    font-weight: 700;
+
+    i {
+      margin-right: 4px;
+    }
+  }
+
+  &__payment-methods {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+
+    i {
+      font-size: 24px;
+    }
+
+    span {
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+    }
+  }
+
+  // Identificação legal da empresa, no fim e à direita.
+  &__legal-id {
+    display: block;
+    margin-top: 80px;
+    font-size: 12px;
+    text-align: right;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}

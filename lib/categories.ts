@@ -1,12 +1,13 @@
-// Categorias (tipos de produto) — servidas em /categorias/[handle]. Cada uma traz o copy do banner (EU-PT; estas páginas renderizam sempre em PT). Coleções reais ficam em /colecoes/.
+// Categorias (tipos de produto) — servidas em /categorias/[handle]. Cada uma traz a copy do banner
+// (pt-PT; essas páginas renderizam sempre em PT). Coleções de verdade ficam em /colecoes/.
 import { TYPE_HANDLES } from './shopify/types';
 import type { TypeKey } from './filters';
 
 export type Category = { title: string; query: string; text: string; type: TypeKey };
 
-/** Banner da categoria: /images/banners/cat-<handle>-{desktop,mobile}.jpg */
-// Sufixo de versão quando a foto de uma categoria é trocada (nome novo = sem cache antiga).
+// Sufixo de versão quando a foto de uma categoria é trocada (nome novo = sem cache antigo).
 const BANNER_VERSION: Record<string, string> = { 'velas-de-copo': '-v2' };
+/** Banner da categoria: /images/banners/cat-<handle>-{desktop,mobile}.jpg */
 export const categoryBanner = (handle: string) => ({
   desktop: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-desktop.jpg`,
   mobile: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-mobile.jpg`,
@@ -50,5 +51,10 @@ export const CATEGORIES: Record<string, Category> = {
 export const CATEGORY_HANDLES = Object.keys(CATEGORIES);
 
 // Coleções que NÃO são coleções curadas: os tipos de produto (têm páginas em /categorias/)
-// e a "Home page" que a Shopify cria por omissão. Usado em /colecoes e no sitemap.
-export const NON_COLLECTION_HANDLES = new Set<string>([...TYPE_HANDLES, 'frontpage', 'home-page', 'homepage']);
+// e a "Home page" que a Shopify cria por padrão. Usado em /colecoes e no sitemap.
+export const NON_COLLECTION_HANDLES = new Set<string>([
+  ...TYPE_HANDLES,
+  'frontpage',
+  'home-page',
+  'homepage',
+]);

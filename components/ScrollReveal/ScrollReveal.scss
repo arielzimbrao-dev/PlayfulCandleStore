@@ -1,0 +1,20 @@
+// Entrada suave das seções (ver ScrollReveal.tsx). Só vale depois que o JS adiciona
+// .reveal-ready ao <html> e só para quem não pediu menos animação.
+// A primeira seção da página nunca fica escondida (é o que aparece logo ao abrir).
+
+@media (prefers-reduced-motion: no-preference) {
+  html.reveal-ready main > section:not(:first-of-type),
+  html.reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.7s var(--ease-out),
+      transform 0.7s var(--ease-out);
+  }
+
+  html.reveal-ready main > section[data-in],
+  html.reveal-ready [data-reveal][data-in] {
+    opacity: 1;
+    transform: none;
+  }
+}

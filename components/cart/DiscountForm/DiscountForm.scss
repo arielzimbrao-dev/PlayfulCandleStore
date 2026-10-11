@@ -1,0 +1,29 @@
+// Campo de código de desconto (pílula) com o botão ao lado.
+
+.discount {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+
+  &__input {
+    flex: 1;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 2px solid var(--color-border-strong);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    font: inherit;
+    color: var(--color-ink);
+  }
+
+  &__applied {
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-success);
+
+    i {
+      margin-right: 4px;
+    }
+  }
+}

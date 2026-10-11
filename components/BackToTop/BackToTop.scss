@@ -1,0 +1,41 @@
+// Botão redondo fixo no canto inferior direito.
+
+@use '../../styles/mixins' as *;
+
+.back-to-top {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: var(--z-sticky);
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-coral-dark);
+  color: #fff;
+  font-size: 16px;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition:
+    opacity var(--duration) var(--ease-out),
+    transform var(--duration) var(--ease-out),
+    visibility var(--duration);
+
+  &.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  &:hover {
+    background: var(--color-coral-darker);
+  }
+
+  // No celular sobe acima da barra fixa de compra da página de produto.
+  @include mobile {
+    bottom: 80px;
+  }
+}

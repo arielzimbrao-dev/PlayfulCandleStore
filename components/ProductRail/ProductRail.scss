@@ -1,0 +1,50 @@
+// Prateleira de produtos: 4 cards por página (2 no tablet).
+// No celular o carrossel sangra até a borda direita e mostra 1 card + um pedaço do seguinte.
+
+@use '../../styles/mixins' as *;
+
+.rail {
+  .section__head {
+    margin-bottom: 16px;
+  }
+
+  .carousel__track {
+    padding-top: 0;
+
+    > .product-card {
+      // 4 por página: (largura − 3 gaps de 16px) / 4
+      flex: 0 0 calc((100% - 48px) / 4);
+
+      @include tablet {
+        flex: 0 0 calc((100% - 16px) / 2);
+      }
+
+      @include small-phone {
+        flex: 0 0 64%;
+      }
+    }
+  }
+
+  .carousel__arrow--prev {
+    left: -56px;
+  }
+
+  .carousel__arrow--next {
+    right: -56px;
+  }
+
+  @include small-phone {
+    // Começa alinhado ao conteúdo do site (5% de margem) e vai até a borda direita da tela.
+    .carousel {
+      width: auto;
+      max-width: none;
+      margin-left: 5%;
+      margin-right: 0;
+    }
+
+    // Sem setas no celular: troca-se de página com o dedo.
+    .carousel__arrow {
+      display: none;
+    }
+  }
+}

@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import ProductGridPaged from '@/components/ProductGridPaged';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import ProductFilters from '@/components/ProductFilters';
-import PreFooter from '@/components/PreFooter';
-import SortSelect from '@/components/SortSelect';
-import JsonLd from '@/components/JsonLd';
+import ProductGridPaged from '@/components/ProductGridPaged/ProductGridPaged';
+import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
+import ProductFilters from '@/components/ProductFilters/ProductFilters';
+import PreFooter from '@/components/PreFooter/PreFooter';
+import ShopLayout from '@/components/ShopLayout/ShopLayout';
+import JsonLd from '@/components/JsonLd/JsonLd';
 import { itemListLd } from '@/lib/jsonld';
 import { getProducts } from '@/lib/shopify';
 import { applyFilters, availableScents, availableTypes } from '@/lib/filters';
@@ -18,58 +18,51 @@ export const metadata: Metadata = {
   alternates: { canonical: '/produtos' },
 };
 
-export default async function ProdutosPage({
+// /produtos: o catálogo inteiro, com filtros de categoria, aroma e preço.
+export default async function ShopPage({
   searchParams,
 }: {
   searchParams: Promise<{ sort?: string; type?: string; scent?: string; price?: string }>;
 }) {
-  const sp = await searchParams;
-  const sort = resolveSort(sp.sort);
-  // Catálogo pequeno: busca tudo e filtra em memória (facetas tipo/aroma/preço).
+  const query = await searchParams;
+  const sort = resolveSort(query.sort);
+  // O catálogo é pequeno: busca tudo de uma vez e filtra em memória.
   const { products } = await getProducts(250, { sortKey: sort.product, reverse: sort.reverse });
 
-  const params = { sort: sort.key, type: sp.type, scent: sp.scent, price: sp.price };
+  const params = { sort: sort.key, type: query.type, scent: query.scent, price: query.price };
   const filtered = applyFilters(products, params);
 
   return (
     <>
-    <section className="container">
-      <JsonLd data={itemListLd(filtered, 'Loja')} />
-      <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Loja', url: '/produtos' }]} />
-      <div className="sec__head">
-        <div>
+      <section className="container">
+        <JsonLd data={itemListLd(filtered, 'Loja')} />
+        <Breadcrumbs
+          items={[
+            { name: 'Início', url: '/' },
+            { name: 'Loja', url: '/produtos' },
+          ]}
+        />
+        <div className="section__head">
           <h1>Loja</h1>
         </div>
-      </div>
 
-      <div className="shop-layout">
-        <aside className="shop-layout__aside">
-          <h2 className="script-title shop-layout__title">Filtros</h2>
-          <ProductFilters
-            basePath="/produtos"
-            params={params}
-            showType
-            types={availableTypes(products)}
-            scents={availableScents(products)}
-          />
-        </aside>
-
-        <div className="shop-layout__main">
-          <div className="listbar">
-            <p className="listbar__count">{filtered.length} {filtered.length === 1 ? 'item' : 'itens'}</p>
-            <SortSelect value={sort.key} />
-          </div>
-          {filtered.length > 0 ? (
-            <ProductGridPaged products={filtered} listName="Loja" />
-          ) : (
-            <p style={{ textAlign: 'center', color: 'var(--ink-soft)', margin: '40px 0' }}>
-              Nada com estes filtros. Experimenta limpar. ✨
-            </p>
-          )}
-        </div>
-      </div>
-    </section>
-    <PreFooter />
+        <ShopLayout
+          resultCount={filtered.length}
+          sortValue={sort.key}
+          filters={
+            <ProductFilters
+              basePath="/produtos"
+              params={params}
+              showType
+              types={availableTypes(products)}
+              scents={availableScents(products)}
+            />
+          }
+        >
+          <ProductGridPaged products={filtered} listName="Loja" />
+        </ShopLayout>
+      </section>
+      <PreFooter />
     </>
   );
 }

@@ -1,0 +1,137 @@
+// Página de produto (PDP): galeria à esquerda, informações fixas à direita (desktop).
+
+@use '../../../styles/mixins' as *;
+
+.product {
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 48px;
+
+    @include mobile {
+      gap: 24px;
+    }
+
+    @include above($tablet) {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    }
+  }
+
+  // No desktop a coluna de informações acompanha a rolagem das fotos.
+  &__info {
+    @include above($tablet) {
+      position: sticky;
+      top: 96px;
+    }
+
+    h1.script-title {
+      margin: 4px 0;
+      font-size: 48px;
+      line-height: 1.05;
+
+      @include mobile {
+        font-size: 32px;
+      }
+    }
+  }
+
+  // Nome do produto + peso na mesma linha.
+  &__title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__weight {
+    font-family: var(--font-script);
+    font-size: 32px;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--color-pink);
+
+    @include mobile {
+      font-size: 24px;
+    }
+  }
+
+  // Pílula da coleção + estrelas.
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__collection {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--color-blush);
+    color: var(--color-coral-dark);
+    font-weight: 700;
+    font-size: 12px;
+    transition: background var(--duration) var(--ease-out);
+
+    &:hover {
+      background: var(--color-coral);
+      color: #fff;
+    }
+  }
+
+  &__rating {
+    display: flex;
+    gap: 4px;
+    font-size: 16px;
+
+    .fa-solid {
+      color: var(--color-yellow);
+    }
+
+    .fa-regular {
+      color: var(--color-border-strong);
+    }
+  }
+
+  // Descrição vinda da Shopify (HTML): mesma tipografia do texto dos acordeões.
+  &__description {
+    max-width: none; // ocupa a coluna toda (a .prose limitaria a 72ch)
+    margin-top: 16px;
+    line-height: 1.7;
+    color: var(--color-ink);
+
+    p {
+      margin: 8px 0;
+    }
+
+    :is(h2, h3) {
+      color: var(--color-pink);
+    }
+
+    :is(p, li) {
+      line-height: 1.6;
+      color: var(--color-ink-soft);
+    }
+
+    :is(strong, b) {
+      font-weight: 700;
+      color: var(--color-pink);
+    }
+  }
+
+  &__accordion {
+    margin-top: 24px;
+
+    summary {
+      color: var(--color-pink);
+    }
+
+    a {
+      color: var(--color-coral-dark);
+      text-decoration: underline;
+    }
+  }
+}

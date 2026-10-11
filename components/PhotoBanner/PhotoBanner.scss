@@ -1,0 +1,114 @@
+// Banner de foto com texto por cima.
+// Desktop (21:8): texto no terço esquerdo sobre um véu claro, para dar contraste.
+// Celular (4:5): texto centralizado no topo.
+
+@use '../../styles/mixins' as *;
+
+// Véu rosado claro que esmaece para transparente (a direção muda conforme o lado do texto).
+@function veil($direction, $strength: 0.82) {
+  @return linear-gradient(
+    $direction,
+    rgba(255, 246, 250, $strength) 0%,
+    rgba(255, 246, 250, 0.55) 70%,
+    transparent 100%
+  );
+}
+
+.photo-banner {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  line-height: normal;
+  background: var(--color-blush);
+
+  &__link,
+  &__picture {
+    display: block;
+  }
+
+  &__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 21 / 8;
+    object-fit: cover;
+
+    @include mobile {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  &__content {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    width: min(46%, 624px);
+    padding: 40px 80px;
+    background: veil(90deg);
+    color: var(--color-ink);
+    // O véu não bloqueia cliques na foto; só os links/botões do texto são clicáveis.
+    pointer-events: none;
+
+    a,
+    button {
+      pointer-events: auto;
+    }
+
+    .eyebrow {
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--color-coral-dark);
+    }
+
+    .btn {
+      margin-top: 8px;
+    }
+
+    @include mobile {
+      inset: 0 0 auto 0;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      padding: 40px var(--gutter) 48px;
+      text-align: center;
+      background: veil(180deg, 0.88);
+    }
+  }
+
+  // Variante com texto à direita (só desktop).
+  &--text-right &__content {
+    @include above(761px) {
+      inset: 0 0 0 auto;
+      background: veil(270deg);
+    }
+  }
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-script);
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 1.05;
+    color: var(--color-coral-dark);
+
+    @include mobile {
+      font-size: 32px;
+    }
+
+    em {
+      font-style: normal;
+      color: var(--color-tangerine-dark);
+    }
+  }
+
+  &__lead {
+    max-width: 38ch;
+    font-size: 16px;
+    color: var(--color-ink);
+  }
+}

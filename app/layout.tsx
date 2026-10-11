@@ -2,20 +2,19 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import 'flag-icons/css/flag-icons.min.css';
-import '../styles/global.scss';
+import '@/styles/global.scss';
 import { CartProvider } from '@/components/cart-context';
 import { WishlistProvider } from '@/components/wishlist-context';
 import { LanguageProvider } from '@/components/LanguageProvider';
-import { ToastProvider } from '@/components/Toast';
-import Header from '@/components/Header';
-import AnnounceBar from '@/components/AnnounceBar';
-import ScrollReveal from '@/components/ScrollReveal';
-import CartDrawer from '@/components/CartDrawer';
-import Footer from '@/components/Footer';
-import CookieConsent from '@/components/CookieConsent';
-import BackToTop from '@/components/BackToTop';
-import JsonLd from '@/components/JsonLd';
+import { ToastProvider } from '@/components/Toast/Toast';
+import Header from '@/components/Header/Header';
+import AnnounceBar from '@/components/AnnounceBar/AnnounceBar';
+import ScrollReveal from '@/components/ScrollReveal/ScrollReveal';
+import CartDrawer from '@/components/CartDrawer/CartDrawer';
+import Footer from '@/components/Footer/Footer';
+import CookieConsent from '@/components/CookieConsent/CookieConsent';
+import BackToTop from '@/components/BackToTop/BackToTop';
+import JsonLd from '@/components/JsonLd/JsonLd';
 import { organizationLd, websiteLd } from '@/lib/jsonld';
 import { getCollections } from '@/lib/shopify';
 import { NON_COLLECTION_HANDLES } from '@/lib/categories';
@@ -56,9 +55,12 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Handle da coleção de outono (destaque do menu) vindo da Shopify, p/ não dar 404 se for renomeada.
-  const autumn = await getCollections(50)
-    .then((cs) => cs.find((c) => !NON_COLLECTION_HANDLES.has(c.handle) && c.handle.includes('outono'))?.handle)
+  // Handle da coleção de outono (destaque do menu) vindo da Shopify, para não dar 404 se for renomeada.
+  const autumnHandle = await getCollections(50)
+    .then((collections) =>
+      collections.find((collection) => !NON_COLLECTION_HANDLES.has(collection.handle) && collection.handle.includes('outono'))
+        ?.handle,
+    )
     .catch(() => undefined);
 
   return (
@@ -83,7 +85,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <WishlistProvider>
               <div className="groovy-ribbon" aria-hidden="true" />
               <AnnounceBar />
-              <Header autumn={autumn} />
+              <Header autumnHandle={autumnHandle} />
               <main id="main">{children}</main>
               <Footer />
               <CartDrawer />

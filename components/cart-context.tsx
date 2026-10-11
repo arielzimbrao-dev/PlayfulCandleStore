@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { useToast } from './Toast';
+import { useToast } from '@/components/Toast/Toast';
 import { useT } from './LanguageProvider';
 import type { Cart } from '@/lib/shopify/types';
 
@@ -70,7 +70,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const data = (await res.json()) as { cart?: Cart | null; error?: string };
       if (data.cart) {
         setCart(data.cart);
-        // A Shopify ajusta a quantidade ao stock e avisa em vez de falhar — dizer ao cliente.
+        // A Shopify ajusta a quantidade ao estoque e avisa em vez de falhar — avisamos o cliente.
         if (data.cart.warnings?.some((w) => w.code.includes('STOCK'))) {
           toast.show(t.cart.stockAdjusted, 'error');
         }

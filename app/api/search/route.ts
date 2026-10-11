@@ -1,16 +1,16 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { predictiveSearch, searchProducts } from '@/lib/shopify';
 
-// Live search for the header dropdown.
-export async function GET(req: NextRequest) {
-  const q = req.nextUrl.searchParams.get('q') ?? '';
+// Busca ao vivo do dropdown do header.
+export async function GET(request: NextRequest) {
+  const term = request.nextUrl.searchParams.get('q') ?? '';
   try {
-    // predictiveSearch tolera gralhas; se não devolver nada, tenta a pesquisa normal.
-    let products: unknown[] = await predictiveSearch(q, 6);
-    if (products.length === 0) products = await searchProducts(q, 6);
+    // predictiveSearch tolera erros de digitação; se não retornar nada, tenta a busca normal.
+    let products: unknown[] = await predictiveSearch(term, 6);
+    if (products.length === 0) products = await searchProducts(term, 6);
     return NextResponse.json({ products });
   } catch {
-    // Falha do Shopify não deve rebentar o dropdown do header — devolve lista vazia.
+    // Falha da Shopify não deve quebrar o dropdown do header — retorna lista vazia.
     return NextResponse.json({ products: [] });
   }
 }

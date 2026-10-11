@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE } from '@/lib/site';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'Contacto',

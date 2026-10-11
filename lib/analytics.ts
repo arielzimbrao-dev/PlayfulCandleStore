@@ -1,12 +1,13 @@
-// GA4 / GTM dataLayer helpers. Events only fire in the browser; GTM decides what to do
-// with them (respecting Consent Mode). Purchase is tracked on Shopify's checkout/thank-you.
-type DL = { push: (o: Record<string, unknown>) => void };
+// Helpers do dataLayer do GA4 / GTM. Os eventos só disparam no navegador; o GTM decide o que
+// fazer com eles (respeitando o Consent Mode). A compra é rastreada no checkout/página de
+// obrigado da Shopify.
+type DataLayer = { push: (entry: Record<string, unknown>) => void };
 
-function dataLayer(): DL | null {
+function dataLayer(): DataLayer | null {
   if (typeof window === 'undefined') return null;
-  const w = window as unknown as { dataLayer?: Record<string, unknown>[] };
-  w.dataLayer = w.dataLayer || [];
-  return w.dataLayer as unknown as DL;
+  const globalWindow = window as unknown as { dataLayer?: Record<string, unknown>[] };
+  globalWindow.dataLayer = globalWindow.dataLayer || [];
+  return globalWindow.dataLayer as unknown as DataLayer;
 }
 
 export function pushEvent(event: string, data: Record<string, unknown> = {}) {
@@ -21,16 +22,17 @@ export type EcommItem = {
   item_category?: string;
 };
 
-// GA4 e-commerce event. Clears the previous `ecommerce` object first (GA4 best practice).
+// Evento de e-commerce do GA4. Limpa antes o objeto `ecommerce` anterior (boa prática do GA4),
+// senão os itens do evento anterior vazam para este.
 export function ecommerceEvent(
   event: 'view_item' | 'add_to_cart' | 'begin_checkout' | 'view_item_list',
   items: EcommItem[],
   extra: Record<string, unknown> = {},
 ) {
-  const dl = dataLayer();
-  if (!dl) return;
-  dl.push({ ecommerce: null });
-  dl.push({
+  const layer = dataLayer();
+  if (!layer) return;
+  layer.push({ ecommerce: null });
+  layer.push({
     event,
     ecommerce: { currency: 'EUR', items, ...extra },
   });

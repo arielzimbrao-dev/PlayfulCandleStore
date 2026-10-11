@@ -1,0 +1,126 @@
+// Texto corrido (páginas de conteúdo/jurídicas e descrição do produto) e acordeões.
+
+@use 'mixins' as *;
+
+// Páginas de conteúdo: h1 em Genty com gradiente, h2 rosa com uma estrelinha.
+.prose {
+  max-width: 72ch;
+
+  h1 {
+    margin-bottom: 8px;
+    font-family: var(--font-script);
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+    background: linear-gradient(90deg, #e8357b 0%, #faa455 27%, #e8357b 50%, #e8357b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    @include mobile {
+      font-size: 32px;
+    }
+  }
+
+  h2 {
+    margin: 32px 0 8px;
+    font-weight: 600;
+    font-size: 24px;
+    color: var(--color-pink);
+
+    @include mobile {
+      font-size: 16px;
+    }
+
+    &::before {
+      content: '✦ ';
+      vertical-align: middle;
+      font-size: 12px;
+      color: var(--color-yellow);
+    }
+  }
+
+  p,
+  li {
+    line-height: 1.7;
+    color: var(--color-ink);
+  }
+
+  // Lista com bolinha laranja no lugar do marcador padrão.
+  ul {
+    margin: 8px 0 16px;
+    padding-left: 16px;
+
+    li {
+      position: relative;
+      margin: 4px 0;
+      padding-left: 16px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--color-orange);
+      }
+    }
+  }
+
+  a {
+    font-weight: 600;
+    color: var(--color-coral-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: var(--color-pink);
+    }
+  }
+
+  .lead {
+    margin-bottom: 32px;
+    font-size: var(--font-size-lead);
+    color: var(--color-ink-soft);
+  }
+}
+
+// Acordeão com <details>/<summary> nativos (FAQ e informações do produto).
+.accordion {
+  details {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    list-style: none;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+
+    // Ícone "+" que vira "×" quando aberto.
+    &::after {
+      content: '+';
+      font-size: 24px;
+      color: var(--color-coral-dark);
+      transition: transform var(--duration) var(--ease-out);
+    }
+  }
+
+  details[open] summary::after {
+    transform: rotate(45deg);
+  }
+
+  details p {
+    margin-top: 8px;
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+  }
+}

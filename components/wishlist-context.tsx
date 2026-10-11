@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
-const KEY = 'pc-wishlist';
+const STORAGE_KEY = 'pc-wishlist';
 
 type WishlistValue = {
   items: string[]; // handles dos produtos
@@ -14,24 +14,25 @@ type WishlistValue = {
 
 const WishlistContext = createContext<WishlistValue | null>(null);
 
+// Favoritos (handles dos produtos) guardados só no navegador, sem conta.
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
 
-  // carrega do localStorage (à prova de modo privado / storage bloqueado)
+  // Carrega do localStorage (à prova de modo privado / armazenamento bloqueado).
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(KEY);
+      const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setItems(JSON.parse(raw));
     } catch {
-      /* storage indisponível */
+      /* armazenamento indisponível: a lista começa vazia */
     }
     setReady(true);
-    // sincroniza entre separadores
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === KEY) {
+    // Mantém a lista sincronizada entre abas abertas do site.
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === STORAGE_KEY) {
         try {
-          setItems(e.newValue ? JSON.parse(e.newValue) : []);
+          setItems(event.newValue ? JSON.parse(event.newValue) : []);
         } catch {
           /* ignora */
         }
@@ -44,7 +45,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!ready) return;
     try {
-      localStorage.setItem(KEY, JSON.stringify(items));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch {
       /* ignora */
     }

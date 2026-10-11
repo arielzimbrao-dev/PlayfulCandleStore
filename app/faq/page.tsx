@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import JsonLd from '@/components/JsonLd';
+import JsonLd from '@/components/JsonLd/JsonLd';
 import { faqLd } from '@/lib/jsonld';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 
 export const metadata: Metadata = {
   title: 'Perguntas frequentes (FAQ)',
@@ -22,7 +22,7 @@ export default function FaqPage() {
   return (
     <>
       <JsonLd data={faqLd(FAQ)} />
-      <article className="container prose faq">
+      <article className="container prose accordion">
         <Breadcrumbs items={[{ name: 'Início', url: '/' }, { name: 'Perguntas frequentes', url: '/faq' }]} />
         <h1>Perguntas frequentes</h1>
         <p className="lead">As perguntas que nos fazem mais vezes. Se faltar alguma, manda mensagem.</p>

@@ -5,20 +5,20 @@ type GraphQLResponse<T> = {
   errors?: { message: string }[];
 };
 
-type FetchOpts = {
-  /** ISR: seconds to cache. Omit/false for always-fresh (`no-store`, e.g. cart). */
+type FetchOptions = {
+  /** ISR: segundos de cache. Omitir/false para sempre fresco (`no-store`, ex.: carrinho). */
   revalidate?: number | false;
 };
 
 /**
- * Executa uma operacao GraphQL contra a Storefront API.
- * Server-only: usa o token privado se disponivel, senao o publico.
+ * Executa uma operação GraphQL contra a Storefront API.
+ * Somente servidor: usa o token privado se disponível, senão o público.
  * Leituras (produtos/coleções) passam `{ revalidate }` para ISR; o carrinho fica `no-store`.
  */
 export async function shopifyFetch<T>(
   query: string,
   variables: Record<string, unknown> = {},
-  opts: FetchOpts = {},
+  options: FetchOptions = {},
 ): Promise<T> {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const privateToken = process.env.SHOPIFY_STOREFRONT_PRIVATE_TOKEN;
@@ -36,26 +36,26 @@ export async function shopifyFetch<T>(
     );
   }
 
-  const cacheOpts =
-    typeof opts.revalidate === 'number'
-      ? { next: { revalidate: opts.revalidate } as const }
+  const cacheOptions =
+    typeof options.revalidate === 'number'
+      ? { next: { revalidate: options.revalidate } as const }
       : { cache: 'no-store' as const };
 
-  const res = await fetch(`https://${domain}/api/${API_VERSION}/graphql.json`, {
+  const response = await fetch(`https://${domain}/api/${API_VERSION}/graphql.json`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       ...authHeader,
     },
     body: JSON.stringify({ query, variables }),
-    ...cacheOpts,
+    ...cacheOptions,
   });
 
-  if (!res.ok) {
-    throw new Error(`Shopify HTTP ${res.status}: ${await res.text()}`);
+  if (!response.ok) {
+    throw new Error(`Shopify HTTP ${response.status}: ${await response.text()}`);
   }
 
-  const json = (await res.json()) as GraphQLResponse<T>;
+  const json = (await response.json()) as GraphQLResponse<T>;
 
   if (json.errors?.length) {
     throw new Error(`Shopify GraphQL: ${json.errors.map((e) => e.message).join('; ')}`);

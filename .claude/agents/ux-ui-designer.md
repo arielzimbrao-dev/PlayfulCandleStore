@@ -13,4 +13,4 @@ Priorities, in order: (1) low-friction path to purchase — buy in few clicks; (
 
 Design in **pt-PT** context (European Portuguese). Reference competitors: candlelicious.pt, petnest Shopify demo, TemplateMonster #70584 — as inspiration, not to copy.
 
-Deliver: concrete specs a developer can implement — spacing/type/color tokens, component states, breakpoints, and section-by-section layout. Reuse the existing Sass token structure in `styles/abstracts/`. Do NOT write production React wiring or Shopify data code — that is the frontend-developer's job; hand off with a clear spec.
+Deliver: concrete specs a developer can implement — spacing/type/color tokens, component states, breakpoints, and section-by-section layout. Reuse the existing design tokens in `styles/_tokens.scss` and breakpoints in `styles/_mixins.scss`. Do NOT write production React wiring or Shopify data code — that is the frontend-developer's job; hand off with a clear spec.

@@ -1,0 +1,24 @@
+// Trilha de navegação no topo das páginas internas.
+
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: var(--color-ink-soft);
+
+  a {
+    color: var(--color-ink-soft);
+
+    &:hover {
+      color: var(--color-coral-dark);
+    }
+  }
+
+  [aria-current] {
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+}

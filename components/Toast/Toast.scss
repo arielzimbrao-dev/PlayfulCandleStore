@@ -1,0 +1,59 @@
+// Pilha de avisos centralizada no rodapé da tela.
+
+@use '../../styles/mixins' as *;
+
+.toasts {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  max-width: 92vw;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: var(--shadow-md);
+  animation: toast-enter var(--duration) var(--ease-out);
+
+  @include reduced-motion {
+    animation: none;
+  }
+
+  &--success {
+    background: var(--color-ink);
+    color: #fff;
+
+    i {
+      color: #7ee0b8;
+    }
+  }
+
+  &--error {
+    background: var(--color-coral-dark);
+    color: #fff;
+  }
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

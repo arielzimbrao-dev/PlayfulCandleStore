@@ -1,0 +1,79 @@
+// Barra de apelos (Figma): fundo lilás-claro, ícones redondos e textos rosa.
+// Desktop: ★ apelo apelo apelo ★ numa grade de 5 colunas.
+// Celular: estrelas fixas nas pontas e um apelo de cada vez no meio (scroll-snap).
+
+@use '../../styles/mixins' as *;
+
+.appeals {
+  background: #fff4fe;
+
+  &__inner {
+    display: grid;
+    grid-template-columns: auto 20% 20% 20% auto;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 90%;
+    max-width: var(--site-max-width);
+    height: 88px;
+    margin-inline: auto;
+    padding: 16px 0;
+
+    @include mobile {
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      width: 100%;
+      padding: 16px;
+    }
+  }
+
+  &__star {
+    flex: none;
+    width: 32px;
+    height: 32px;
+  }
+
+  // Desktop: display: contents → os itens entram direto nas colunas da grade do __inner.
+  &__track {
+    display: contents;
+
+    @include mobile {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 100%;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      @include hide-scrollbar;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--color-pink);
+
+    @include mobile {
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+    }
+  }
+
+  &__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+
+    img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+  }
+}

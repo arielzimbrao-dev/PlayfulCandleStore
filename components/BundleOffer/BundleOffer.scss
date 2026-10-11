@@ -1,0 +1,113 @@
+// "Leva junto": card + card = total, tudo numa linha.
+// Até 1199px o total desce para baixo dos cards (senão os cards ficam minúsculos).
+
+@use '../../styles/mixins' as *;
+
+.bundle {
+  .section__head {
+    justify-content: center;
+    text-align: center;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+
+    @include mobile {
+      gap: 8px;
+    }
+
+    .product-card {
+      flex: 0 1 360px;
+      min-width: 0;
+    }
+  }
+
+  &__items {
+    display: contents;
+  }
+
+  // Sinais "+" e "=" entre os cards.
+  &__operator {
+    flex: none;
+    font-weight: 800;
+    font-size: 40px;
+    line-height: 1;
+    color: var(--color-pink);
+
+    @include mobile {
+      font-size: 24px;
+    }
+  }
+
+  &__total {
+    display: flex;
+    flex: 0 0 300px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+
+    @include mobile {
+      flex: 0 0 220px;
+    }
+
+    small {
+      font-size: 16px;
+      color: var(--color-ink-soft);
+    }
+
+    .btn {
+      margin-top: 8px;
+    }
+  }
+
+  &__price {
+    font-family: var(--font-script);
+    font-size: 48px;
+    line-height: 1;
+    color: var(--color-pink);
+
+    @include mobile {
+      font-size: 32px;
+    }
+  }
+
+  &__promo {
+    display: inline-flex;
+    padding: 4px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--color-coral);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  @include below(1199px) {
+    &__row {
+      flex-wrap: wrap;
+      gap: 8px 16px;
+
+      .product-card {
+        flex: 1 1 0;
+        max-width: 360px;
+      }
+
+      > .bundle__operator {
+        flex-basis: 100%;
+        text-align: center;
+      }
+    }
+
+    &__total {
+      flex: 1 1 100%;
+      align-items: center;
+      text-align: center;
+
+      .btn {
+        width: min(100%, 416px);
+      }
+    }
+  }
+}

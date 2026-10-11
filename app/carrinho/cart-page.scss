@@ -1,0 +1,177 @@
+// Página /carrinho: lista de produtos à esquerda, resumo fixo à direita.
+
+@use '../../styles/mixins' as *;
+
+.cart-page {
+  // Espaço reservado enquanto o carrinho carrega (evita o rodapé "pular").
+  &--loading {
+    min-height: 44vh;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 40px;
+    margin-top: 16px;
+
+    @include mobile {
+      gap: 24px;
+    }
+
+    @include above(820px) {
+      grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.9fr);
+    }
+  }
+
+  &__lines {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  &__summary {
+    position: sticky;
+    top: calc(var(--header-height) + 16px);
+    padding: 24px;
+    border-radius: var(--radius-xl);
+    background: var(--color-blush);
+  }
+
+  &__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 16px 0;
+    font-size: 16px;
+  }
+
+  &__continue {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-ink-soft);
+
+    &:hover {
+      color: var(--color-coral-dark);
+    }
+  }
+}
+
+// Um produto no carrinho: miniatura · nome + quantidade · preço.
+.cart-line {
+  display: grid;
+  grid-template-columns: 88px 1fr auto;
+  align-items: start;
+  gap: 16px;
+  min-width: 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+
+  @include below(480px) {
+    grid-template-columns: 64px 1fr auto;
+  }
+
+  &__thumb {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 88px;
+    height: 88px;
+    overflow: hidden;
+    background: var(--color-blush);
+    font-size: 32px;
+
+    @include below(480px) {
+      width: 64px;
+      height: 64px;
+    }
+  }
+
+  &__info {
+    min-width: 0;
+
+    small {
+      color: var(--color-ink-soft);
+    }
+  }
+
+  &__name {
+    display: block;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  &__price {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+// Mensagem de oferta (vira a nota do pedido na Shopify).
+.gift-note {
+  margin: 16px 0;
+  padding: 8px 16px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+
+  > summary {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  &__input {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-page);
+    font: inherit;
+    font-size: 16px;
+    color: var(--color-ink);
+    resize: vertical;
+  }
+}
+
+// Carrinho vazio: tudo centralizado, com um ícone grande.
+.cart-empty {
+  display: grid;
+  place-items: center;
+  gap: 16px;
+  min-height: 52vh;
+  padding-block: 80px;
+
+  @include mobile {
+    padding-block: 40px;
+  }
+
+  h1 {
+    font-size: 40px;
+
+    @include mobile {
+      font-size: 32px;
+    }
+  }
+
+  &__icon {
+    font-size: 72px;
+    line-height: 1;
+    filter: drop-shadow(0 6px 14px rgba(42, 21, 36, 0.18));
+
+    @include mobile {
+      font-size: 48px;
+    }
+  }
+
+  &__message {
+    max-width: 40ch;
+    font-size: var(--font-size-lead);
+    color: var(--color-ink-soft);
+  }
+}

@@ -1,0 +1,35 @@
+// Caixa rosada com o texto do frete grátis e uma barra de progresso.
+
+.free-shipping {
+  margin: 8px 0 16px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-blush);
+
+  &__text {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-ink);
+
+    i {
+      color: var(--color-coral-dark);
+    }
+  }
+
+  &__track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    background: var(--color-border);
+
+    // Parte preenchida: a largura vem do componente (percentual do caminho até o frete grátis).
+    span {
+      display: block;
+      height: 100%;
+      border-radius: var(--radius-pill);
+      background: var(--color-coral);
+      transition: width var(--duration-slow) var(--ease-out);
+    }
+  }
+}
