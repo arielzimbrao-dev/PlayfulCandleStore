@@ -56,11 +56,57 @@ docker run --env-file .env.local -p 3000:3000 playfulcandles
 
 ## Estrutura
 
-- `lib/shopify/` — cliente GraphQL, queries, mutations, tipos e funções de alto nível.
-- `app/api/cart/route.ts` — carrinho; `cartId` em cookie httpOnly (GET/POST/PATCH/DELETE).
-- `components/` — grid de produtos, botão de adicionar, drawer e contexto do carrinho.
-- Checkout: redireciona para `cart.checkoutUrl` (checkout hospedado da Shopify).
+```
+app/                      → rotas (App Router)
+  page.tsx                → home
+  produtos/               → /produtos (loja) e /produtos/[handle] (página de produto)
+  categorias/[handle]/    → listagem por categoria (velas, wax melts, snapbars, queimadores)
+  colecoes/               → /colecoes e /colecoes/[handle]
+  carrinho/ pesquisa/ favoritos/
+  faq/ envios/ devolucoes/ contacto/ termos/ privacidade/   → páginas de conteúdo
+  api/                    → cart, search, reviews, revalidate (webhook ISR), health
+  layout.tsx              → layout raiz (header, footer, gaveta do carrinho, cookies, analytics)
+  fonts.ts                → Poppins + Genty via next/font
+
+components/               → uma pasta por componente, com o .tsx e o .scss dele
+  Footer/
+    Footer.tsx            → importa o próprio estilo: import './Footer.scss'
+    Footer.scss
+    VipBanner/            → subcomponente usado só pelo Footer fica dentro da pasta dele
+  cart/                   → peças partilhadas pela gaveta e pela página do carrinho
+  cart-context.tsx, wishlist-context.tsx, LanguageProvider.tsx, useDismiss.ts
+                          → contextos e hooks partilhados (não são componentes visuais)
+
+styles/                   → só o que é global
+  global.scss             → ponto de entrada (importado no app/layout.tsx)
+  _tokens.scss            → cores, fontes, espaços, cantos, sombras, z-index (variáveis CSS)
+  _mixins.scss            → breakpoints (@include mobile, tablet…) e mixins
+  _base.scss, _shared.scss, _prose.scss → reset, utilitários (.btn, .wrap…) e texto corrido
+
+lib/
+  shopify/                → cliente GraphQL, queries, mutations, tipos e Admin API (estoque, promoções)
+  filters.ts, sort.ts     → filtros e ordenação das listagens
+  bundle.ts               → regras do "Leva junto"
+  i18n.ts                 → textos da loja (PT/ES/EN)
+  jsonld.ts, site.ts      → SEO (dados estruturados) e dados da empresa
+  analytics.ts            → eventos de e-commerce (GA4/GTM)
+
+scripts/                  → scripts pontuais de manutenção da loja via Admin API
+                            (preços, estoque, SKUs, fotos, copy dos produtos…)
+design/                   → design system (design-system.md), mockup e fontes
+public/                   → imagens, ícones e llms.txt
+```
+
+Convenções:
+
+- **Estilos:** cada componente tem o seu `.scss` ao lado do `.tsx`. Os estilos globais ficam em
+  `@layer`, por isso o CSS de um componente sempre vence um utilitário global. Classes em BEM por
+  extenso (`.product-card__name`), medidas em px múltiplos de 8. Detalhes e lista de classes em
+  [`design/design-system.md`](design/design-system.md).
+- **Código:** nomes autoexplicativos (sem abreviações) e comentários em pt-BR. A copy da loja é pt-PT.
+- **Checkout:** redireciona para `cart.checkoutUrl` (checkout hospedado da Shopify). O carrinho guarda o
+  `cartId` num cookie httpOnly (`app/api/cart/route.ts`).
 
 ## Fora de escopo (próximas fases)
 
-Customização visual, Customer Account API (login), webhooks de pedidos.
+Customer Account API (login no site), webhooks de pedidos, rotas por idioma (`/es`, `/en` + hreflang).
