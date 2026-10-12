@@ -56,7 +56,9 @@ export function websiteLd() {
   };
 }
 
-export function productLd(product: Product) {
+// transitDays: prazo de entrega em Portugal, lido da tarifa na Shopify (getShippingZones). Sem ele,
+// o transitTime é omitido.
+export function productLd(product: Product, transitDays?: { min: number; max: number } | null) {
   const price = product.priceRange.minVariantPrice;
   const sourceImages = product.images.length
     ? product.images
@@ -108,14 +110,10 @@ export function productLd(product: Product) {
       // O Google recomenda priceValidUntil; sem promoção com data, damos validade de ~1 ano.
       priceValidUntil: new Date(Date.now() + 365 * DAY_MS).toISOString().slice(0, 10),
       seller: { '@type': 'Organization', name: SITE.name },
-      // Só declaramos frete grátis quando o produto sozinho passa do limite (senão o Google recebe
-      // um valor falso). Abaixo disso omitimos shippingRate e a tarifa real vem do Merchant Center.
-      // ponytail: quando a tabela de frete estiver fechada, passar o valor real em vez de omitir.
+      // Sem shippingRate: os portes dependem do peso da encomenda (tarifas na Shopify) e o Google
+      // recebe o valor real pelo Merchant Center.
       shippingDetails: {
         '@type': 'OfferShippingDetails',
-        ...(Number(price.amount) >= SITE.freeShippingThreshold
-          ? { shippingRate: { '@type': 'MonetaryAmount', value: '0', currency: 'EUR' } }
-          : {}),
         shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'PT' },
         deliveryTime: {
           '@type': 'ShippingDeliveryTime',
@@ -137,7 +135,9 @@ export function productLd(product: Product) {
               ],
             },
           },
-          transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+          ...(transitDays
+            ? { transitTime: { '@type': 'QuantitativeValue', minValue: transitDays.min, maxValue: transitDays.max, unitCode: 'DAY' } }
+            : {}),
         },
       },
       hasMerchantReturnPolicy: {

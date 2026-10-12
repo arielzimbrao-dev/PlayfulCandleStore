@@ -52,7 +52,7 @@ components/Footer/
 ### Apoio
 | Token | Hex | Uso |
 |---|---|---|
-| `--color-coral` | `#ff4d7d` | Setas do carrossel, barra de frete grátis, contador do header. |
+| `--color-coral` | `#ff4d7d` | Setas do carrossel, contador do header. |
 | `--color-coral-dark` | `#cc1a52` | Hover dos rosas; rosa como texto pequeno (links, eyebrow); `.btn--primary`. |
 | `--color-coral-darker` | `#a81244` | Hover do `.btn--primary` e do botão de checkout. |
 | `--color-tangerine` | `#ff7a1f` | Hover dos botões laranja. |
@@ -218,7 +218,6 @@ Header: `$header-compact` (1535px — a pesquisa vira só a lupa) e `$header-mob
 | Componente | Classes |
 |---|---|
 | `CartDrawer` | `.drawer` (`.is-open`) · `__overlay`, `__header`, `__close`, `__lines`, `__line`, `__thumb`, `__line-info`, `__line-name`, `__line-price`, `__footer`, `__total` |
-| `cart/FreeShippingBar` | `.free-shipping` · `__text`, `__track` |
 | `cart/DiscountForm` | `.discount` · `__input`, `__applied` |
 | `cart/LineQuantity` | `.line-quantity` · `__step`, `__remove` |
 | `cart/CheckoutButton` | `.checkout-button` |

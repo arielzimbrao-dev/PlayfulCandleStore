@@ -38,9 +38,10 @@ async function getToken(): Promise<{ domain: string; token: string }> {
 export async function adminFetch<T>(
   query: string,
   variables: Record<string, unknown> = {},
+  version = API_VERSION,
 ): Promise<T> {
   const { domain, token } = await getToken();
-  const response = await fetch(`https://${domain}/admin/api/${API_VERSION}/graphql.json`, {
+  const response = await fetch(`https://${domain}/admin/api/${version}/graphql.json`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Shopify-Access-Token': token },
     body: JSON.stringify({ query, variables }),
@@ -196,5 +197,82 @@ export async function getActivePromos(): Promise<Promo[]> {
     // Admin API fora do ar: serve o último resultado (mesmo vencido) em vez de sumir com as
     // promoções.
     return promoCache?.promos ?? [];
+  }
+}
+
+// ── Tarifas de envio (Definições → Frete e entrega) ──────────────────────────────────────────────
+// O site não guarda valores de portes: lê as zonas e tarifas do perfil de envio da Shopify.
+export type ShippingRate = { name: string; price: number; minKg: number | null; maxKg: number | null };
+// days: prazo de entrega = "Tempo de trânsito" do 1.º escalão da zona (em dias).
+export type ShippingZone = { name: string; rates: ShippingRate[]; days: { min: number; max: number } | null };
+
+type RawCondition = {
+  field: string;
+  operator: string;
+  conditionCriteria: { value?: number; unit?: string };
+};
+type RawMethod = {
+  name: string;
+  active: boolean;
+  rateProvider: { price?: { amount: string }; minTransitTime?: number | null; maxTransitTime?: number | null };
+  methodConditions: RawCondition[];
+};
+
+const toKg = ({ value = 0, unit }: { value?: number; unit?: string }) =>
+  unit === 'GRAMS' ? value / 1000 : unit === 'POUNDS' ? value * 0.4536 : unit === 'OUNCES' ? value * 0.02835 : value;
+
+// ponytail: cache em memória de 5 min, como as promoções — tarifas mudam raramente.
+let shippingCache: { at: number; zones: ShippingZone[] } | null = null;
+
+export async function getShippingZones(): Promise<ShippingZone[]> {
+  if (shippingCache && Date.now() - shippingCache.at < 5 * 60_000) return shippingCache.zones;
+  try {
+    const data = await adminFetch<{
+      deliveryProfiles: { nodes: { default: boolean; profileLocationGroups: {
+        locationGroupZones: { nodes: { zone: { name: string }; methodDefinitions: { nodes: RawMethod[] } }[] };
+      }[] }[] };
+    }>(
+      `{ deliveryProfiles(first:10){ nodes{ default profileLocationGroups{ locationGroupZones(first:20){ nodes{
+        zone{ name } methodDefinitions(first:50){ nodes{ name active
+          rateProvider{ ... on DeliveryRateDefinition{ price{ amount } minTransitTime maxTransitTime } }
+          methodConditions{ field operator conditionCriteria{ ... on Weight{ value unit } } } } } } } } } } }`,
+      {},
+      // ponytail: o tempo de trânsito só existe na API unstable; se ela mudar, cai no catch e a
+      // página Envios mostra "o valor aparece no checkout".
+      'unstable',
+    );
+    // Só o perfil geral: perfis personalizados valem para produtos específicos.
+    const profile = data.deliveryProfiles.nodes.find((node) => node.default);
+    const zones = (profile?.profileLocationGroups ?? []).flatMap((group) =>
+      group.locationGroupZones.nodes.map(({ zone, methodDefinitions }) => {
+        const rates = methodDefinitions.nodes
+          .filter((method) => method.active && method.rateProvider.price)
+          .map((method) => {
+            const weight = (op: string) => {
+              const condition = method.methodConditions.find(
+                (c) => c.field === 'TOTAL_WEIGHT' && c.operator.startsWith(op),
+              );
+              return condition ? toKg(condition.conditionCriteria) : null;
+            };
+            return {
+              name: method.name,
+              price: Number(method.rateProvider.price!.amount),
+              minKg: weight('GREATER'),
+              maxKg: weight('LESS'),
+              transit: method.rateProvider,
+            };
+          })
+          .sort((a, b) => (a.minKg ?? 0) - (b.minKg ?? 0) || a.price - b.price);
+        const transit = rates[0]?.transit;
+        const days = transit?.minTransitTime && transit.maxTransitTime
+          ? { min: transit.minTransitTime / 86_400, max: transit.maxTransitTime / 86_400 }
+          : null;
+        return { name: zone.name, rates: rates.map(({ transit: _, ...rate }) => rate), days };
+      }),
+    );
+    shippingCache = { at: Date.now(), zones };
+    return zones;
+  } catch {
+    return shippingCache?.zones ?? [];
   }
 }

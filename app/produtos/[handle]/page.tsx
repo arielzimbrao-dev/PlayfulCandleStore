@@ -12,7 +12,7 @@ import TrackProductView from '@/components/TrackProductView/TrackProductView';
 import { productLd } from '@/lib/jsonld';
 import { productCategory } from '@/lib/filters';
 import { getProduct } from '@/lib/shopify';
-import { getVariantStock } from '@/lib/shopify/admin';
+import { getShippingZones, getVariantStock } from '@/lib/shopify/admin';
 import { getSeasonalCollection } from '@/lib/shopify/types';
 import TwoToneTitle from '@/components/TwoToneTitle/TwoToneTitle';
 import './product-page.scss';
@@ -70,7 +70,10 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   const shopifyProduct = await getProduct(handle);
   if (!shopifyProduct) notFound();
   // O estoque vem da Admin API (a Storefront API não o expõe com o nosso token).
-  const stockByVariant = await getVariantStock(shopifyProduct.variants.map((variant) => variant.id));
+  const [stockByVariant, shippingZones] = await Promise.all([
+    getVariantStock(shopifyProduct.variants.map((variant) => variant.id)),
+    getShippingZones(),
+  ]);
   const product = {
     ...shopifyProduct,
     variants: shopifyProduct.variants.map((variant) => ({ ...variant, quantityAvailable: stockByVariant[variant.id] })),
@@ -85,7 +88,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
   return (
     <>
-      <JsonLd data={productLd(product)} />
+      <JsonLd data={productLd(product, shippingZones.find((zone) => zone.name.includes('Portugal'))?.days)} />
       <TrackProductView
         id={product.id}
         name={product.title}

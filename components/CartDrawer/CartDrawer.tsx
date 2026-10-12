@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useCart } from '@/components/cart-context';
 import { useT } from '@/components/LanguageProvider';
 import { formatMoney } from '@/lib/format';
-import FreeShippingBar from '@/components/cart/FreeShippingBar/FreeShippingBar';
 import LineQuantity from '@/components/cart/LineQuantity/LineQuantity';
 import DiscountForm from '@/components/cart/DiscountForm/DiscountForm';
 import CheckoutButton from '@/components/cart/CheckoutButton/CheckoutButton';
@@ -88,7 +87,6 @@ export default function CartDrawer() {
           </div>
         ) : (
           <div className="drawer__content">
-            <FreeShippingBar subtotal={cart.cost.subtotalAmount} />
 
             <ul className="drawer__lines">
               {cart.lines.map((line) => {
@@ -131,7 +129,7 @@ export default function CartDrawer() {
                 <strong>{formatMoney(cart.cost.totalAmount)}</strong>
               </p>
               <CheckoutButton cart={cart} />
-              <TrustList items={['freeShip', 'securePay']} />
+              <TrustList items={['shipping', 'securePay']} />
             </footer>
           </div>
         )}

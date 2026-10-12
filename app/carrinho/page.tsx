@@ -8,7 +8,6 @@ import { useT } from '@/components/LanguageProvider';
 import { formatMoney } from '@/lib/format';
 import TwoToneTitle from '@/components/TwoToneTitle/TwoToneTitle';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
-import FreeShippingBar from '@/components/cart/FreeShippingBar/FreeShippingBar';
 import LineQuantity from '@/components/cart/LineQuantity/LineQuantity';
 import DiscountForm from '@/components/cart/DiscountForm/DiscountForm';
 import CheckoutButton from '@/components/cart/CheckoutButton/CheckoutButton';
@@ -43,7 +42,7 @@ export default function CartPage() {
         <Link className="btn btn--primary btn--large" href="/produtos">
           {t.cart.browse}
         </Link>
-        <TrustList items={['freeShip', 'delivery', 'easyReturns', 'securePay']} inline />
+        <TrustList items={['shipping', 'delivery', 'easyReturns', 'securePay']} inline />
       </section>
     );
   }
@@ -100,7 +99,6 @@ export default function CartPage() {
         </ul>
 
         <aside className="cart-page__summary">
-          <FreeShippingBar subtotal={cart.cost.subtotalAmount} />
           <DiscountForm />
 
           <details className="gift-note" open={!!cart.note}>
@@ -124,7 +122,7 @@ export default function CartPage() {
           <Link href="/produtos" className="cart-page__continue">
             ← {t.cart.browse}
           </Link>
-          <TrustList items={['freeShip', 'securePay', 'easyReturns']} />
+          <TrustList items={['shipping', 'securePay', 'easyReturns']} />
         </aside>
       </div>
     </section>

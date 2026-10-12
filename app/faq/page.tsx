@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const FAQ = [
   { question: 'As velas são veganas?', answer: 'Sim. Usamos ceras vegetais e biodegradáveis, sem produtos de origem animal.' },
   { question: 'Quanto tempo dura uma vela?', answer: 'Depende do tamanho, mas as velas de copo duram tipicamente entre 30 e 40 horas de queima. Segue as instruções da etiqueta para um melhor aproveitamento.' },
-  { question: 'Para onde enviam?', answer: 'Enviamos para Portugal continental e Espanha peninsular. Expedimos a encomenda em até 24 horas em dias úteis (ao fim de semana e em feriados segue no dia útil seguinte) e a entrega demora 24/72h a partir daí. Portes grátis acima de €35 em Portugal continental.' },
+  { question: 'Para onde enviam?', answer: 'Enviamos para Portugal continental e Espanha peninsular. Expedimos a encomenda em até 24 horas em dias úteis (ao fim de semana e em feriados segue no dia útil seguinte). Os prazos de entrega e os portes de cada zona estão na página Envios & portes.' },
   { question: 'Como funcionam os snapbars e wax melts?', answer: 'Partes um cubo do snapbar (ou colocas um wax melt), aqueces num queimador e a casa enche-se de aroma em minutos, sem chama.' },
   { question: 'Posso oferecer como presente?', answer: 'Podes. Vai tudo bem embalado e, no carrinho, podes escrever a mensagem de oferta que segue com a encomenda.' },
   { question: 'Que métodos de pagamento aceitam?', answer: 'Multibanco, MB WAY, Visa, Mastercard e PayPal, no checkout seguro da Shopify.' },

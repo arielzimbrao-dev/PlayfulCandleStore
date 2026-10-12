@@ -5,7 +5,7 @@ import './TrustList.scss';
 
 // Ícone de cada selo de confiança. O texto vem de t.product.<chave>.
 const ICONS = {
-  freeShip: 'fa-truck-fast',
+  shipping: 'fa-truck-fast',
   delivery: 'fa-clock',
   easyReturns: 'fa-rotate-left',
   securePay: 'fa-lock',
@@ -13,7 +13,7 @@ const ICONS = {
 
 type TrustItem = keyof typeof ICONS;
 
-// Selos de confiança (frete grátis, pagamento seguro…) mostrados no carrinho.
+// Selos de confiança (envio, pagamento seguro…) mostrados no carrinho.
 export default function TrustList({ items, inline = false }: { items: TrustItem[]; inline?: boolean }) {
   const t = useT();
   return (

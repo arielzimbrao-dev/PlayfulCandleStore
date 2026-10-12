@@ -14,7 +14,7 @@ Detalhe técnico completo em `audit.md`.
 | # | O quê | Onde | Porquê |
 |---|---|---|---|
 | 1 | **Fotos dos produtos** — 12 dos 18 produtos não têm foto nenhuma (incluindo o queimador) | Admin → Produtos | Os cards mostram um placeholder; é o maior travão à conversão |
-| 2 | **Domínio do checkout** — hoje abre em `playfulcandles.myshopify.com` | Admin → Definições → Domínios | O cliente sai da marca a meio da compra. ⚠️ Usar um subdomínio (`checkout.playfulcandles.com`), senão choca com o site headless |
+| 2 | ~~**Domínio do checkout**~~ ✅ feito (12 out 2026): `checkout.playfulcandles.com` é o principal (CNAME DNS only na Cloudflare); o `theme.liquid` do tema publicado redireciona para `playfulcandles.com` | Admin → Definições → Domínios | ⚠️ Ao trocar de tema, copiar o redirect para o novo `theme.liquid` |
 | 3 | **SKU (e EAN, se houver)** em todas as variantes | Admin → Produtos → Variantes | Sem isto o Google Shopping fica limitado e o schema usa o ID interno |
 | 4 | **Scope `unauthenticated_read_product_inventory`** no canal Headless | Admin → Apps → Headless | Sem ele não dá para mostrar "Só restam N" |
 | 5 | **Emails de carrinho abandonado** | Admin → Marketing → Automações | Nativo da Shopify, recupera vendas sem newsletter |
@@ -88,8 +88,7 @@ O menu/footer apontam para estas **handles exatas**. Estado atual verificado na 
 - [ ] Testar um pagamento em modo de teste.
 
 ### 1.5 Envios & impostos
-- [ ] Criar **zona de envio** para **Portugal continental** com a regra de **portes grátis acima de €35** (o site anuncia isto e a barra do carrinho usa €35 — se mudares o valor, avisa para ajustar `FREE_SHIPPING_THRESHOLD` no código).
-- [ ] Definir tarifas para valores abaixo de €35.
+- [x] Zonas de envio com tarifas por peso (€ por caixa de ~1 kg). O site lê as tarifas da Shopify (`getShippingZones` em `lib/shopify/admin.ts`) — sem portes grátis, nada fixo no código.
 - [ ] Zona separada para **Ilhas** (Açores/Madeira) se aplicável.
 - [ ] Configurar **IVA** (incluído no preço, taxa PT).
 

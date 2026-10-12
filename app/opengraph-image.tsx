@@ -28,7 +28,7 @@ export default function OgImage() {
           Velas artesanais feitas à mão em Lisboa 🕯️
         </div>
         <div style={{ fontSize: 28, marginTop: 32, opacity: 0.9 }}>
-          Portes grátis acima de €35 · Entrega em 24/72h
+          Feitas com cera vegetal · Expedição em 24h
         </div>
       </div>
     ),

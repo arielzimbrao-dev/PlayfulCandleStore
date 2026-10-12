@@ -12,10 +12,8 @@ export const SITE = {
   accountUrl: process.env.NEXT_PUBLIC_ACCOUNT_URL || 'https://shopify.com/98533048648/account',
   locale: 'pt_PT',
   description:
-    'Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com ceras vegetais e fragrâncias premium. Portes grátis acima de €35 e entrega em 24/72h em Portugal continental.',
+    'Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com ceras vegetais e fragrâncias premium. Expedição em 24h para Portugal continental e Espanha peninsular.',
   currency: 'EUR',
-  // € — frete grátis acima deste valor (manter alinhado com a regra configurada na Shopify).
-  freeShippingThreshold: 35,
   logo: '/images/logo.png',
   telephone: '+351937820986', // também WhatsApp
   whatsapp: 'https://wa.me/351937820986',
