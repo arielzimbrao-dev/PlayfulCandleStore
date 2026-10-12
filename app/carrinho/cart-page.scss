@@ -110,35 +110,6 @@
   }
 }
 
-// Mensagem de oferta (vira a nota do pedido na Shopify).
-.gift-note {
-  margin: 16px 0;
-  padding: 8px 16px;
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-
-  > summary {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--color-ink);
-    cursor: pointer;
-  }
-
-  &__input {
-    width: 100%;
-    margin-top: 8px;
-    padding: 8px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-page);
-    font: inherit;
-    font-size: 16px;
-    color: var(--color-ink);
-    resize: vertical;
-  }
-}
-
 // Carrinho vazio: tudo centralizado, com um ícone grande.
 .cart-empty {
   display: grid;

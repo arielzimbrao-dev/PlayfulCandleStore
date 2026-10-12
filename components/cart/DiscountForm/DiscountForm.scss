@@ -17,8 +17,12 @@
     width: 100%;
   }
 
+  // Um desconto por linha: nome à esquerda, valor à direita.
   &__applied {
-    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 0 8px;
     font-size: 16px;
     font-weight: 700;
     color: var(--color-success);

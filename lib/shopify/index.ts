@@ -48,7 +48,11 @@ type RawProduct = Omit<
   peso: { value: string } | null;
   reviews: { value: string } | null;
 };
-type RawCart = Omit<Cart, 'lines'> & { lines: Connection<CartLine> };
+type RawAllocation = { discountedAmount: { amount: string; currencyCode: string }; code?: string };
+type RawCart = Omit<Cart, 'lines'> & {
+  discountAllocations: RawAllocation[];
+  lines: Connection<CartLine & { discountAllocations: RawAllocation[] }>;
+};
 
 type Metafield = { value: string } | null;
 
@@ -122,7 +126,21 @@ const normalizeProduct = ({ scent, peso, reviews, ...product }: RawProduct): Pro
   reviews: parseReviews(reviews),
 });
 
-const normalizeCart = (cart: RawCart): Cart => ({ ...cart, lines: cart.lines.nodes });
+// Soma o que cada código desconta (nas linhas e no total do carrinho) e descarta as alocações
+// cruas — elas trazem o código, que para os packs não deve chegar ao browser.
+function normalizeCart({ discountAllocations, lines, ...cart }: RawCart): Cart {
+  const allocations = [...discountAllocations, ...lines.nodes.flatMap((line) => line.discountAllocations)];
+  return {
+    ...cart,
+    discountCodes: cart.discountCodes.map((discount) => {
+      const matching = allocations.filter((a) => a.code?.toLowerCase() === discount.code.toLowerCase());
+      if (!matching.length) return discount;
+      const amount = matching.reduce((sum, a) => sum + Number(a.discountedAmount.amount), 0);
+      return { ...discount, amount: { amount: amount.toFixed(2), currencyCode: matching[0].discountedAmount.currencyCode } };
+    }),
+    lines: lines.nodes.map(({ discountAllocations: _, ...line }) => line),
+  };
+}
 
 type CartMutationResult = {
   cart: RawCart | null;

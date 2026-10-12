@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useCart } from '@/components/cart-context';
 import { useToast } from '@/components/Toast/Toast';
 import { useT } from '@/components/LanguageProvider';
+import { formatMoney } from '@/lib/format';
 import './DiscountForm.scss';
 
 // Campo de código de desconto + lista dos códigos já aplicados ao carrinho.
@@ -12,9 +13,7 @@ export default function DiscountForm() {
   const t = useT();
   const toast = useToast();
   const [code, setCode] = useState('');
-  const appliedCodes = (cart?.discountCodes ?? [])
-    .filter((discount) => discount.applicable)
-    .map((discount) => discount.code);
+  const appliedCodes = (cart?.discountCodes ?? []).filter((discount) => discount.applicable);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -39,11 +38,14 @@ export default function DiscountForm() {
           {t.cart.discountApply}
         </button>
       </form>
-      {appliedCodes.length > 0 && (
-        <p className="discount__applied">
-          <i className="fa-solid fa-tag" aria-hidden="true" /> {appliedCodes.join(', ')}
+      {appliedCodes.map((discount) => (
+        <p key={discount.label ?? discount.code} className="discount__applied">
+          <span>
+            <i className="fa-solid fa-tag" aria-hidden="true" /> {discount.label ?? discount.code}
+          </span>
+          {discount.amount && <span>−{formatMoney(discount.amount)}</span>}
         </p>
-      )}
+      ))}
     </>
   );
 }

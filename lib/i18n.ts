@@ -181,10 +181,6 @@ const pt = {
     discountApply: 'Aplicar',
     stockAdjusted: 'Ajustámos a quantidade ao stock disponível.',
     emptyCta: 'Escolhe um aroma e dá mood à casa. ✨',
-    giftSummary: '🎁 É para oferecer? Escreve a mensagem',
-    giftPlaceholder: 'Ex.: Parabéns, mana! Com amor, a Rita ✨',
-    giftLabel: 'Mensagem de oferta',
-    giftSaved: 'Mensagem guardada. Segue com a encomenda.',
   },
   lang: { label: 'Idioma' },
   consent: {
@@ -377,10 +373,6 @@ const es: Dictionary = {
     discountApply: 'Aplicar',
     stockAdjusted: 'Ajustamos la cantidad al stock disponible.',
     emptyCta: 'Elige un aroma y dale mood a tu casa. ✨',
-    giftSummary: '🎁 ¿Es para regalar? Escribe el mensaje',
-    giftPlaceholder: 'Ej.: ¡Felicidades, hermana! Con amor, Rita ✨',
-    giftLabel: 'Mensaje de regalo',
-    giftSaved: 'Mensaje guardado. Sigue con el pedido.',
   },
   lang: { label: 'Idioma' },
   consent: {
@@ -562,10 +554,6 @@ const en: Dictionary = {
     discountApply: 'Apply',
     stockAdjusted: 'We adjusted the quantity to the stock available.',
     emptyCta: 'Pick a scent and set the mood. ✨',
-    giftSummary: '🎁 Is it a gift? Write your message',
-    giftPlaceholder: 'E.g.: Happy birthday, sis! Love, Rita ✨',
-    giftLabel: 'Gift message',
-    giftSaved: 'Message saved. Carry on with your order.',
   },
   lang: { label: 'Language' },
   consent: {

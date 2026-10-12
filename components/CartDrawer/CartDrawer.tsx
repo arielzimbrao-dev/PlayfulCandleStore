@@ -116,7 +116,7 @@ export default function CartDrawer() {
                       {line.merchandise.title !== 'Default Title' && <small>{line.merchandise.title}</small>}
                       <LineQuantity line={line} />
                     </div>
-                    <span className="drawer__line-price">{formatMoney(line.cost.totalAmount)}</span>
+                    <span className="drawer__line-price">{formatMoney(line.cost.subtotalAmount)}</span>
                   </li>
                 );
               })}

@@ -47,10 +47,22 @@ async function syncPackCodes(cart: Cart): Promise<Cart> {
   return { ...(await updateCartDiscountCodes(cart.id, wanted)), warnings: cart.warnings };
 }
 
+// O código de um pack nunca vai para o browser (para ninguém o copiar): troca-o por um nome.
+// ponytail: o checkout da Shopify continua a mostrar o código — aí não temos controlo.
+async function hidePackCodes(cart: Cart): Promise<Cart> {
+  const packs = await getPackCodes();
+  const discountCodes = cart.discountCodes.map((discount) => {
+    const pack = packs.find((candidate) => candidate.code.toLowerCase() === discount.code.toLowerCase());
+    return pack ? { ...discount, code: '', label: `Desconto ${pack.title}` } : discount;
+  });
+  return { ...cart, discountCodes };
+}
+
 // Anexa o estoque de cada linha para a UI não deixar subir a quantidade acima do disponível.
 async function withStock(cart: Cart | null) {
   if (!cart) return NextResponse.json({ cart });
   cart = await syncPackCodes(cart).catch(() => cart!);
+  cart = await hidePackCodes(cart);
   const stock = await getVariantStock(cart.lines.map((line) => line.merchandise.id));
   const lines = cart.lines.map((line) => ({
     ...line,

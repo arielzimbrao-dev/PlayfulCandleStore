@@ -75,7 +75,8 @@ export type CollectionSummary = {
 export type CartLine = {
   id: string;
   quantity: number;
-  cost: { totalAmount: Money };
+  /** subtotalAmount: preço cheio (preço × quantidade); totalAmount: já com descontos. */
+  cost: { totalAmount: Money; subtotalAmount: Money };
   merchandise: {
     id: string;
     title: string;
@@ -90,7 +91,9 @@ export type Cart = {
   checkoutUrl: string;
   totalQuantity: number;
   note: string | null;
-  discountCodes: { code: string; applicable: boolean }[];
+  /** label: nome a mostrar no lugar do código (packs — o código fica escondido do browser).
+   *  amount: quanto o código desconta neste carrinho. */
+  discountCodes: { code: string; applicable: boolean; label?: string; amount?: Money }[];
   cost: { subtotalAmount: Money; totalAmount: Money };
   lines: CartLine[];
   /** Avisos da última mutação (ex.: quantidade reduzida ao estoque). Não vem do Cart da Shopify. */

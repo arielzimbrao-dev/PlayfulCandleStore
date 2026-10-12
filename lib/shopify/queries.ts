@@ -90,6 +90,15 @@ export const CART_FRAGMENT = /* GraphQL */ `
       code
       applicable
     }
+    discountAllocations {
+      discountedAmount {
+        amount
+        currencyCode
+      }
+      ... on CartCodeDiscountAllocation {
+        code
+      }
+    }
     cost {
       subtotalAmount {
         amount
@@ -108,6 +117,19 @@ export const CART_FRAGMENT = /* GraphQL */ `
           totalAmount {
             amount
             currencyCode
+          }
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+        }
+        discountAllocations {
+          discountedAmount {
+            amount
+            currencyCode
+          }
+          ... on CartCodeDiscountAllocation {
+            code
           }
         }
         merchandise {

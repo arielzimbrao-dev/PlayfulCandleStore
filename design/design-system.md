@@ -222,7 +222,7 @@ Header: `$header-compact` (1535px — a pesquisa vira só a lupa) e `$header-mob
 | `cart/LineQuantity` | `.line-quantity` · `__step`, `__remove` |
 | `cart/CheckoutButton` | `.checkout-button` |
 | `cart/TrustList` | `.trust-list` (`--inline`) |
-| página (`cart-page.scss`) | `.cart-page` (`--loading`) · `__grid`, `__lines`, `__summary`, `__total`, `__continue` · `.cart-line` · `__thumb`, `__info`, `__name`, `__price` · `.gift-note` · `__input` · `.cart-empty` · `__icon`, `__message` |
+| página (`cart-page.scss`) | `.cart-page` (`--loading`) · `__grid`, `__lines`, `__summary`, `__total`, `__continue` · `.cart-line` · `__thumb`, `__info`, `__name`, `__price` · `.cart-empty` · `__icon`, `__message` |
 
 ### Coleções
 | Componente | Classes |
