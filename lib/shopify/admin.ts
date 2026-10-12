@@ -281,7 +281,8 @@ export async function getShippingZones(): Promise<ShippingZone[]> {
 // Convenção na Shopify: desconto por código cujo título começa por "Pack" (ex.: "Pack Trio
 // Outono"). Os produtos a que ele se aplica são o pack: com 1 de cada no carrinho, o site aplica o
 // código; sem eles, remove-o. Valor, datas e combinações configuram-se no próprio desconto.
-export type PackCode = { title: string; code: string; productHandles: string[] };
+// amount: valor do desconto (€) — com produtos em comum, o site dá prioridade ao pack maior.
+export type PackCode = { title: string; code: string; productHandles: string[]; amount: number };
 
 // ponytail: cache em memória de 5 min, como as promoções.
 let packCache: { at: number; packs: PackCode[] } | null = null;
@@ -294,11 +295,11 @@ export async function getPackCodes(): Promise<PackCode[]> {
         title?: string;
         status?: string;
         codes?: { nodes: { code: string }[] };
-        customerGets?: { items: RawItems };
+        customerGets?: { items: RawItems; value: RawValue };
       } }[] };
     }>(
       `{ codeDiscountNodes(first:50, query:"status:active"){ nodes{ codeDiscount{
-        ... on DiscountCodeBasic{ title status codes(first:1){ nodes{ code } } customerGets{ items{ ${ITEMS_FRAGMENT} } } } } } } }`,
+        ... on DiscountCodeBasic{ title status codes(first:1){ nodes{ code } } customerGets{ items{ ${ITEMS_FRAGMENT} } value{ ${VALUE_FRAGMENT} } } } } } } }`,
     );
     const packs = data.codeDiscountNodes.nodes
       .map(({ codeDiscount }) => codeDiscount)
@@ -307,8 +308,10 @@ export async function getPackCodes(): Promise<PackCode[]> {
         title: discount.title!,
         code: discount.codes?.nodes[0]?.code ?? '',
         productHandles: [...new Set(itemProductHandles(discount.customerGets?.items))],
+        amount: Number(discount.customerGets?.value.amount?.amount ?? 0),
       }))
       .filter((pack) => pack.code && pack.productHandles.length);
+    packs.sort((a, b) => b.amount - a.amount);
     packCache = { at: Date.now(), packs };
     return packs;
   } catch {

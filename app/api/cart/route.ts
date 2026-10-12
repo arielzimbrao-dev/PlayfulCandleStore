@@ -20,14 +20,23 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 dias
 async function syncPackCodes(cart: Cart): Promise<Cart> {
   const packs = await getPackCodes();
   if (!packs.length) return cart;
-  const handles = new Set(cart.lines.map((line) => line.merchandise.product.handle));
+  // Unidades por produto; cada pack ganho consome 1 de cada (produto em 2 packs só conta para
+  // um). Os packs vêm do maior desconto para o menor, por isso o maior tem prioridade.
+  const units = new Map<string, number>();
+  for (const line of cart.lines) {
+    const handle = line.merchandise.product.handle;
+    units.set(handle, (units.get(handle) ?? 0) + line.quantity);
+  }
+  const earned: string[] = [];
+  for (const pack of packs) {
+    if (!pack.productHandles.every((handle) => (units.get(handle) ?? 0) > 0)) continue;
+    pack.productHandles.forEach((handle) => units.set(handle, units.get(handle)! - 1));
+    earned.push(pack.code);
+  }
   const packCodes = new Set(packs.map((pack) => pack.code.toLowerCase()));
   const customerCodes = cart.discountCodes
     .map((discount) => discount.code)
     .filter((code) => !packCodes.has(code.toLowerCase()));
-  const earned = packs
-    .filter((pack) => pack.productHandles.every((handle) => handles.has(handle)))
-    .map((pack) => pack.code);
   const wanted = [...customerCodes, ...earned];
   const current = cart.discountCodes.map((discount) => discount.code);
   const same =

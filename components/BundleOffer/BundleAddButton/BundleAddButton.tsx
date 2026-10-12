@@ -4,8 +4,16 @@ import { useCart } from '@/components/cart-context';
 import { useToast } from '@/components/Toast/Toast';
 import { useT } from '@/components/LanguageProvider';
 
-// Adiciona todos os produtos do "Leva junto" ao carrinho de uma vez.
-export default function BundleAddButton({ variantIds, label }: { variantIds: string[]; label: string }) {
+// Adiciona vários produtos ao carrinho de uma vez ("Leva junto" da PDP e banner do pack).
+export default function BundleAddButton({
+  variantIds,
+  label,
+  className = 'btn btn--orange btn--block',
+}: {
+  variantIds: string[];
+  label: string;
+  className?: string;
+}) {
   const { addItem, loading } = useCart();
   const toast = useToast();
   const t = useT();
@@ -16,7 +24,7 @@ export default function BundleAddButton({ variantIds, label }: { variantIds: str
   };
 
   return (
-    <button type="button" className="btn btn--orange btn--block" disabled={loading} onClick={addAll}>
+    <button type="button" className={className} disabled={loading} onClick={addAll}>
       <i className="fa-solid fa-cart-shopping" aria-hidden="true" />
       {loading ? t.product.adding : label}
     </button>
