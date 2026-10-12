@@ -8,7 +8,6 @@ export const DEFAULT_LOCALE: Locale = 'pt';
 const pt = {
   langHtml: 'pt-PT',
   announce: [
-    '15% OFF na primeira compra com o código PRIMEIRACOMPRA15',
     'Enviamos para Portugal continental e Espanha peninsular',
     'Expedimos em 24h úteis, embalado à mão.',
     'Feitas à mão em Lisboa, com cera vegetal',
@@ -207,7 +206,6 @@ export type Dictionary = typeof pt;
 const es: Dictionary = {
   langHtml: 'es',
   announce: [
-    '15% de descuento en tu primera compra con el código PRIMEIRACOMPRA15',
     'Enviamos a España peninsular y Portugal continental',
     'Enviamos en 24h laborables, empaquetado a mano.',
     'Hechas a mano en Lisboa, con cera vegetal',
@@ -402,7 +400,6 @@ const es: Dictionary = {
 const en: Dictionary = {
   langHtml: 'en',
   announce: [
-    '15% off your first order with code PRIMEIRACOMPRA15',
     'We ship to mainland Portugal and mainland Spain',
     'Ships within 24 business hours, hand-packed.',
     'Handmade in Lisbon, with plant wax',

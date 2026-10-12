@@ -9,15 +9,39 @@ import {
   updateCartLines,
   updateCartNote,
 } from '@/lib/shopify';
-import { getVariantStock } from '@/lib/shopify/admin';
+import { getPackCodes, getVariantStock } from '@/lib/shopify/admin';
 import type { Cart, CartLineInput } from '@/lib/shopify/types';
 
 const CART_COOKIE = 'cartId';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 dias
 
+// Packs: com 1 de cada produto do pack no carrinho aplica o código do pack; sem eles, tira-o.
+// Os códigos que o cliente digitou ficam como estão.
+async function syncPackCodes(cart: Cart): Promise<Cart> {
+  const packs = await getPackCodes();
+  if (!packs.length) return cart;
+  const handles = new Set(cart.lines.map((line) => line.merchandise.product.handle));
+  const packCodes = new Set(packs.map((pack) => pack.code.toLowerCase()));
+  const customerCodes = cart.discountCodes
+    .map((discount) => discount.code)
+    .filter((code) => !packCodes.has(code.toLowerCase()));
+  const earned = packs
+    .filter((pack) => pack.productHandles.every((handle) => handles.has(handle)))
+    .map((pack) => pack.code);
+  const wanted = [...customerCodes, ...earned];
+  const current = cart.discountCodes.map((discount) => discount.code);
+  const same =
+    wanted.length === current.length &&
+    wanted.every((code) => current.some((other) => other.toLowerCase() === code.toLowerCase()));
+  if (same) return cart;
+  // Mantém os avisos da mutação anterior (ex.: quantidade ajustada ao estoque).
+  return { ...(await updateCartDiscountCodes(cart.id, wanted)), warnings: cart.warnings };
+}
+
 // Anexa o estoque de cada linha para a UI não deixar subir a quantidade acima do disponível.
 async function withStock(cart: Cart | null) {
   if (!cart) return NextResponse.json({ cart });
+  cart = await syncPackCodes(cart).catch(() => cart!);
   const stock = await getVariantStock(cart.lines.map((line) => line.merchandise.id));
   const lines = cart.lines.map((line) => ({
     ...line,

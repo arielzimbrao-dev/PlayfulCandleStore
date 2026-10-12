@@ -276,3 +276,42 @@ export async function getShippingZones(): Promise<ShippingZone[]> {
     return shippingCache?.zones ?? [];
   }
 }
+
+// ── Packs (desconto por código aplicado automaticamente pelo site) ──────────────────────────────
+// Convenção na Shopify: desconto por código cujo título começa por "Pack" (ex.: "Pack Trio
+// Outono"). Os produtos a que ele se aplica são o pack: com 1 de cada no carrinho, o site aplica o
+// código; sem eles, remove-o. Valor, datas e combinações configuram-se no próprio desconto.
+export type PackCode = { title: string; code: string; productHandles: string[] };
+
+// ponytail: cache em memória de 5 min, como as promoções.
+let packCache: { at: number; packs: PackCode[] } | null = null;
+
+export async function getPackCodes(): Promise<PackCode[]> {
+  if (packCache && Date.now() - packCache.at < 5 * 60_000) return packCache.packs;
+  try {
+    const data = await adminFetch<{
+      codeDiscountNodes: { nodes: { codeDiscount: {
+        title?: string;
+        status?: string;
+        codes?: { nodes: { code: string }[] };
+        customerGets?: { items: RawItems };
+      } }[] };
+    }>(
+      `{ codeDiscountNodes(first:50, query:"status:active"){ nodes{ codeDiscount{
+        ... on DiscountCodeBasic{ title status codes(first:1){ nodes{ code } } customerGets{ items{ ${ITEMS_FRAGMENT} } } } } } } }`,
+    );
+    const packs = data.codeDiscountNodes.nodes
+      .map(({ codeDiscount }) => codeDiscount)
+      .filter((discount) => discount.status === 'ACTIVE' && /^pack\b/i.test(discount.title ?? ''))
+      .map((discount) => ({
+        title: discount.title!,
+        code: discount.codes?.nodes[0]?.code ?? '',
+        productHandles: [...new Set(itemProductHandles(discount.customerGets?.items))],
+      }))
+      .filter((pack) => pack.code && pack.productHandles.length);
+    packCache = { at: Date.now(), packs };
+    return packs;
+  } catch {
+    return packCache?.packs ?? [];
+  }
+}
