@@ -27,7 +27,6 @@ type CartContextValue = {
   updateItem: (lineId: string, quantity: number) => Promise<boolean>;
   removeItem: (lineId: string) => Promise<boolean>;
   applyDiscount: (code: string) => Promise<boolean>;
-  saveNote: (note: string) => Promise<boolean>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -108,11 +107,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [mutate],
   );
 
-  const saveNote = useCallback(
-    (note: string) => mutate({ method: 'PATCH', body: JSON.stringify({ note }) }),
-    [mutate],
-  );
-
   // Shopify aceita qualquer string e devolve-a com applicable:false (sem userErrors).
   // Só devolvemos sucesso se o código voltar como APLICÁVEL (ou se for uma remoção).
   const applyDiscount = useCallback(async (code: string): Promise<boolean> => {
@@ -164,7 +158,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateItem,
         removeItem,
         applyDiscount,
-        saveNote,
       }}
     >
       {children}

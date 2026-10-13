@@ -4,6 +4,7 @@ import BundleAddButton from '@/components/BundleOffer/BundleAddButton/BundleAddB
 import { getProduct } from '@/lib/shopify';
 import { getPackCodes } from '@/lib/shopify/admin';
 import { productCategory } from '@/lib/filters';
+import { formatMoney } from '@/lib/format';
 import type { Product } from '@/lib/shopify/types';
 import './PackBanner.scss';
 
@@ -11,6 +12,7 @@ import './PackBanner.scss';
 // etiquetas numeradas por cima de cada produto à direita.
 // Os produtos vêm do desconto "Pack Gourmand" na Shopify (ver getPackCodes): o botão põe 1 de cada
 // no carrinho e o carrinho aplica o código. Sem o desconto ativo, o banner não aparece.
+// Preço: soma dos produtos (riscada) − valor do desconto = preço do pack, com a poupança em destaque.
 // ponytail: copy só em PT.
 const PACK_TITLE = /gourmand/i;
 
@@ -25,24 +27,31 @@ const TAG_POSITIONS: Record<string, { left: string; top: string }> = {
 
 const TYPE_LABELS: Record<string, string> = { velas: 'Vela', wax: 'Wax Melt', snap: 'Snapbar', burner: 'Queimador' };
 
-type PackItem = { number: number; product: Product; type: string; variantId: string | null };
+type PackItem = { number: number; product: Product; type: string; variantId: string | null; price: number };
 
-async function getPackItems(): Promise<PackItem[]> {
+async function getPack(): Promise<{ items: PackItem[]; discount: number }> {
   const pack = (await getPackCodes()).find((candidate) => PACK_TITLE.test(candidate.title));
-  if (!pack) return [];
+  if (!pack) return { items: [], discount: 0 };
   // Mesma ordem das etiquetas da foto; produtos sem etiqueta vão para o fim.
   const tagOrder = Object.keys(TAG_POSITIONS);
   const rank = (handle: string) => (tagOrder.includes(handle) ? tagOrder.indexOf(handle) : tagOrder.length);
   const handles = [...pack.productHandles].sort((a, b) => rank(a) - rank(b));
   const products = await Promise.all(handles.map((handle) => getProduct(handle).catch(() => null)));
-  return products
+  const items = products
     .filter((product): product is Product => !!product)
-    .map((product, index) => ({
-      number: index + 1,
-      product,
-      type: TYPE_LABELS[productCategory(product) ?? ''] ?? '',
-      variantId: product.variants.find((variant) => variant.availableForSale)?.id ?? null,
-    }));
+    .map((product, index) => {
+      // Mesma variante que o botão põe no carrinho, para o preço bater com o checkout.
+      const variant = product.variants.find((candidate) => candidate.availableForSale);
+      return {
+        number: index + 1,
+        product,
+        type: TYPE_LABELS[productCategory(product) ?? ''] ?? '',
+        variantId: variant?.id ?? null,
+        price: Number(variant?.price.amount ?? product.priceRange.minVariantPrice.amount),
+      };
+    });
+  // ponytail: só desconto de valor fixo (pack.amount); desconto em % dá 0 e o banner mostra só o total.
+  return { items, discount: pack.amount };
 }
 
 // Elementos de outono flutuando em volta do cartão (decorativos, SVG inline).
@@ -100,8 +109,13 @@ function AutumnDecoration({ shape, index }: { shape: AutumnShape; index: number 
 }
 
 export default async function PackBanner() {
-  const items = await getPackItems();
+  const { items, discount } = await getPack();
   if (!items.length) return null;
+  const currencyCode = items[0].product.priceRange.minVariantPrice.currencyCode;
+  const money = (value: number) => formatMoney({ amount: value.toFixed(2), currencyCode });
+  const originalTotal = items.reduce((sum, item) => sum + item.price, 0);
+  const saving = Math.min(discount, originalTotal);
+  const packPrice = originalTotal - saving;
   const variantIds = items.map((item) => item.variantId);
   const isSoldOut = variantIds.some((id) => !id);
 
@@ -138,9 +152,26 @@ export default async function PackBanner() {
                       <span className="visually-hidden"> (esgotado)</span>
                     </s>
                   )}
+                  <span className="pack__item-price">{money(item.price)}</span>
                 </li>
               ))}
             </ol>
+            <div className="pack__price">
+              <span className="pack__price-label">Preço do pack</span>
+              <span className="pack__price-row">
+                {saving > 0 && (
+                  <span className="price-old">
+                    <span className="visually-hidden">Em separado: </span>
+                    {money(originalTotal)}
+                  </span>
+                )}
+                <strong className="pack__price-now">{money(packPrice)}</strong>
+                {saving > 0 && <span className="pack__save">Poupas {money(saving)}</span>}
+              </span>
+              {saving > 0 && (
+                <small className="pack__price-note">face à compra dos {items.length} produtos em separado</small>
+              )}
+            </div>
             {isSoldOut ? (
               <p className="pack__cta pack__cta--soon">Volta em breve</p>
             ) : (
@@ -162,6 +193,12 @@ export default async function PackBanner() {
               quality={90}
               style={{ objectFit: 'cover' }}
             />
+            {saving > 0 && (
+              <span className="pack__sticker">
+                <small>Poupa</small>
+                {money(saving)}
+              </span>
+            )}
             {items
               .filter((item) => TAG_POSITIONS[item.product.handle])
               .map((item) => (

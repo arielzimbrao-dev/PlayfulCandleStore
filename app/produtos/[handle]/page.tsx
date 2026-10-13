@@ -6,6 +6,7 @@ import BuyBox from '@/components/BuyBox/BuyBox';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 import RelatedProducts from '@/components/RelatedProducts/RelatedProducts';
 import BundleOffer from '@/components/BundleOffer/BundleOffer';
+import HowToUse from '@/components/HowToUse/HowToUse';
 import ProductReviews from '@/components/ProductReviews/ProductReviews';
 import JsonLd from '@/components/JsonLd/JsonLd';
 import TrackProductView from '@/components/TrackProductView/TrackProductView';
@@ -84,7 +85,8 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   const reviews = product.reviews ?? [];
   const averageRating = reviews.length ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 0;
   const scents = product.scents ?? [];
-  const info = PRODUCT_INFO[productCategory(product) ?? ''] ?? DEFAULT_PRODUCT_INFO;
+  const category = productCategory(product);
+  const info = PRODUCT_INFO[category ?? ''] ?? DEFAULT_PRODUCT_INFO;
 
   return (
     <>
@@ -104,8 +106,9 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
           ]}
         />
         <div className="product__grid">
-          <ProductGallery images={images} title={product.title} handle={product.handle} />
-          <div className="product__info">
+          {/* Nome antes da galeria: no celular fica em cima da foto; no desktop a grade
+              devolve-o à coluna da direita (ver grid-template-areas em product-page.scss). */}
+          <div className="product__head">
             {product.productType && <p className="eyebrow">{product.productType}</p>}
             <div className="product__title-row">
               <h1 className="script-title">
@@ -113,6 +116,9 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
               </h1>
               {product.weight && <span className="product__weight">{product.weight}</span>}
             </div>
+          </div>
+          <ProductGallery images={images} title={product.title} handle={product.handle} />
+          <div className="product__info">
             <div className="product__meta">
               {collection && (
                 <Link href={`/colecoes/${collection.handle}`} className="product__collection">
@@ -169,10 +175,13 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
         </div>
       </section>
 
+      {/* Wax melts e snapbars: "Como usar" logo abaixo da informação do produto. */}
+      {(category === 'wax' || category === 'snap') && <HowToUse />}
+
       <BundleOffer product={product} />
 
       <ProductReviews productId={product.id} reviews={reviews} />
-      
+
       <RelatedProducts product={product} />
     </>
   );

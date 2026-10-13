@@ -1,56 +1,167 @@
-// Galeria da PDP: coluna de fotos no desktop; carrossel horizontal com scroll-snap até 899px.
+// Galeria da PDP: slide 4:5 com setas e contador por cima, thumbs quadradas em linha por baixo.
+// No celular (≤760px) o slide sangra até às bordas da tela e as setas somem (troca-se com o dedo).
 
 @use '../../styles/mixins' as *;
 
 .gallery {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 
-  &__track {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  // Desktop: a galeria fica presa por baixo do header enquanto se lê a coluna de informações.
+  // Desktop: a galeria fica presa por baixo do header enquanto se lê a coluna de informações.
+  // A foto ocupa a coluna toda e é sempre 4:5; em ecrãs baixos as thumbs podem ficar abaixo da dobra.
+  @include above($tablet) {
+    position: sticky;
+    top: calc(var(--header-height) + 16px);
   }
 
-  &__item {
+  &__main {
     position: relative;
     overflow: hidden;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-lg);
     background: var(--color-blush);
-    box-shadow: var(--shadow-sm);
+  }
+
+  // Trilho horizontal: cada slide ocupa 100% e encaixa (scroll-snap).
+  &__track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    @include hide-scrollbar;
+  }
+
+  &__slide {
+    position: relative;
+    flex: 0 0 100%;
+    aspect-ratio: 4 / 5;
+    scroll-snap-align: start;
   }
 
   // Produto sem fotos: vela gigante no lugar.
   &__placeholder {
     display: grid;
     place-items: center;
-    aspect-ratio: 2 / 3;
+    aspect-ratio: 4 / 5;
     font-size: 64px;
   }
 
-  @include below(899px) {
-    &__track {
-      flex-direction: row;
-      align-items: start;
-      gap: 4px;
-      // Sangra até as bordas da tela.
-      margin-inline: calc(-1 * var(--gutter));
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      @include hide-scrollbar;
+  // Setas redondas brancas nas laterais da foto (desktop).
+  &__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+    color: var(--color-pink);
+    font-size: 16px;
+    transform: translateY(-50%);
+    transition:
+      opacity var(--duration) var(--ease-out),
+      background var(--duration) var(--ease-out),
+      color var(--duration) var(--ease-out);
+
+    &:hover:not(:disabled) {
+      background: var(--color-pink);
+      color: #fff;
     }
 
-    // Cada foto ocupa 90% da tela: o pedaço da seguinte mostra que dá para deslizar.
-    &__item {
-      flex: 0 0 90%;
-      scroll-snap-align: start;
+    &:disabled {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &--prev {
+      left: 16px;
+    }
+
+    &--next {
+      right: 16px;
+    }
+  }
+
+  // "2 / 5" no canto inferior esquerdo.
+  &__counter {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    z-index: 2;
+    padding: 4px 16px;
+    border-radius: var(--radius-pill);
+    background: rgba(42, 21, 36, 0.6);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+
+  // Thumbs: linha que rola na horizontal se não couberem.
+  &__thumbs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    @include hide-scrollbar;
+  }
+
+  &__thumb {
+    position: relative;
+    flex: 0 0 80px;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    background: var(--color-blush);
+    opacity: 0.6;
+    cursor: pointer;
+    transition:
+      opacity var(--duration) var(--ease-out),
+      border-color var(--duration) var(--ease-out);
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &.is-active {
+      border-color: var(--color-pink);
+      opacity: 1;
+    }
+  }
+
+  @include mobile {
+    gap: 8px;
+
+    // Foto de ponta a ponta da tela, sem cantos arredondados.
+    &__main {
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
       border-radius: 0;
-      box-shadow: none;
     }
 
-    // O coração acompanha o canto da 1.ª foto (que agora encosta na borda da tela).
+    &__arrow {
+      display: none;
+    }
+
+    &__thumb {
+      flex-basis: 64px;
+    }
+
+    // Coração maior (alvo de toque) no canto inferior direito, longe do header e ao lado do contador.
     .wish-button--gallery {
-      top: 16px;
-      right: calc(10vw - var(--gutter) + 16px);
+      top: auto;
+      right: 16px;
+      bottom: 16px;
+      width: 48px;
+      height: 48px;
+      font-size: 20px;
     }
   }
 }

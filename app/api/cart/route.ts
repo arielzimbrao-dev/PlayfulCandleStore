@@ -7,7 +7,6 @@ import {
   removeCartLines,
   updateCartDiscountCodes,
   updateCartLines,
-  updateCartNote,
 } from '@/lib/shopify';
 import { getPackCodes, getVariantStock } from '@/lib/shopify/admin';
 import type { Cart, CartLineInput } from '@/lib/shopify/types';
@@ -164,7 +163,6 @@ export async function PATCH(request: Request) {
     lineId?: string;
     quantity?: number;
     discountCodes?: string[];
-    note?: string;
   }>(request);
   const cartId = await readCartId();
   if (!body) {
@@ -174,10 +172,6 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: 'sem carrinho' }, { status: 400 });
   }
   try {
-    if (typeof body.note === 'string') {
-      const cart = await updateCartNote(cartId, body.note.slice(0, 500));
-      return withStock(cart);
-    }
     if (Array.isArray(body.discountCodes)) {
       const cart = await updateCartDiscountCodes(cartId, body.discountCodes);
       return withStock(cart);

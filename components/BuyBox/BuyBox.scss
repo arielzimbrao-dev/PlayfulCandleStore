@@ -8,6 +8,13 @@
   gap: 16px;
   margin-top: 24px;
 
+  // Botões principais (adicionar + comprar já); observados para mostrar a barra do celular.
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
   &__price {
     display: flex;
     align-items: baseline;
@@ -103,7 +110,8 @@
   }
 }
 
-// Barra de compra fixa no rodapé, só no celular.
+// Barra de compra fixa no rodapé, só no celular. Começa escondida abaixo do ecrã e
+// sobe (.is-visible) quando os botões principais da BuyBox saem do ecrã por cima.
 .mobile-buy-bar {
   display: none;
 
@@ -120,6 +128,18 @@
     border-top: 1px solid var(--color-border);
     background: var(--color-surface);
     box-shadow: 0 -8px 24px -12px rgba(42, 21, 36, 0.3);
+    transform: translateY(100%);
+    visibility: hidden;
+    // visibility só muda no fim da saída, para a barra descer antes de sumir.
+    transition:
+      transform var(--duration) var(--ease-out),
+      visibility 0s linear var(--duration);
+
+    &.is-visible {
+      transform: none;
+      visibility: visible;
+      transition: transform var(--duration) var(--ease-out);
+    }
 
     &__price {
       font-weight: 800;
@@ -132,10 +152,10 @@
   }
 }
 
-// Com a barra fixa na página: o banner de cookies sobe para não cobrir o botão,
+// Com a barra fixa visível: o banner de cookies sobe para não cobrir o botão,
 // e o conteúdo ganha espaço no fim para não ficar escondido atrás dela.
 @include mobile {
-  body:has(.mobile-buy-bar) .consent {
+  body:has(.mobile-buy-bar.is-visible) .consent {
     bottom: 72px;
   }
 

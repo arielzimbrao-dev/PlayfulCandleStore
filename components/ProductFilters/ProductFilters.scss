@@ -1,5 +1,5 @@
 // Filtros (Figma Frame 60): cartão branco arredondado, grupos em acordeão com título em Genty
-// e checkboxes quadradas. Até 899px ficam escondidos atrás de um botão "Filtros".
+// e checkboxes quadradas. No celular ficam numa gaveta (ver ShopLayout).
 
 @use '../../styles/mixins' as *;
 
@@ -10,6 +10,13 @@
   border: 2px solid var(--color-border);
   border-radius: 16px;
   background: #fff;
+
+  // Dentro da gaveta do celular o cartão perde a moldura.
+  @include tablet {
+    padding: 0 24px;
+    border: none;
+    border-radius: 0;
+  }
 
   &__clear {
     align-self: flex-start;
@@ -109,50 +116,6 @@
       font-weight: 800;
       line-height: 1;
       color: #fff;
-    }
-  }
-}
-
-// Botão "Filtros" do celular. O checkbox escondido guarda se está aberto (CSS puro).
-.filters-toggle {
-  &__checkbox {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  &__button {
-    display: none;
-  }
-
-  @include below(899px) {
-    &__button {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 48px;
-      padding: 0 16px;
-      border: 2px solid var(--color-border-strong);
-      border-radius: var(--radius-pill);
-      background: var(--color-surface);
-      font-weight: 700;
-      color: var(--color-ink);
-      cursor: pointer;
-    }
-
-    &__checkbox:focus-visible ~ &__button {
-      box-shadow: var(--focus-ring);
-    }
-
-    .filters {
-      display: none;
-      margin-top: 16px;
-    }
-
-    &__checkbox:checked ~ .filters {
-      display: flex;
     }
   }
 }

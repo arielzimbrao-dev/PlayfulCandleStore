@@ -1,0 +1,240 @@
+// Como usar (home): faixa rosada de ponta a ponta fechada por ondas suaves (SVG do getwaves.io)
+// em cima e em baixo. Cabeçalho centrado, 3 cartões brancos (foto 3:4 + número laranja +
+// título em Genty) ligados por setas, e o rodapé com o aviso de segurança e os links.
+
+@use '../../styles/mixins' as *;
+
+.how-to {
+  margin-block: 48px;
+
+  @include mobile {
+    margin-block: 24px;
+  }
+
+  // Faixa rosada entre as duas ondas.
+  &__band {
+    padding-block: 48px 64px;
+    background: var(--color-paper);
+
+    @include mobile {
+      padding-block: 32px 48px;
+    }
+  }
+
+  // Onda de cima sobe a partir da faixa; a de baixo é a mesma ideia virada ao contrário.
+  // A onda estica na largura (preserveAspectRatio="none") e mantém a altura.
+  &__wave {
+    display: block;
+    width: 100%;
+    height: 160px;
+    color: var(--color-paper);
+
+    @include tablet {
+      height: 96px;
+    }
+
+    @include mobile {
+      height: 56px;
+    }
+
+    &--top {
+      margin-bottom: -1px; // evita uma linha clara entre a onda e a faixa
+    }
+
+    &--bottom {
+      margin-top: -1px;
+      transform: scaleY(-1);
+    }
+  }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 48px;
+    text-align: center;
+
+    @include mobile {
+      align-items: flex-start;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .eyebrow {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-pink);
+    }
+
+    .script-title {
+      font-size: 48px;
+      line-height: 56px;
+
+      @include mobile {
+        font-size: 32px;
+        line-height: 40px;
+      }
+    }
+  }
+
+  &__lead {
+    max-width: 56ch;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-ink);
+  }
+
+  // 3 colunas com 56px de espaço: no meio de cada espaço fica a seta para o passo seguinte.
+  &__steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 56px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    @include tablet {
+      gap: 24px;
+    }
+
+    @include mobile {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+
+  &__step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: #fff;
+    box-shadow: 0 24px 32px -24px rgba(204, 26, 82, 0.35);
+
+    // Seta rosa entre os cartões (só desktop).
+    &:not(:last-child)::after {
+      content: '\f061'; // fa-arrow-right
+      position: absolute;
+      top: 40%;
+      right: -44px;
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 24px;
+      color: var(--color-pink);
+
+      @include tablet {
+        display: none;
+      }
+    }
+  }
+
+  &__media {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: calc(var(--radius-lg) - 2px) calc(var(--radius-lg) - 2px) 0 0;
+    background: var(--color-blush);
+
+    @include mobile {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  // Texto do cartão; o número sobe metade para cima da foto.
+  &__text {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 8px;
+    padding: 40px 24px 24px;
+
+    p {
+      font-size: 16px;
+      line-height: 24px;
+      color: var(--color-ink-soft);
+    }
+
+    .script-title {
+      font-size: 32px;
+      line-height: 40px;
+    }
+  }
+
+  // Bolinha laranja em Genty, encavalitada entre a foto e o texto.
+  &__number {
+    position: absolute;
+    top: -32px;
+    left: 24px;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    background: var(--color-logo-orange);
+    color: #fff;
+    box-shadow: 0 8px 16px -8px rgba(143, 58, 23, 0.5);
+
+    // Caixa de altura fixa: a Genty tem métricas verticais estranhas e, sem isto,
+    // o número fica descentrado. O padding-top compensa a descida do glifo.
+    span {
+      display: block;
+      height: 22px;
+      font-family: var(--font-script);
+      font-size: 32px;
+      line-height: 32px;
+    }
+  }
+
+  &__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 48px;
+    padding: 24px 32px;
+    border: 2px dashed var(--color-border-strong);
+    border-radius: var(--radius-pill);
+    background: #fff;
+
+    @include tablet {
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+  }
+
+  &__safety {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    max-width: 64ch;
+    font-size: 14px;
+    line-height: 24px;
+    color: var(--color-ink);
+
+    i {
+      margin-top: 4px;
+      color: var(--color-pink);
+    }
+  }
+
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    @include mobile {
+      width: 100%;
+
+      .btn {
+        flex: 1;
+      }
+    }
+  }
+}

@@ -1,4 +1,7 @@
 // Menu de ordenação: botão de texto simples + lista suspensa alinhada à direita.
+// No celular o botão ganha moldura e mostra a ordenação atual (par do botão "Filtrar").
+
+@use '../../../styles/mixins' as *;
 
 .sort-select {
   position: relative;
@@ -18,6 +21,65 @@
 
     &:hover {
       color: var(--color-coral-dark);
+    }
+  }
+
+  &__desktop {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__mobile {
+    display: none;
+  }
+
+  @include tablet {
+    &__button {
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 16px;
+      border: 2px solid var(--color-border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+
+      &:hover {
+        color: var(--color-ink);
+        border-color: var(--color-pink);
+      }
+    }
+
+    &__desktop {
+      display: none;
+    }
+
+    &__mobile {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      min-width: 0;
+
+      i {
+        font-size: 16px;
+        color: var(--color-pink);
+      }
+    }
+
+    // Rótulos longos ("Alfabeticamente, A-Z") cortam com reticências.
+    &__current {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &__menu {
+      min-width: 100%;
     }
   }
 

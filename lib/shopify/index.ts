@@ -16,7 +16,6 @@ import {
   CART_LINES_ADD,
   CART_LINES_REMOVE,
   CART_LINES_UPDATE,
-  CART_NOTE_UPDATE,
 } from './mutations';
 import type {
   Cart,
@@ -75,9 +74,14 @@ type RawReview = {
   date?: string;
   verified?: boolean;
   approved?: boolean;
+  photo?: string;
 };
 
-// custom.reviews é JSON: array de {author,rating,text,date,verified,approved}
+// Foto da avaliação: só https:// ou caminho local (/…); qualquer outra coisa é ignorada.
+const safePhoto = (photo: unknown) =>
+  typeof photo === 'string' && /^(https:\/\/|\/[^/])/.test(photo) ? photo : undefined;
+
+// custom.reviews é JSON: array de {author,rating,text,date,verified,approved,photo?}
 // (ou { items: [...] }).
 // Só mostramos as aprovadas; o metafield pode ser editado à mão, então tudo é normalizado.
 function parseReviews(metafield: Metafield): Product['reviews'] {
@@ -98,6 +102,7 @@ function parseReviews(metafield: Metafield): Product['reviews'] {
         date: review.date,
         verified: review.verified,
         approved: review.approved,
+        photo: safePhoto(review.photo),
       }));
   } catch {
     return [];
@@ -357,12 +362,4 @@ export async function updateCartDiscountCodes(
     { cartId, discountCodes },
   );
   return unwrapCart(data.cartDiscountCodesUpdate);
-}
-
-export async function updateCartNote(cartId: string, note: string): Promise<Cart> {
-  const data = await shopifyFetch<{ cartNoteUpdate: CartMutationResult }>(CART_NOTE_UPDATE, {
-    cartId,
-    note,
-  });
-  return unwrapCart(data.cartNoteUpdate);
 }

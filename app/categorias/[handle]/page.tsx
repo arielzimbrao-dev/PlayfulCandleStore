@@ -3,11 +3,15 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 import ProductListing from '@/components/ProductListing/ProductListing';
+import HowToUse from '@/components/HowToUse/HowToUse';
 import { getProducts } from '@/lib/shopify';
 import { resolveSort } from '@/lib/sort';
 import { CATEGORIES, categoryBanner } from '@/lib/categories';
 
 export const revalidate = 3600;
+
+// Categorias de cera que mostram o "Como usar" acima da prateleira final.
+const HOW_TO_CATEGORIES = new Set(['wax-melts', 'snapbars']);
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
@@ -73,6 +77,7 @@ export default async function CategoryPage({
       facets={facets}
       params={filterParams}
       listName={info.title}
+      beforeRail={HOW_TO_CATEGORIES.has(handle) ? <HowToUse /> : undefined}
     />
   );
 }

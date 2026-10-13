@@ -85,7 +85,6 @@ export const CART_FRAGMENT = /* GraphQL */ `
     id
     checkoutUrl
     totalQuantity
-    note
     discountCodes {
       code
       applicable

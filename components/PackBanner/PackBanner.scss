@@ -84,6 +84,7 @@
   }
 
   &__list {
+    align-self: stretch;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -111,6 +112,107 @@
     s,
     strong {
       color: var(--color-ink-soft);
+    }
+  }
+
+  // Preço avulso de cada item, encostado à direita (base do "riscado" do total).
+  &__item-price {
+    margin-left: auto;
+    padding-left: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+    white-space: nowrap;
+  }
+
+  // Bloco de preço: "Preço do pack" · total riscado · preço do pack · selo "Poupas X €".
+  &__price {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-self: stretch;
+    padding-top: 16px;
+    border-top: 2px dashed var(--color-border-strong);
+  }
+
+  &__price-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+
+  &__price-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+  }
+
+  &__price-now {
+    font-size: 40px;
+    line-height: 48px;
+    font-weight: 800;
+    color: var(--color-pink);
+
+    @include tablet {
+      font-size: 32px;
+      line-height: 40px;
+    }
+  }
+
+  &__save {
+    padding: 4px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--color-logo-orange);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 24px;
+  }
+
+  &__price-note {
+    font-size: 14px;
+    color: var(--color-ink-soft);
+  }
+
+  // Selo redondo "Poupa X €" no canto da foto, inclinado como um autocolante.
+  // À esquerda: a foto pode ser mais larga que a coluna e o cartão corta a borda direita.
+  &__sticker {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+    z-index: 1;
+    display: grid;
+    place-content: center;
+    width: 104px;
+    height: 104px;
+    border: 4px dashed rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    background: var(--color-pink);
+    box-shadow: 0 16px 24px -16px rgba(204, 26, 82, 0.6);
+    color: #fff;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 24px;
+    text-align: center;
+    rotate: -12deg;
+
+    small {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      line-height: 16px;
+      text-transform: uppercase;
+    }
+
+    @include tablet {
+      left: 16px;
+      bottom: 16px;
+      width: 88px;
+      height: 88px;
+      font-size: 16px;
     }
   }
 

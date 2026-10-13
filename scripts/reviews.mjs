@@ -1,7 +1,7 @@
 // Gestão de reviews (metafield custom.reviews) via Admin API.
 // Uso:
 //   node scripts/reviews.mjs list <handle>
-//   node scripts/reviews.mjs add <handle> "Nome" <1-5> "Comentário"   (adiciona já aprovada + verificada)
+//   node scripts/reviews.mjs add <handle> "Nome" <1-5> "Comentário" [urlFoto]   (adiciona já aprovada + verificada; foto do cliente opcional)
 //   node scripts/reviews.mjs approve <handle>                          (aprova todas as pendentes)
 import { readFileSync } from 'node:fs';
 
@@ -36,8 +36,8 @@ if (cmd === 'list') {
   console.log(`${product.title} — ${list.length} review(s):`);
   list.forEach((r, i) => console.log(`  [${i}] ${r.approved === false ? 'PENDENTE' : 'aprovada'} · ${r.rating}★ · ${r.author}: ${String(r.text).slice(0, 60)}`));
 } else if (cmd === 'add') {
-  const [author, rating, text] = rest;
-  list.push({ author: author || 'Cliente', rating: Math.max(1, Math.min(5, Math.round(Number(rating)))), text: text || '', date: new Date().toISOString(), verified: true, approved: true });
+  const [author, rating, text, photo] = rest;
+  list.push({ author: author || 'Cliente', rating: Math.max(1, Math.min(5, Math.round(Number(rating)))), text: text || '', date: new Date().toISOString(), verified: true, approved: true, ...(photo ? { photo } : {}) });
   await save(); console.log('✓ adicionada e aprovada. Total:', list.length);
 } else if (cmd === 'approve') {
   let n = 0; list = list.map((r) => { if (r.approved === false) { n++; return { ...r, approved: true }; } return r; });

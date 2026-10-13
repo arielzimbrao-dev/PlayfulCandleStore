@@ -77,18 +77,3 @@ export const CART_DISCOUNT_CODES_UPDATE = /* GraphQL */ `
     }
   }
 `;
-
-// Mensagem de presente / instruções: vai como nota do pedido e aparece no admin da Shopify.
-export const CART_NOTE_UPDATE = /* GraphQL */ `
-  ${CART_FRAGMENT}
-  mutation CartNoteUpdate($cartId: ID!, $note: String!) {
-    cartNoteUpdate(cartId: $cartId, note: $note) {
-      cart {
-        ...CartFields
-      }
-      userErrors {
-        message
-      }
-    }
-  }
-`;

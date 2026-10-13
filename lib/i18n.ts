@@ -57,8 +57,9 @@ const pt = {
   ],
   catNav: 'Navega por categoria',
   cats: {
-    eyebrow: 'Escolhe o teu',
-    title: 'Aroma favorito',
+    // Título em Genty (sem acentos): o "é" fica no eyebrow, em Poppins.
+    eyebrow: 'Qual é o teu',
+    title: 'Mood de hoje?',
     citrico: 'Laranja e limão para acordar a casa.',
     doce: 'Baunilha e mimo, aconchego puro.',
     floral: 'Flores delicadas, leve e romântico.',
@@ -251,8 +252,8 @@ const es: Dictionary = {
   ],
   catNav: 'Navega por categoría',
   cats: {
-    eyebrow: 'Elige tu',
-    title: 'Aroma favorito',
+    eyebrow: '¿Cuál es tu',
+    title: 'Mood de hoy?',
     citrico: 'Naranja y limón para despertar la casa.',
     doce: 'Vainilla y mimo, puro confort.',
     floral: 'Flores delicadas, ligero y romántico.',
@@ -441,8 +442,8 @@ const en: Dictionary = {
   ],
   catNav: 'Shop by category',
   cats: {
-    eyebrow: 'Pick your',
-    title: 'Favourite scent',
+    eyebrow: "What's your",
+    title: 'Mood today?',
     citrico: 'Orange and lemon to wake the house up.',
     doce: 'Vanilla and comfort, pure cosiness.',
     floral: 'Delicate flowers, light and romantic.',

@@ -4,6 +4,8 @@ import CategoryNav from '@/components/CategoryNav/CategoryNav';
 import ProductRail from '@/components/ProductRail/ProductRail';
 import PackBanner from '@/components/PackBanner/PackBanner';
 import ScentGrid from '@/components/ScentGrid/ScentGrid';
+import HowToUse from '@/components/HowToUse/HowToUse';
+import CustomerReviews from '@/components/CustomerReviews/CustomerReviews';
 import { getProducts, getCollection } from '@/lib/shopify';
 
 const AUTUMN_COLLECTION = 'colecao-de-outono';
@@ -27,6 +29,8 @@ export default async function HomePage() {
       <PackBanner />
       <ScentGrid />
       <ProductRail variant="latest" products={newArrivals.products} />
+      <HowToUse />
+      <CustomerReviews />
     </>
   );
 }

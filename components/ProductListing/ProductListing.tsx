@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Image from 'next/image';
 import ProductGridPaged from '@/components/ProductGridPaged/ProductGridPaged';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
@@ -34,6 +35,7 @@ export default function ProductListing({
   facets,
   params,
   listName,
+  beforeRail,
 }: {
   title: string;
   image?: ShopifyImage | null;
@@ -48,6 +50,8 @@ export default function ProductListing({
   facets: { type?: string; scent?: string; price?: string };
   params: Record<string, string | undefined>;
   listName: string;
+  /** Secção extra no pré-footer, logo acima da prateleira Best-Sellers. */
+  beforeRail?: ReactNode;
 }) {
   const stockFiltered = onlyInStock ? products.filter((product) => product.availableForSale) : products;
   const filtered = applyFilters(stockFiltered, facets);
@@ -114,7 +118,7 @@ export default function ProductListing({
           <ProductGridPaged products={filtered} listName={listName} />
         </ShopLayout>
       </section>
-      <PreFooter />
+      <PreFooter beforeRail={beforeRail} />
     </>
   );
 }

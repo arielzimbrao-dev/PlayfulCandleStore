@@ -38,6 +38,7 @@ function FilterOption({ href, label, isActive }: { href: string; label: string; 
 // Barra lateral de filtros (Figma Frame 60): cartão com grupos em acordeão
 // (Categoria · Tipos de aromas · Preço · Disponibilidade) e opções com checkbox.
 // Componente de servidor sem estado: cada opção é um link que liga/desliga o parâmetro na URL.
+// No celular a gaveta que abre/fecha fica no ShopLayout.
 export default function ProductFilters({
   basePath,
   params,
@@ -87,52 +88,45 @@ export default function ProductFilters({
   const showTypeGroup = showType && types.length > 1;
 
   return (
-    <div className="filters-toggle">
-      {/* Botão "Filtros" só no celular, sem JS (checkbox + label); no desktop a barra aparece sempre. */}
-      <input type="checkbox" id="filters-toggle" className="filters-toggle__checkbox" />
-      <label htmlFor="filters-toggle" className="filters-toggle__button">
-        <i className="fa-solid fa-sliders" aria-hidden="true" /> Filtros
-      </label>
-      <div className="filters">
-        {showTypeGroup && (
-          <FilterGroup title="Categoria">
-            {types.map((type) => (
-              <FilterOption key={type} href={toggleHref('type', type)} label={TYPE_LABELS[type]} isActive={params.type === type} />
-            ))}
-          </FilterGroup>
-        )}
-
-        {scents.length > 0 && (
-          <FilterGroup title="Tipos de aromas">
-            {scents.map((scent) => (
-              <FilterOption key={scent} href={scentHref(scent)} label={scent} isActive={selectedScents.includes(scent)} />
-            ))}
-          </FilterGroup>
-        )}
-
-        <FilterGroup title="Preço">
-          {PRICE_BUCKETS.map((bucket) => (
-            <FilterOption
-              key={bucket.key}
-              href={toggleHref('price', bucket.key)}
-              label={bucket.label}
-              isActive={params.price === bucket.key}
-            />
+    <div className="filters">
+      {showTypeGroup && (
+        <FilterGroup title="Categoria">
+          {types.map((type) => (
+            <FilterOption key={type} href={toggleHref('type', type)} label={TYPE_LABELS[type]} isActive={params.type === type} />
           ))}
         </FilterGroup>
+      )}
 
-        {stockFilter && (
-          <FilterGroup title="Disponibilidade">
-            <FilterOption href={toggleHref('stock', '1')} label="Em stock" isActive={params.stock === '1'} />
-          </FilterGroup>
-        )}
+      {scents.length > 0 && (
+        <FilterGroup title="Tipos de aromas">
+          {scents.map((scent) => (
+            <FilterOption key={scent} href={scentHref(scent)} label={scent} isActive={selectedScents.includes(scent)} />
+          ))}
+        </FilterGroup>
+      )}
 
-        {hasActiveFilter && (
-          <Link href={basePath} className="filters__clear">
-            Limpar ✕
-          </Link>
-        )}
-      </div>
+      <FilterGroup title="Preço">
+        {PRICE_BUCKETS.map((bucket) => (
+          <FilterOption
+            key={bucket.key}
+            href={toggleHref('price', bucket.key)}
+            label={bucket.label}
+            isActive={params.price === bucket.key}
+          />
+        ))}
+      </FilterGroup>
+
+      {stockFilter && (
+        <FilterGroup title="Disponibilidade">
+          <FilterOption href={toggleHref('stock', '1')} label="Em stock" isActive={params.stock === '1'} />
+        </FilterGroup>
+      )}
+
+      {hasActiveFilter && (
+        <Link href={basePath} className="filters__clear">
+          Limpar ✕
+        </Link>
+      )}
     </div>
   );
 }

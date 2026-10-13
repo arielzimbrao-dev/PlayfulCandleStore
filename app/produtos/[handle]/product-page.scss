@@ -13,16 +13,24 @@
       gap: 24px;
     }
 
+    // Nome (head) e informações na coluna da direita; a galeria ocupa as duas linhas à esquerda.
     @include above($tablet) {
       grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      grid-template-rows: auto 1fr;
+      grid-template-areas:
+        'gallery head'
+        'gallery info';
+      row-gap: 0;
+
+      > .gallery {
+        grid-area: gallery;
+      }
     }
   }
 
-  // No desktop a coluna de informações acompanha a rolagem das fotos.
-  &__info {
+  &__head {
     @include above($tablet) {
-      position: sticky;
-      top: 96px;
+      grid-area: head;
     }
 
     h1.script-title {
@@ -39,6 +47,19 @@
       text-transform: uppercase;
       margin-bottom: 16px;
       font-size: 16px;
+
+      @include mobile {
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  // No desktop a coluna de informações acompanha a rolagem das fotos.
+  &__info {
+    @include above($tablet) {
+      grid-area: info;
+      position: sticky;
+      top: 96px;
     }
   }
 
@@ -50,6 +71,13 @@
     justify-content: space-between;
     gap: 16px;
     margin-bottom: 8px;
+
+    // Celular: nome à esquerda (o peso fica na mesma linha, à direita).
+    @include tablet {
+      justify-content: space-between;
+      text-align: left;
+      margin-bottom: 0;
+    }
   }
 
   &__weight {

@@ -27,6 +27,7 @@ export type Review = {
   date?: string; // ISO
   verified?: boolean;
   approved?: boolean; // moderação: só aprovadas aparecem
+  photo?: string; // foto enviada pelo cliente (URL https ou caminho /local), opcional
 };
 
 export type Product = {
@@ -90,7 +91,6 @@ export type Cart = {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
-  note: string | null;
   /** label: nome a mostrar no lugar do código (packs — o código fica escondido do browser).
    *  amount: quanto o código desconta neste carrinho. */
   discountCodes: { code: string; applicable: boolean; label?: string; amount?: Money }[];

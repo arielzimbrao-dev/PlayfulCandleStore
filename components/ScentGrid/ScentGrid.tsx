@@ -6,7 +6,7 @@ import { useT } from '@/components/LanguageProvider';
 import TwoToneTitle from '@/components/TwoToneTitle/TwoToneTitle';
 import './ScentGrid.scss';
 
-// "Escolhe o teu Aroma favorito" (home): 6 blocos, um por família olfativa, com foto e frase.
+// "Qual é o teu Mood de hoje?" (home): 6 blocos, um por família olfativa, com foto e frase.
 // Cada bloco abre a loja já filtrada por esse aroma (?scent=).
 // Os nomes são os valores do metafield custom.aromas (em PT), por isso não são traduzidos.
 const SCENT_FAMILIES = [

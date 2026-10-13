@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCart } from '@/components/cart-context';
 import { useToast } from '@/components/Toast/Toast';
 import { useT } from '@/components/LanguageProvider';
@@ -24,17 +24,36 @@ export default function BuyBox({ product }: { product: Product }) {
   const [variantId, setVariantId] = useState(firstAvailable?.id ?? '');
   const [quantity, setQuantity] = useState(1);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
+  // Barra fixa do celular: só aparece depois de o botão principal sair do ecrã por cima
+  // (antes disso ele já está à vista e a barra só taparia conteúdo).
+  const mainActionsRef = useRef<HTMLDivElement>(null);
+  const [isBarVisible, setIsBarVisible] = useState(false);
+
+  useEffect(() => {
+    const target = mainActionsRef.current;
+    if (!target) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsBarVisible(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+    });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
 
   if (variants.length === 0) return <p>Produto indisponível.</p>;
 
   const variant = variants.find((candidate) => candidate.id === variantId) ?? firstAvailable;
   // Limite = estoque menos o que já está no carrinho (quantityAvailable null = sem limite).
-  const quantityInCart = cart?.lines.find((line) => line.merchandise.id === variant?.id)?.quantity ?? 0;
+  const quantityInCart =
+    cart?.lines.find((line) => line.merchandise.id === variant?.id)?.quantity ?? 0;
   const maxQuantity =
-    variant?.quantityAvailable == null ? UNLIMITED_STOCK : Math.max(0, variant.quantityAvailable - quantityInCart);
+    variant?.quantityAvailable == null
+      ? UNLIMITED_STOCK
+      : Math.max(0, variant.quantityAvailable - quantityInCart);
   const isSoldOut = !variant?.availableForSale || variant.quantityAvailable === 0;
   const safeQuantity = Math.min(quantity, Math.max(1, maxQuantity));
-  const isOnSale = !!variant?.compareAtPrice && Number(variant.compareAtPrice.amount) > Number(variant.price.amount);
+  const isOnSale =
+    !!variant?.compareAtPrice &&
+    Number(variant.compareAtPrice.amount) > Number(variant.price.amount);
   const canAdd = !loading && !isBuyingNow && !!variant && maxQuantity > 0;
 
   const trackAddToCart = () => {
@@ -53,7 +72,10 @@ export default function BuyBox({ product }: { product: Product }) {
   const addToCart = async () => {
     if (!variant) return;
     const isAdded = await addItem(variant.id, safeQuantity);
-    toast.show(isAdded ? `${product.title} — ${t.product.added}` : t.product.addError, isAdded ? 'success' : 'error');
+    toast.show(
+      isAdded ? `${product.title} — ${t.product.added}` : t.product.addError,
+      isAdded ? 'success' : 'error',
+    );
     if (isAdded) trackAddToCart();
   };
 
@@ -93,7 +115,9 @@ export default function BuyBox({ product }: { product: Product }) {
     <div className="buybox">
       <div className="buybox__price">
         {variant && <span className="buybox__amount">{formatMoney(variant.price)}</span>}
-        {isOnSale && variant?.compareAtPrice && <span className="price-old">{formatMoney(variant.compareAtPrice)}</span>}
+        {isOnSale && variant?.compareAtPrice && (
+          <span className="price-old">{formatMoney(variant.compareAtPrice)}</span>
+        )}
       </div>
 
       {!isSoldOut && (
@@ -123,7 +147,9 @@ export default function BuyBox({ product }: { product: Product }) {
       {!isSoldOut && (
         <p className="buybox__stock">
           <i className="fa-solid fa-circle-check" aria-hidden="true" />
-          {maxQuantity === 0 ? 'Já tens no carrinho todas as unidades disponíveis' : t.product.inStock}
+          {maxQuantity === 0
+            ? 'Já tens no carrinho todas as unidades disponíveis'
+            : t.product.inStock}
         </p>
       )}
 
@@ -141,34 +167,56 @@ export default function BuyBox({ product }: { product: Product }) {
         </label>
       )}
 
-      {isSoldOut ? (
-        <a className="btn btn--orange btn--block" href={notifyMeHref} target="_blank" rel="noopener noreferrer">
-          {t.product.notify}
-          <i className="fa-solid fa-bell" aria-hidden="true" />
-        </a>
-      ) : (
-        <>
-          <button className="btn btn--orange btn--block" disabled={!canAdd} onClick={addToCart}>
-            <i className="fa-solid fa-cart-shopping" aria-hidden="true" />
-            {loading ? t.product.adding : t.product.choose}
-          </button>
-          <button className="btn btn--yellow btn--block" disabled={isBuyingNow || loading || !variant} onClick={buyNow}>
-            <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
-            {isBuyingNow ? t.product.adding : t.product.buyNow}
-          </button>
-        </>
-      )}
+      <div ref={mainActionsRef} className="buybox__actions">
+        {isSoldOut ? (
+          <a
+            className="btn btn--orange btn--block"
+            href={notifyMeHref}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t.product.notify}
+            <i className="fa-solid fa-bell" aria-hidden="true" />
+          </a>
+        ) : (
+          <>
+            <button className="btn btn--orange btn--block" disabled={!canAdd} onClick={addToCart}>
+              <i className="fa-solid fa-cart-shopping" aria-hidden="true" />
+              {loading ? t.product.adding : t.product.choose}
+            </button>
+            <button
+              className="btn btn--yellow btn--block"
+              disabled={isBuyingNow || loading || !variant}
+              onClick={buyNow}
+            >
+              <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
+              {isBuyingNow ? t.product.adding : t.product.buyNow}
+            </button>
+          </>
+        )}
+      </div>
 
-      {/* Barra fixa de compra no celular: mantém o botão sempre visível ao rolar. */}
-      <div className="mobile-buy-bar">
+      {/* Barra fixa de compra no celular: entra quando os botões acima saem do ecrã.
+          Escondida, fica `inert` para não receber foco do teclado. */}
+      <div className={`mobile-buy-bar${isBarVisible ? ' is-visible' : ''}`} inert={!isBarVisible}>
         {variant && <span className="mobile-buy-bar__price">{formatMoney(variant.price)}</span>}
         {isSoldOut ? (
-          <a className="btn btn--primary mobile-buy-bar__button" href={notifyMeHref} target="_blank" rel="noopener noreferrer">
+          <a
+            className="btn btn--primary mobile-buy-bar__button"
+            href={notifyMeHref}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {t.product.notify} <i className="fa-solid fa-bell" aria-hidden="true" />
           </a>
         ) : (
-          <button className="btn btn--primary mobile-buy-bar__button" disabled={!canAdd} onClick={addToCart}>
-            {loading ? t.product.adding : t.product.choose} <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
+          <button
+            className="btn btn--primary mobile-buy-bar__button"
+            disabled={!canAdd}
+            onClick={addToCart}
+          >
+            {loading ? t.product.adding : t.product.choose}{' '}
+            <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
           </button>
         )}
       </div>

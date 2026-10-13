@@ -17,6 +17,8 @@ export default function SortSelect({ value }: { value: string }) {
   const close = useCallback(() => setIsOpen(false), []);
   useDismiss(rootRef, isOpen, close);
 
+  const currentLabel = SORT_OPTIONS.find((option) => option.key === value)?.label ?? 'Ordenar';
+
   const choose = (sortKey: string) => {
     setIsOpen(false);
     const params = new URLSearchParams(searchParams.toString());
@@ -32,9 +34,17 @@ export default function SortSelect({ value }: { value: string }) {
         className="sort-select__button"
         aria-haspopup="true"
         aria-expanded={isOpen}
+        aria-label={`Ordenar: ${currentLabel}`}
         onClick={() => setIsOpen((open) => !open)}
       >
-        Ordenar <i className={`fa-solid fa-chevron-${isOpen ? 'up' : 'down'}`} aria-hidden="true" />
+        {/* Desktop: "Ordenar ⌄". Celular: botão com a ordenação atual (ver SortSelect.scss). */}
+        <span className="sort-select__desktop">
+          Ordenar <i className={`fa-solid fa-chevron-${isOpen ? 'up' : 'down'}`} aria-hidden="true" />
+        </span>
+        <span className="sort-select__mobile">
+          <span className="sort-select__current">{currentLabel}</span>
+          <i className="fa-solid fa-bars-staggered" aria-hidden="true" />
+        </span>
       </button>
       {isOpen && (
         <ul className="sort-select__menu" role="menu">

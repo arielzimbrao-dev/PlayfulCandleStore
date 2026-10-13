@@ -56,4 +56,29 @@
       background: rgba(255, 255, 255, 0.2);
     }
   }
+
+  // Celular: barra mais baixa — menos padding, setas menores e o texto usa a largura toda
+  // (com 70vw os avisos quebravam em 3 linhas).
+  @include mobile {
+    gap: 4px;
+    padding: 4px 8px;
+    letter-spacing: 0;
+
+    &__viewport {
+      flex: 1;
+      width: auto;
+    }
+
+    &__track li {
+      padding: 0 4px;
+      line-height: 16px;
+      font-size: 8px;
+    }
+
+    &__arrow {
+      width: 24px;
+      height: 24px;
+      font-size: 12px;
+    }
+  }
 }

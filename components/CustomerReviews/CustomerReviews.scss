@@ -1,0 +1,218 @@
+// Avaliações (home): cabeçalho centrado com a média e um slide de cartões (PagedCarousel).
+// Cartão: foto 4:5 com as estrelas por cima, texto da avaliação, autor (bolinha com a inicial)
+// e produto. 3 por página no desktop, 2 no tablet, ~1,2 no celular (espreita o seguinte).
+
+@use '../../styles/mixins' as *;
+
+.customer-reviews {
+  padding-block: 64px;
+
+  @include mobile {
+    padding-block: 32px;
+  }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 40px;
+    text-align: center;
+
+    @include mobile {
+      align-items: flex-start;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .eyebrow {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-pink);
+    }
+
+    .script-title {
+      font-size: 48px;
+      line-height: 56px;
+
+      @include mobile {
+        font-size: 32px;
+        line-height: 40px;
+      }
+    }
+  }
+
+  // "★ 4,8 de 5 · 4 avaliações"
+  &__summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--color-blush);
+    font-size: 14px;
+    color: var(--color-ink);
+
+    i {
+      color: var(--color-yellow);
+    }
+
+    strong {
+      font-size: 16px;
+    }
+  }
+
+  // Larguras dos cartões e setas (mesmo padrão da prateleira de produtos).
+  .carousel__track > .review-card {
+    flex: 0 0 calc((100% - 32px) / 3);
+
+    @include tablet {
+      flex: 0 0 calc((100% - 16px) / 2);
+    }
+
+    @include small-phone {
+      flex: 0 0 80%;
+    }
+  }
+
+  .carousel__arrow--prev {
+    left: -56px;
+  }
+
+  .carousel__arrow--next {
+    right: -56px;
+  }
+
+  @include small-phone {
+    .carousel {
+      width: auto;
+      max-width: none;
+      margin-left: 5%;
+      margin-right: 0;
+    }
+
+    .carousel__arrow {
+      display: none;
+    }
+  }
+}
+
+.review-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-paper);
+  box-shadow: 0 24px 32px -24px rgba(204, 26, 82, 0.35);
+
+  &__photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background: var(--color-blush);
+
+    img {
+      transition: transform 0.8s var(--ease-out);
+    }
+  }
+
+  &:hover &__photo img {
+    transform: scale(1.04);
+  }
+
+  // Estrelas numa pílula branca sobre a foto, em baixo à esquerda.
+  &__stars {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    padding: 4px 16px;
+    border-radius: var(--radius-pill);
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--color-yellow);
+
+    .fa-regular {
+      color: var(--color-border-strong);
+    }
+  }
+
+  // Selo dos exemplos de desenvolvimento (nunca aparecem em produção).
+  &__sample {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 4px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--color-ink);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  &__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  &__text {
+    flex: 1;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 16px;
+    border-top: 2px dashed var(--color-border-strong);
+    font-size: 14px;
+  }
+
+  // Bolinha rosa com a inicial do nome, em Genty.
+  &__avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-pink);
+    color: #fff;
+    font-family: var(--font-script);
+    font-size: 24px;
+  }
+
+  &__who {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 8px;
+
+    strong {
+      color: var(--color-ink);
+    }
+  }
+
+  &__verified {
+    color: var(--color-success);
+    font-weight: 600;
+  }
+
+  &__product {
+    width: 100%;
+    font-weight: 600;
+    color: var(--color-pink);
+
+    &:hover {
+      color: var(--color-coral-dark);
+    }
+  }
+}
