@@ -7,14 +7,15 @@ import { CATEGORIES } from '@/lib/categories';
 
 export const revalidate = 3600;
 
-// Banners-arte por coleção (com o texto embutido na imagem).
+// Banners de foto por coleção (desktop 3:1 / mobile 4:5, texto em HTML por cima).
 // ponytail: mapa fixo; passar para um metafield se crescer.
-const ART_BANNERS: Record<string, { src: string; alt: string; width: number; height: number }> = {
+const PHOTO_BANNERS: Record<string, { title?: string; desktop: string; mobile: string; alt: string; text: string }> = {
   'colecao-de-outono': {
-    src: '/images/hero-colecao-outono.png',
-    alt: 'Trio Outono — três novas sugestões para um outono três vezes mais aconchegante. Velas Pumpkin Spice e Cappuccino entre pinhas e folhas.',
-    width: 1270,
-    height: 330,
+    title: 'Autumn Collection', // em inglês: a fonte Genty não tem ç/ã
+    desktop: '/images/banners/col-outono-v2-desktop.jpg',
+    mobile: '/images/banners/col-outono-mobile.jpg',
+    alt: 'Velas Orange & Cinnamon, Cappuccino e Pumpkin Spice entre pinhas e abóboras',
+    text: 'Canela, café e abóbora num trio a pensar no outono. Acende uma, puxa a manta e deixa-te ficar.',
   },
 };
 
@@ -67,11 +68,13 @@ export default async function CollectionPage({
     { name: shortTitle, url: `/colecoes/${handle}` },
   ];
 
+  const photoBanner = PHOTO_BANNERS[handle];
+
   return (
     <ProductListing
-      title={collection.title}
+      title={photoBanner?.title ?? collection.title}
       image={bannerImage}
-      art={ART_BANNERS[handle]}
+      photo={photoBanner}
       crumbs={crumbs}
       basePath={`/colecoes/${handle}`}
       products={collection.products}

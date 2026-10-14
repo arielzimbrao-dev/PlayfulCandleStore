@@ -18,14 +18,12 @@ type Crumb = { name: string; url: string };
 // Página de listagem de uma categoria ou coleção: banner no topo, migalhas, filtros + produtos
 // e o bloco pré-footer. O banner pode ser (por ordem de preferência):
 //   `photo` → foto desktop/celular com o h1 e a intro visíveis por cima (categorias);
-//   `art`   → imagem-arte que já traz o texto embutido (coleções especiais);
 //   `image` → foto simples da coleção.
-// Nos dois últimos casos o h1 fica escondido visualmente (só para SEO e leitores de tela).
+// No último caso o h1 fica escondido visualmente (só para SEO e leitores de tela).
 export default function ProductListing({
   title,
   image,
   photo,
-  art,
   crumbs,
   basePath,
   products,
@@ -40,7 +38,6 @@ export default function ProductListing({
   title: string;
   image?: ShopifyImage | null;
   photo?: { desktop: string; mobile: string; alt: string; text: string; textRight?: boolean };
-  art?: { src: string; alt: string; width: number; height: number };
   crumbs: Crumb[];
   basePath: string;
   products: Product[];
@@ -70,33 +67,18 @@ export default function ProductListing({
         ) : (
           <>
             <h1 className="visually-hidden">{title}</h1>
-            {art ? (
-              <div className="listing-banner">
+            {image && (
+              <div className="listing-banner listing-banner--photo">
                 <Image
-                  src={art.src}
-                  alt={art.alt}
-                  width={art.width}
-                  height={art.height}
+                  src={image.url}
+                  alt={image.altText ?? title}
+                  title={image.altText ?? title}
+                  fill
                   sizes="100vw"
-                  quality={90}
+                  style={{ objectFit: 'cover' }}
                   priority
-                  className="listing-banner__art"
                 />
               </div>
-            ) : (
-              image && (
-                <div className="listing-banner listing-banner--photo">
-                  <Image
-                    src={image.url}
-                    alt={image.altText ?? title}
-                    title={image.altText ?? title}
-                    fill
-                    sizes="100vw"
-                    style={{ objectFit: 'cover' }}
-                    priority
-                  />
-                </div>
-              )
             )}
           </>
         )}

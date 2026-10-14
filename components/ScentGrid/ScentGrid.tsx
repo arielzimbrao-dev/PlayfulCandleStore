@@ -9,8 +9,9 @@ import './ScentGrid.scss';
 // "Qual é o teu Mood de hoje?" (home): 6 blocos, um por família olfativa, com foto e frase.
 // Cada bloco abre a loja já filtrada por esse aroma (?scent=).
 // Os nomes são os valores do metafield custom.aromas (em PT), por isso não são traduzidos.
+// `label`: texto visível em inglês quando o nome tem acento (a fonte Genty não tem acentos).
 const SCENT_FAMILIES = [
-  { key: 'citrico', name: 'Cítrico' },
+  { key: 'citrico', name: 'Cítrico', label: 'Citrus' },
   { key: 'doce', name: 'Doce' },
   { key: 'floral', name: 'Floral' },
   { key: 'fresco', name: 'Fresco' },
@@ -39,7 +40,7 @@ export default function ScentGrid() {
               quality={90}
               style={{ objectFit: 'cover' }}
             />
-            <h3>{scent.name}</h3>
+            <h3>{'label' in scent ? scent.label : scent.name}</h3>
             <p>{t.cats[scent.key]}</p>
           </Link>
         ))}

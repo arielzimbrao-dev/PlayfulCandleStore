@@ -36,7 +36,7 @@ function FilterOption({ href, label, isActive }: { href: string; label: string; 
 }
 
 // Barra lateral de filtros (Figma Frame 60): cartão com grupos em acordeão
-// (Categoria · Tipos de aromas · Preço · Disponibilidade) e opções com checkbox.
+// (Categoria · Tipos de aromas · Valor · Disponibilidade) e opções com checkbox.
 // Componente de servidor sem estado: cada opção é um link que liga/desliga o parâmetro na URL.
 // No celular a gaveta que abre/fecha fica no ShopLayout.
 export default function ProductFilters({
@@ -105,7 +105,7 @@ export default function ProductFilters({
         </FilterGroup>
       )}
 
-      <FilterGroup title="Preço">
+      <FilterGroup title="Valor">
         {PRICE_BUCKETS.map((bucket) => (
           <FilterOption
             key={bucket.key}

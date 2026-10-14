@@ -6,13 +6,11 @@ import type { CategoryKey } from './filters';
 export type Category = { title: string; query: string; text: string; type: CategoryKey };
 
 // Sufixo de versão quando a foto de uma categoria é trocada (nome novo = sem cache antigo).
-const BANNER_VERSION: Record<string, string> = { 'velas-de-copo': '-v2' };
+const BANNER_VERSION: Record<string, string> = { 'velas-de-copo': '-v3', snapbars: '-v2', queimadores: '-v2', 'wax-melts': '-v2' };
 /** Banner da categoria: /images/banners/cat-<handle>-{desktop,mobile}.jpg */
 export const categoryBanner = (handle: string) => ({
   desktop: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-desktop.jpg`,
   mobile: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-mobile.jpg`,
-  // a foto das velas tem o produto à esquerda → texto à direita (desktop)
-  textRight: handle === 'velas-de-copo',
 });
 
 export const CATEGORIES: Record<string, Category> = {
