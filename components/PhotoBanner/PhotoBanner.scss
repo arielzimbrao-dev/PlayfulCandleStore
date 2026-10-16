@@ -99,3 +99,46 @@
     color: var(--color-ink);
   }
 }
+
+// Enquadramento da foto de outono (hero-outono-*): ponha .banner-wall num ancestral do banner.
+// No desktop o texto fica na parede lisa entre a manta (esquerda) e os produtos (direita); no
+// celular, folhas à esquerda e parede à direita. Se trocar a foto, revisar estas faixas.
+.banner-wall {
+  .photo-banner__content {
+    @include above(761px) {
+      left: 23%;
+      width: 32%;
+      padding: 40px 0;
+    }
+
+    @include mobile {
+      align-items: flex-start;
+      padding: 32px var(--gutter) 48px 40%;
+      text-align: left;
+    }
+  }
+
+  // Desktop: foto 3:1 num recorte 21:8 ancorada à direita (corta só folhas e alarga a parede).
+  // Celular: os produtos estão no fundo, o recorte 4:5 fica ancorado embaixo.
+  .photo-banner__image {
+    @include above(761px) {
+      object-position: right center;
+    }
+
+    @include mobile {
+      object-position: center bottom;
+    }
+  }
+
+  .photo-banner__title {
+    @include above(761px) {
+      font-size: clamp(32px, 3.9vw, 64px);
+    }
+  }
+  // No desktop o parágrafo começaria em cima da manta: fica só o título (e o botão).
+  .photo-banner__lead {
+    @include above(761px) {
+      display: none;
+    }
+  }
+}

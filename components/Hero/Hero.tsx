@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useT } from '@/components/LanguageProvider';
 import PhotoBanner from '@/components/PhotoBanner/PhotoBanner';
-import './Hero.scss';
 
 const HERO_HREF = '/colecoes/colecao-de-outono';
 
@@ -11,7 +10,7 @@ const HERO_HREF = '/colecoes/colecao-de-outono';
 export default function Hero() {
   const t = useT();
   return (
-    <section className="hero" aria-label={t.hero.eyebrow}>
+    <section className="hero banner-wall" aria-label={t.hero.eyebrow}>
       <PhotoBanner
         desktop="/images/banners/hero-outono-desktop.jpg"
         mobile="/images/banners/hero-outono-mobile.jpg"

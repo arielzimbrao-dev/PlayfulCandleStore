@@ -37,7 +37,7 @@ export default function ProductListing({
 }: {
   title: string;
   image?: ShopifyImage | null;
-  photo?: { desktop: string; mobile: string; alt: string; text: string; textRight?: boolean };
+  photo?: { desktop: string; mobile: string; alt: string; text: string; textRight?: boolean; wall?: boolean };
   crumbs: Crumb[];
   basePath: string;
   products: Product[];
@@ -58,7 +58,7 @@ export default function ProductListing({
       <section className="container">
         <JsonLd data={itemListLd(filtered, listName)} />
         {photo ? (
-          <div className="listing-banner">
+          <div className={`listing-banner${photo.wall ? ' banner-wall' : ''}`}>
             <PhotoBanner desktop={photo.desktop} mobile={photo.mobile} alt={photo.alt} textRight={photo.textRight} priority>
               <h1 className="photo-banner__title">{title}</h1>
               <p className="photo-banner__lead">{photo.text}</p>

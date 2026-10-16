@@ -37,4 +37,12 @@
       aspect-ratio: 3 / 1;
     }
   }
+
+  // Foto de outono (.banner-wall, em Packs): a 3:1 aparece inteira, e a parede lisa começa
+  // mais à direita do que no recorte do hero.
+  &.banner-wall .photo-banner__content {
+    @include above(761px) {
+      left: 29%;
+    }
+  }
 }

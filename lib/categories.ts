@@ -9,10 +9,14 @@ export type Category = { title: string; seoTitle: string; query: string; text: s
 // Sufixo de versão quando a foto de uma categoria é trocada (nome novo = sem cache antigo).
 const BANNER_VERSION: Record<string, string> = { 'velas-de-copo': '-v3', snapbars: '-v2', queimadores: '-v2', 'wax-melts': '-v2' };
 /** Banner da categoria: /images/banners/cat-<handle>-{desktop,mobile}.jpg */
-export const categoryBanner = (handle: string) => ({
-  desktop: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-desktop.jpg`,
-  mobile: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-mobile.jpg`,
-});
+export const categoryBanner = (handle: string) =>
+  handle === 'packs'
+    ? // Packs reaproveita a foto de outono do hero da home (mesmo enquadramento: .banner-wall).
+      { desktop: '/images/banners/hero-outono-desktop.jpg', mobile: '/images/banners/hero-outono-mobile.jpg', wall: true }
+    : {
+        desktop: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-desktop.jpg`,
+        mobile: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-mobile.jpg`,
+      };
 
 export const CATEGORIES: Record<string, Category> = {
   'velas-de-copo': {
