@@ -12,7 +12,7 @@ const pt = {
     'Expedimos em 24h úteis, embalado à mão.',
     'Feitas à mão em Lisboa, com cera vegetal',
   ],
-  nav: { velas: 'Velas de Copo', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Queimadores', autumn: 'Coleção de Outono' },
+  nav: { velas: 'Velas de Copo', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Queimadores', pack: 'Packs', autumn: 'Coleção de Outono' },
   header: {
     account: 'Minha conta',
     search: 'Pesquisar',
@@ -207,7 +207,7 @@ const es: Dictionary = {
     'Enviamos en 24h laborables, empaquetado a mano.',
     'Hechas a mano en Lisboa, con cera vegetal',
   ],
-  nav: { velas: 'Velas', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Quemadores', autumn: 'Colección de Otoño' },
+  nav: { velas: 'Velas', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Quemadores', pack: 'Packs', autumn: 'Colección de Otoño' },
   header: {
     account: 'Mi cuenta',
     search: 'Buscar',
@@ -397,7 +397,7 @@ const en: Dictionary = {
     'Ships within 24 business hours, hand-packed.',
     'Handmade in Lisbon, with plant wax',
   ],
-  nav: { velas: 'Candles', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Burners', autumn: 'Autumn Collection' },
+  nav: { velas: 'Candles', wax: 'Wax Melts', snap: 'Snapbars', burner: 'Burners', pack: 'Packs', autumn: 'Autumn Collection' },
   header: {
     account: 'My account',
     search: 'Search',

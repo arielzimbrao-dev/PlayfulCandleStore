@@ -18,6 +18,7 @@ const MENU_ITEMS = [
   ['/categorias/wax-melts', 'wax'],
   ['/categorias/snapbars', 'snap'],
   ['/categorias/queimadores', 'burner'],
+  ['/categorias/packs', 'pack'],
 ] as const;
 
 // Desktop: logo · menu (centro) · pesquisa, favoritos, conta, carrinho.
