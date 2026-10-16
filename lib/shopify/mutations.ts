@@ -7,6 +7,10 @@ export const CART_CREATE = /* GraphQL */ `
       cart {
         ...CartFields
       }
+      warnings {
+        code
+        message
+      }
       userErrors {
         message
       }

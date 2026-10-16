@@ -4,6 +4,7 @@ import {
   addCartLines,
   createCart,
   getCart,
+  getProducts,
   removeCartLines,
   updateCartDiscountCodes,
   updateCartLines,
@@ -14,6 +15,11 @@ import type { Cart, CartLineInput } from '@/lib/shopify/types';
 
 const CART_COOKIE = 'cartId';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 dias
+// Limites de um pedido (o browser não é de confiança): linhas por pedido e códigos de desconto.
+const MAX_LINES = 10;
+const MAX_CODES = 5;
+const isQuantity = (value: unknown): value is number =>
+  Number.isInteger(value) && (value as number) >= 1 && (value as number) <= 99;
 
 // Packs: com 1 de cada produto do pack no carrinho aplica o código do pack; sem eles, tira-o.
 // Os códigos que o cliente digitou ficam como estão.
@@ -142,7 +148,7 @@ export async function POST(request: Request) {
     lines?: CartLineInput[];
     attributes?: CartLineInput['attributes'];
   }>(request);
-  const { merchandiseId, quantity = 1, buyNow } = body ?? {};
+  const buyNow = body?.buyNow;
   const toAttributes = (value: unknown) =>
     Array.isArray(value)
       ? value
@@ -150,21 +156,38 @@ export async function POST(request: Request) {
           .map(({ key, value }) => ({ key: String(key), value: String(value) }))
       : [];
   // `lines` adiciona vários itens numa só chamada (seção "Leva junto").
-  const lines = Array.isArray(body?.lines)
+  const rawLines: Partial<CartLineInput>[] = Array.isArray(body?.lines)
     ? body.lines
-        .filter((line) => typeof line?.merchandiseId === 'string')
-        .map((line) => ({
-          merchandiseId: line.merchandiseId,
-          quantity: Math.max(1, Number(line.quantity) || 1),
-          attributes: toAttributes(line.attributes),
-        }))
-    : merchandiseId
-      ? [{ merchandiseId, quantity: Math.max(1, Number(quantity) || 1), attributes: toAttributes(body?.attributes) }]
+    : body?.merchandiseId
+      ? [{ merchandiseId: body.merchandiseId, quantity: body.quantity, attributes: body.attributes }]
       : [];
+  const lines = rawLines
+    .filter((line) => typeof line?.merchandiseId === 'string')
+    .map((line) => ({
+      merchandiseId: line.merchandiseId!,
+      quantity: line.quantity ?? 1,
+      attributes: toAttributes(line.attributes),
+    }));
   if (!lines.length) {
     return NextResponse.json({ error: 'merchandiseId obrigatorio' }, { status: 400 });
   }
+  if (rawLines.length > MAX_LINES) {
+    return NextResponse.json({ error: `No máximo ${MAX_LINES} artigos de cada vez` }, { status: 400 });
+  }
+  if (!lines.every((line) => isQuantity(line.quantity))) {
+    return NextResponse.json({ error: 'Quantidade inválida (de 1 a 99)' }, { status: 400 });
+  }
   try {
+    // Propriedades da linha vão parar à encomenda: só os packs de escolha as usam (mesma regra
+    // do packLimits: produto do tipo Pack com pack_slots). Nos outros produtos, descarta-as.
+    if (lines.some((line) => line.attributes.length)) {
+      const packs = (await getProducts(20, { query: 'product_type:Pack' })).products.filter(
+        (product) => product.packSlots.length,
+      );
+      const packVariants = new Set(packs.flatMap((product) => product.variants.map((variant) => variant.id)));
+      for (const line of lines) if (!packVariants.has(line.merchandiseId)) line.attributes = [];
+    }
+
     // O carrinho pode ter expirado (ex.: checkout concluído) → recria. "Comprar agora" ignora-o.
     let cartId = buyNow ? null : await readCartId();
     const current = cartId ? await getCart(cartId) : null;
@@ -208,12 +231,16 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: 'sem carrinho' }, { status: 400 });
   }
   try {
-    if (Array.isArray(body.discountCodes)) {
+    if (body.discountCodes !== undefined) {
+      const codes = body.discountCodes;
+      if (!Array.isArray(codes) || codes.length > MAX_CODES || !codes.every((code) => typeof code === 'string')) {
+        return NextResponse.json({ error: 'Códigos de desconto inválidos' }, { status: 400 });
+      }
       const cart = await updateCartDiscountCodes(cartId, body.discountCodes);
       return withStock(cart);
     }
-    if (!body.lineId || body.quantity == null) {
-      return NextResponse.json({ error: 'lineId e quantity obrigatorios' }, { status: 400 });
+    if (typeof body.lineId !== 'string' || !isQuantity(body.quantity)) {
+      return NextResponse.json({ error: 'Quantidade inválida (de 1 a 99)' }, { status: 400 });
     }
     // Subir a quantidade revê o stock partilhado dos itens dos packs (descer passa sempre).
     const current = await getCart(cartId);

@@ -35,18 +35,22 @@ export default function QuickAddButton({
 
   const addToCart = async () => {
     if (!variant) return;
-    const isAdded = await addItem(variant.id, 1);
-    toast.show(isAdded ? `${product.title} — ${t.product.added}` : t.product.addError, isAdded ? 'success' : 'error');
-    if (isAdded) {
-      ecommerceEvent('add_to_cart', [
-        {
-          item_id: product.id,
-          item_name: product.title,
-          price: Number(variant.price.amount),
-          quantity: 1,
-          item_category: product.productType,
-        },
-      ]);
+    const { ok, error } = await addItem(variant.id, 1);
+    toast.show(ok ? `${product.title} — ${t.product.added}` : (error ?? t.product.addError), ok ? 'success' : 'error');
+    if (ok) {
+      ecommerceEvent(
+        'add_to_cart',
+        [
+          {
+            item_id: product.id,
+            item_name: product.title,
+            price: Number(variant.price.amount),
+            quantity: 1,
+            item_category: product.productType,
+          },
+        ],
+        { value: Number(variant.price.amount), currency: variant.price.currencyCode },
+      );
     }
   };
 

@@ -14,6 +14,12 @@ type WishlistValue = {
 
 const WishlistContext = createContext<WishlistValue | null>(null);
 
+// O valor guardado pode estar estragado (versão antiga, extensão): só aceita uma lista de textos.
+function parseItems(raw: string | null): string[] {
+  const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+  return Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string') : [];
+}
+
 // Favoritos (handles dos produtos) guardados só no navegador, sem conta.
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<string[]>([]);
@@ -23,7 +29,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(JSON.parse(raw));
+      setItems(parseItems(raw));
     } catch {
       /* armazenamento indisponível: a lista começa vazia */
     }
@@ -32,7 +38,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     const onStorage = (event: StorageEvent) => {
       if (event.key === STORAGE_KEY) {
         try {
-          setItems(event.newValue ? JSON.parse(event.newValue) : []);
+          setItems(parseItems(event.newValue));
         } catch {
           /* ignora */
         }

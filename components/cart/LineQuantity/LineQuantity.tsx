@@ -1,6 +1,6 @@
 'use client';
 
-import { useCart } from '@/components/cart-context';
+import { useCart, type CartResult } from '@/components/cart-context';
 import { useToast } from '@/components/Toast/Toast';
 import { useT } from '@/components/LanguageProvider';
 import type { CartLine } from '@/lib/shopify/types';
@@ -15,9 +15,12 @@ export default function LineQuantity({ line }: { line: CartLine }) {
   const isUpdating = pending === line.id;
   const stockLimit = line.merchandise.quantityAvailable ?? Infinity;
 
-  // Mostra um aviso se a ação falhar (ex.: sem rede).
-  const run = async (action: () => Promise<boolean>) => {
-    if (!(await action())) toast.show(t.cart.actionError, 'error');
+  const title = line.merchandise.product.title;
+
+  // Mostra um aviso se a ação falhar: a mensagem da API (ex.: stock do pack) ou a genérica.
+  const run = async (action: () => Promise<CartResult>) => {
+    const { ok, error } = await action();
+    if (!ok) toast.show(error ?? t.cart.actionError, 'error');
   };
 
   return (
@@ -26,16 +29,16 @@ export default function LineQuantity({ line }: { line: CartLine }) {
         className="line-quantity__step"
         disabled={isUpdating}
         onClick={() => run(() => updateItem(line.id, Math.max(1, line.quantity - 1)))}
-        aria-label="−"
+        aria-label={`Diminuir quantidade de ${title}`}
       >
         −
       </button>
-      <span>{line.quantity}</span>
+      <span aria-live="polite">{line.quantity}</span>
       <button
         className="line-quantity__step"
         disabled={isUpdating || line.quantity >= stockLimit}
         onClick={() => run(() => updateItem(line.id, line.quantity + 1))}
-        aria-label="+"
+        aria-label={`Aumentar quantidade de ${title}`}
       >
         +
       </button>

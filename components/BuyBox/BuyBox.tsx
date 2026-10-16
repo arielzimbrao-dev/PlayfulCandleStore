@@ -78,27 +78,28 @@ export default function BuyBox({ product, pack }: { product: Product; pack?: Pac
   const canAdd = !loading && !isBuyingNow && !!variant && maxQuantity > 0 && !isPackIncomplete;
   const addLabel = isPackIncomplete ? 'Escolhe os itens do pack' : loading ? t.product.adding : t.product.choose;
 
-  const trackAddToCart = () => {
+  const trackAddToCart = (event: 'add_to_cart' | 'begin_checkout' = 'add_to_cart') => {
     if (!variant) return;
-    ecommerceEvent('add_to_cart', [
-      {
-        item_id: product.id,
-        item_name: product.title,
-        price: Number(variant.price.amount),
-        quantity: safeQuantity,
-        item_category: product.productType,
-      },
-    ]);
+    ecommerceEvent(
+      event,
+      [
+        {
+          item_id: product.id,
+          item_name: product.title,
+          price: Number(variant.price.amount),
+          quantity: safeQuantity,
+          item_category: product.productType,
+        },
+      ],
+      { value: Number(variant.price.amount) * safeQuantity, currency: variant.price.currencyCode },
+    );
   };
 
   const addToCart = async () => {
     if (!variant) return;
-    const isAdded = await addItem(variant.id, safeQuantity, packAttributes);
-    toast.show(
-      isAdded ? `${product.title} — ${t.product.added}` : t.product.addError,
-      isAdded ? 'success' : 'error',
-    );
-    if (isAdded) trackAddToCart();
+    const { ok, error } = await addItem(variant.id, safeQuantity, packAttributes);
+    toast.show(ok ? `${product.title} — ${t.product.added}` : (error ?? t.product.addError), ok ? 'success' : 'error');
+    if (ok) trackAddToCart();
   };
 
   // "Comprar agora": cria/atualiza o carrinho e vai direto para o checkout da Shopify (que oferece Shop Pay).
@@ -119,6 +120,7 @@ export default function BuyBox({ product, pack }: { product: Product; pack?: Pac
       const data = (await response.json()) as { cart?: { checkoutUrl?: string } };
       if (data.cart?.checkoutUrl) {
         trackAddToCart();
+        trackAddToCart('begin_checkout');
         window.location.href = data.cart.checkoutUrl;
         return;
       }

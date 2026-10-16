@@ -5,12 +5,16 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
 import { useToast } from '@/components/Toast/Toast';
 import { useT } from './LanguageProvider';
 import type { Cart } from '@/lib/shopify/types';
+
+/** error = mensagem real da API (stock do pack, itens por escolher…), quando houver. */
+export type CartResult = { ok: boolean; error?: string; cart?: Cart };
 
 type CartContextValue = {
   cart: Cart | null;
@@ -27,9 +31,9 @@ type CartContextValue = {
     merchandiseId: string | string[],
     quantity?: number,
     attributes?: { key: string; value: string }[],
-  ) => Promise<boolean>;
-  updateItem: (lineId: string, quantity: number) => Promise<boolean>;
-  removeItem: (lineId: string) => Promise<boolean>;
+  ) => Promise<CartResult>;
+  updateItem: (lineId: string, quantity: number) => Promise<CartResult>;
+  removeItem: (lineId: string) => Promise<CartResult>;
   applyDiscount: (code: string) => Promise<boolean>;
 };
 
@@ -43,13 +47,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [pending, setPending] = useState<string | null>(null);
   const toast = useToast();
   const t = useT();
+  // Nº do último pedido que mexe no carrinho: respostas de pedidos mais antigos são ignoradas
+  // (senão um clique lento pode sobrepor o carrinho de um clique mais recente).
+  const lastRequest = useRef(0);
 
   const refresh = useCallback(async () => {
+    const request = lastRequest.current;
     try {
       const res = await fetch('/api/cart');
       if (!res.ok) return;
       const data = (await res.json()) as { cart: Cart | null };
-      setCart(data.cart);
+      // ponytail: só não aplica se uma mutação começou entretanto; uma que já estava a meio
+      // pode ainda perder para este GET — o próximo refresh corrige.
+      if (request === lastRequest.current) setCart(data.cart);
     } catch {
       /* rede indisponível — mantém o estado atual */
     } finally {
@@ -57,11 +67,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Volta a ler o carrinho ao regressar ao separador (pode ter sido pago ou mudado noutro).
   useEffect(() => {
     void refresh();
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void refresh();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, [refresh]);
 
-  const mutate = useCallback(async (init: RequestInit, key = 'cart'): Promise<boolean> => {
+  const mutate = useCallback(async (init: RequestInit, key = 'cart'): Promise<CartResult> => {
+    const request = ++lastRequest.current;
     setLoading(true);
     setPending(key);
     try {
@@ -69,22 +86,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         ...init,
       });
-      if (!res.ok) return false;
-      const data = (await res.json()) as { cart?: Cart | null; error?: string };
-      if (data.cart) {
-        setCart(data.cart);
-        // A Shopify ajusta a quantidade ao estoque e avisa em vez de falhar — avisamos o cliente.
-        if (data.cart.warnings?.some((w) => w.code.includes('STOCK'))) {
-          toast.show(t.cart.stockAdjusted, 'error');
+      const data = (await res.json().catch(() => ({}))) as { cart?: Cart | null; error?: string };
+      if (!res.ok || !data.cart) {
+        // O carrinho já não existe (pago/expirado): limpa-o em vez de mostrar linhas fantasma.
+        if (request === lastRequest.current && /sem carrinho|cart does not exist/i.test(data.error ?? '')) {
+          setCart(null);
         }
-        return true;
+        return { ok: false, error: data.error };
       }
-      return false;
+      if (request === lastRequest.current) setCart(data.cart);
+      // A Shopify ajusta a quantidade ao estoque e avisa em vez de falhar — avisamos o cliente.
+      if (data.cart.warnings?.some((w) => w.code.includes('STOCK'))) {
+        toast.show(t.cart.stockAdjusted, 'error');
+      }
+      return { ok: true, cart: data.cart };
     } catch {
-      return false;
+      return { ok: false };
     } finally {
-      setLoading(false);
-      setPending(null);
+      if (request === lastRequest.current) {
+        setLoading(false);
+        setPending(null);
+      }
     }
   }, [toast, t]);
 
@@ -94,9 +116,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const body = Array.isArray(merchandiseId)
         ? { lines: merchandiseId.map((id) => ({ merchandiseId: id, quantity })) }
         : { merchandiseId, quantity, attributes };
-      const ok = await mutate({ method: 'POST', body: JSON.stringify(body) });
-      if (ok) setIsOpen(true);
-      return ok;
+      const result = await mutate({ method: 'POST', body: JSON.stringify(body) });
+      if (result.ok) setIsOpen(true);
+      return result;
     },
     [mutate],
   );
@@ -114,40 +136,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Shopify aceita qualquer string e devolve-a com applicable:false (sem userErrors).
   // Só devolvemos sucesso se o código voltar como APLICÁVEL (ou se for uma remoção).
-  const applyDiscount = useCallback(async (code: string): Promise<boolean> => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/cart', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ discountCodes: code ? [code] : [] }),
-      });
-      if (!res.ok) return false;
-      const data = (await res.json()) as { cart?: Cart | null };
-      if (!data.cart) return false;
-      setCart(data.cart);
+  // O PATCH substitui a lista inteira, por isso o código novo vai junto com os já aplicados
+  // (os dos packs chegam com code '' e o servidor repõe-nos sozinho).
+  const applyDiscount = useCallback(
+    async (code: string): Promise<boolean> => {
+      const kept = (cart?.discountCodes ?? []).filter((dc) => dc.applicable && dc.code).map((dc) => dc.code);
+      const setCodes = (discountCodes: string[]) =>
+        mutate({ method: 'PATCH', body: JSON.stringify({ discountCodes }) });
+      const result = await setCodes(code ? [...kept, code] : []);
+      if (!result.cart) return false;
       if (!code) return true; // remoção de códigos
       const wanted = code.trim().toLowerCase();
-      const ok = (data.cart.discountCodes ?? []).some((dc) => dc.applicable && dc.code.toLowerCase() === wanted);
-      // Um código inválido fica agarrado ao carrinho (applicable:false) e volta a aparecer como erro
-      // no checkout — limpa-o. A limpeza devolve o carrinho já sem o código.
-      if (!ok) {
-        const clean = await fetch('/api/cart', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ discountCodes: [] }),
-        })
-          .then((r) => (r.ok ? (r.json() as Promise<{ cart?: Cart | null }>) : null))
-          .catch(() => null);
-        if (clean?.cart) setCart(clean.cart);
-      }
+      const ok = result.cart.discountCodes.some((dc) => dc.applicable && dc.code.toLowerCase() === wanted);
+      // Um código inválido fica agarrado ao carrinho (applicable:false) e volta a aparecer como
+      // erro no checkout — tira só esse, mantendo os válidos.
+      if (!ok) await setCodes(kept);
       return ok;
-    } catch {
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [cart, mutate],
+  );
 
   return (
     <CartContext.Provider

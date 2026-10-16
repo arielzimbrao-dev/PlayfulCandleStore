@@ -88,16 +88,15 @@ export async function POST(request: Request) {
         { id: productId },
       );
       // Aceita os dois formatos já usados no metafield: array puro ou { items: [...] }.
+      // JSON estragado → não grava nada (gravar por cima apagaria todas as avaliações).
       let reviews: unknown[] = [];
-      try {
-        const stored = data.product?.metafield?.value;
-        if (stored) {
-          const parsed = JSON.parse(stored) as unknown;
-          const items = (parsed as { items?: unknown })?.items;
-          reviews = Array.isArray(parsed) ? parsed : Array.isArray(items) ? items : [];
-        }
-      } catch {
-        reviews = [];
+      const stored = data.product?.metafield?.value;
+      if (stored) {
+        const parsed = JSON.parse(stored) as unknown;
+        const items = (parsed as { items?: unknown })?.items;
+        if (Array.isArray(parsed)) reviews = parsed;
+        else if (Array.isArray(items)) reviews = items;
+        else throw new Error('metafield custom.reviews com formato inesperado');
       }
 
       reviews.push({
@@ -139,12 +138,14 @@ export async function POST(request: Request) {
     });
     const userErrors = result.metafieldsSet.userErrors;
     if (userErrors.length) {
-      return NextResponse.json({ error: userErrors[0].message }, { status: 422 });
+      console.error('reviews: metafieldsSet', userErrors);
+      return NextResponse.json({ error: 'Não foi possível guardar a avaliação.' }, { status: 422 });
     }
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'erro';
-    return NextResponse.json({ error: message }, { status: 500 });
+    // O detalhe (Admin API, JSON estragado) fica no log do servidor, não vai para o browser.
+    console.error('reviews:', error);
+    return NextResponse.json({ error: 'Não foi possível guardar a avaliação.' }, { status: 500 });
   }
 }
