@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Hero from '@/components/Hero/Hero';
 import Appeals from '@/components/Appeals/Appeals';
 import CategoryNav from '@/components/CategoryNav/CategoryNav';
@@ -9,6 +10,11 @@ import Testimonials from '@/components/Testimonials/Testimonials';
 import { getProducts, getCollection } from '@/lib/shopify';
 
 const AUTUMN_COLLECTION = 'colecao-de-outono';
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { url: '/' },
+};
 
 export default async function HomePage() {
   const [autumnCollection, newArrivals] = await Promise.all([

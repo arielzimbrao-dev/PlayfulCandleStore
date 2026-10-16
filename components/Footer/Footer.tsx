@@ -38,7 +38,7 @@ export default function Footer() {
         <div className="footer__grid">
           <div>
             <span className="footer__logo">
-              <Image src="/images/logo.png" alt="Playful Candles" title="Playful Candles" width={1615} height={341} unoptimized />
+              <Image src="/images/logo.webp" alt="Playful Candles" title="Playful Candles" width={682} height={144} unoptimized />
             </span>
             <p>{t.footer.tagline}</p>
             <div className="footer__social">

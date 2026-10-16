@@ -6,7 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/api/', '/carrinho', '/pesquisa'],
+      // /pesquisa fica rastreável de propósito: é noindex, e o Google só vê o noindex se puder lê-la.
+      disallow: ['/api/', '/carrinho'],
     },
     sitemap: `${SITE.url}/sitemap.xml`,
   };

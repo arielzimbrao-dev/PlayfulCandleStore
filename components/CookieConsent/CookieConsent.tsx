@@ -47,8 +47,8 @@ export default function CookieConsent() {
   const t = useT();
   const [isVisible, setIsVisible] = useState(false);
   const [isCustomizing, setIsCustomizing] = useState(false);
-  const [analytics, setAnalytics] = useState(true);
-  const [marketing, setMarketing] = useState(true);
+  const [analytics, setAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(false);
 
   useEffect(() => {
     const stored = readStoredChoice();
@@ -58,8 +58,8 @@ export default function CookieConsent() {
     // Reabrir o banner para gerir/retirar o consentimento (RGPD: retirar tem de ser tão fácil quanto dar).
     const reopen = () => {
       const current = readStoredChoice();
-      setAnalytics(current?.analytics ?? true);
-      setMarketing(current?.marketing ?? true);
+      setAnalytics(current?.analytics ?? false);
+      setMarketing(current?.marketing ?? false);
       setIsCustomizing(false);
       setIsVisible(true);
     };

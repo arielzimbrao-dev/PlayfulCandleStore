@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getImageProps } from 'next/image';
 import type { ReactNode } from 'react';
+import { preload } from 'react-dom';
 import './PhotoBanner.scss';
 
 // Banner de foto em largura total com "art direction": uma foto para desktop (≥761px) e outra
@@ -34,11 +35,23 @@ export default function PhotoBanner({
     props: { srcSet: mobileSrcSet, ...mobileImageProps },
   } = getImageProps({ ...sharedProps, src: mobile, width: 1080, height: 1350 });
 
+  // O getImageProps ignora `priority` (não faz preload nem fetchpriority): com <picture> é preciso
+  // pré-carregar cada fonte à mão, com a mesma media query, senão o LCP só começa depois do CSS.
+  if (priority) {
+    preload(desktop, { as: 'image', imageSrcSet: desktopSrcSet, imageSizes: '100vw', media: '(min-width: 761px)', fetchPriority: 'high' });
+    preload(mobile, { as: 'image', imageSrcSet: mobileSrcSet, imageSizes: '100vw', media: '(max-width: 760px)', fetchPriority: 'high' });
+  }
+
   const picture = (
     <picture className="photo-banner__picture">
       <source media="(min-width: 761px)" srcSet={desktopSrcSet} />
       <source srcSet={mobileSrcSet} />
-      <img {...mobileImageProps} alt={alt} className="photo-banner__image" />
+      <img
+        {...mobileImageProps}
+        alt={alt}
+        className="photo-banner__image"
+        fetchPriority={priority ? 'high' : undefined}
+      />
     </picture>
   );
 

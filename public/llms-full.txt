@@ -1,6 +1,6 @@
 # Playful Candles — informação completa
 
-> Loja online de velas artesanais em Portugal. Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com ceras vegetais e fragrâncias premium. Envio para todo o Portugal continental e Espanha peninsular (expedição em 24h úteis). Portes conforme o peso da encomenda: https://playfulcandles.com/envios
+> Loja online de velas artesanais em Portugal. Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com ceras vegetais e fragrâncias premium. Envio para Portugal continental e Espanha peninsular, com expedição em até 24 horas úteis. Portes conforme o peso da encomenda: https://playfulcandles.com/envios
 
 ## A marca
 Playful Candles é uma marca portuguesa de velas artesanais com uma identidade divertida e retro-groovy. Cada peça é feita à mão em Lisboa, em pequenos lotes, com cera vegetal (soja) e essências premium. O foco é criar ambiente e "mood" em casa através do aroma, da cor e do design.
@@ -16,9 +16,11 @@ Playful Candles é uma marca portuguesa de velas artesanais com uma identidade d
 Cítrico · Doce · Floral · Fresco · Frutado · Gourmand. Os produtos podem ser filtrados por tipo, aroma e preço na loja.
 
 ## Envios e portes
-- Prazos de entrega por zona: https://playfulcandles.com/envios
-- Portes calculados pelo peso da encomenda; tabela atualizada em https://playfulcandles.com/envios
-- Ilhas (Açores/Madeira): sob consulta.
+- Zonas: Portugal continental e Espanha peninsular. Não enviamos para os Açores, Madeira, Baleares, Canárias, Ceuta nem Melilla.
+- Expedição: até 24 horas em dias úteis.
+- Portugal continental: 5 € por kg, entrega em 2 a 5 dias úteis.
+- Espanha peninsular: 7 € por kg, entrega em 2 a 8 dias úteis.
+- Tabela atualizada: https://playfulcandles.com/envios
 
 ## Trocas e devoluções
 - Direito de livre resolução de 14 dias (produto por usar e na embalagem original).
@@ -27,7 +29,7 @@ Cítrico · Doce · Floral · Fresco · Frutado · Gourmand. Os produtos podem s
 - Artigos danificados: enviar foto em 48h; substituição ou reembolso sem custos.
 
 ## Pagamentos e segurança
-Multibanco, MB WAY, Visa, Mastercard, PayPal. Checkout seguro (Shopify). Não guardamos dados de cartão.
+MB WAY, Multibanco, Visa, Mastercard, PayPal, Google Pay e Shop Pay. Checkout seguro (Shopify). Não guardamos dados de cartão.
 
 ## Privacidade (RGPD)
 Cumprimos o RGPD. Consentimento de cookies com bloqueio por omissão dos não essenciais. Direitos de acesso, retificação, apagamento, portabilidade e oposição. Autoridade: CNPD. Resolução de litígios: Livro de Reclamações e RAL (CNIACC).
@@ -36,17 +38,19 @@ Cumprimos o RGPD. Consentimento de cookies com bloqueio por omissão dos não es
 Sem newsletter por email — a comunicação de novidades e ofertas é feita através do grupo VIP no WhatsApp (acesso antecipado a coleções).
 
 ## Páginas principais
-- Loja: /produtos
-- Categorias: /categorias/velas-de-copo · /categorias/wax-melts · /categorias/snapbars · /categorias/queimadores
-- Coleções: /colecoes (ex.: Coleção de Outono)
-- Pesquisa: /pesquisa?q=
-- FAQ: /faq
-- Envios e portes: /envios
-- Trocas e devoluções: /devolucoes
-- Termos e condições: /termos
-- Política de privacidade: /privacidade
-- Contacto: /contacto
-- Sobre: /sobre
+- [Loja](https://playfulcandles.com/produtos)
+- [Velas de Copo](https://playfulcandles.com/categorias/velas-de-copo)
+- [Wax Melts](https://playfulcandles.com/categorias/wax-melts)
+- [Snapbars](https://playfulcandles.com/categorias/snapbars)
+- [Queimadores](https://playfulcandles.com/categorias/queimadores)
+- [Packs](https://playfulcandles.com/categorias/packs)
+- [Coleções (ex.: Coleção de Outono)](https://playfulcandles.com/colecoes)
+- [Perguntas frequentes](https://playfulcandles.com/faq)
+- [Envios e portes](https://playfulcandles.com/envios)
+- [Trocas e devoluções](https://playfulcandles.com/devolucoes)
+- [Termos e condições](https://playfulcandles.com/termos)
+- [Política de privacidade](https://playfulcandles.com/privacidade)
+- [Contacto](https://playfulcandles.com/contacto)
 
 ## Identificação
 Paloma da Cruz Marques (empresária em nome individual), NIF 314148213, Amadora, Portugal. Marca comercial: Playful Candles.
@@ -55,4 +59,4 @@ Paloma da Cruz Marques (empresária em nome individual), NIF 314148213, Amadora,
 - Website: https://playfulcandles.com
 - Email: geral@playfulcandles.com
 - Instagram: @theplayfulcandles
-- Idiomas: Português (principal), Espanhol, Inglês.
+- Idioma do site: português (Portugal).

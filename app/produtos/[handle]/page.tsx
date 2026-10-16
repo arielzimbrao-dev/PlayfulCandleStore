@@ -54,7 +54,7 @@ const DEFAULT_PRODUCT_INFO = PRODUCT_INFO.velas;
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
   const product = await getProduct(handle);
-  if (!product) return { title: 'Produto não encontrado' };
+  if (!product) return { title: 'Produto não encontrado', robots: { index: false, follow: true } };
   const imageUrl = product.featuredImage?.url ?? product.images[0]?.url;
   const description =
     product.seo.description || product.description || `${product.title} — vela artesanal Playful Candles.`;

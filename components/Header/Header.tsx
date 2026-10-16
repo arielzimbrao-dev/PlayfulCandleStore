@@ -59,7 +59,7 @@ export default function Header({ autumnHandle = 'colecao-de-outono' }: { autumnH
         </button>
 
         <Link href="/" className="header__logo" aria-label={t.header.home}>
-          <Image src="/images/logo.png" alt="Playful Candles" width={1615} height={341} unoptimized priority />
+          <Image src="/images/logo.webp" alt="Playful Candles" width={682} height={144} unoptimized priority />
         </Link>
 
         <nav className="header__nav" aria-label="Navegação principal">

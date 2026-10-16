@@ -32,21 +32,17 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   keywords: ['velas artesanais', 'velas aromáticas', 'wax melts Portugal', 'snapbars', 'queimadores', 'velas Lisboa'],
-  alternates: { canonical: '/' },
+  // Sem canonical nem título/descrição/url no OG aqui: seriam herdados por todas as páginas e
+  // apontariam para a home. O Next preenche og:title/description a partir de cada página.
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
     locale: 'pt_PT',
     siteName: SITE.name,
-    url: SITE.url,
-    title: 'Playful Candles — Velas artesanais feitas em Lisboa',
-    description: SITE.description,
     // Imagem via convenção app/opengraph-image.tsx (1200×630).
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Playful Candles — Velas artesanais',
-    description: SITE.description,
     // Imagem via convenção app/opengraph-image.tsx (Next reutiliza-a para o Twitter).
   },
   verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION

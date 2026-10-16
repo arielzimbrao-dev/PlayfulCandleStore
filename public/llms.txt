@@ -1,29 +1,31 @@
 # Playful Candles
 
-> Loja online de velas artesanais em Portugal. Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com ceras vegetais e fragrâncias premium. Envio para todo o Portugal continental e Espanha peninsular (expedição em 24h úteis). Portes conforme o peso da encomenda: https://playfulcandles.com/envios
+> Loja online de velas artesanais em Portugal. Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com cera vegetal e fragrâncias premium. Envio para Portugal continental e Espanha peninsular, com expedição em até 24 horas úteis. Não enviamos para os Açores, Madeira, Baleares, Canárias, Ceuta nem Melilla.
 
-## Sobre
-- Marca: Playful Candles — velas artesanais, identidade divertida e groovy.
-- Origem: Lisboa, Portugal. Produção à mão, ceras vegetais/biodegradáveis.
-- Idiomas: Português (principal), Espanhol, Inglês.
-- Pagamentos: Multibanco, MB WAY, Visa, Mastercard, PayPal.
+- Marca: Playful Candles, velas artesanais com identidade divertida e retro-groovy.
+- Origem: Lisboa, Portugal. Produção à mão em pequenos lotes, cera vegetal (soja).
+- Idioma do site: português (Portugal).
+- Pagamentos: MB WAY, Multibanco, Visa, Mastercard, PayPal, Google Pay e Shop Pay.
+- Portes (pelo peso da encomenda): Portugal continental 5 € por kg, entrega em 2 a 5 dias úteis; Espanha peninsular 7 € por kg, entrega em 2 a 8 dias úteis.
+- Devoluções: 14 dias para livre resolução (produto por usar e na embalagem original).
 
 ## Categorias
-- Velas de Copo — velas em copo reutilizável, várias fragrâncias.
-- Wax Melts — pastilhas de cera para queimador.
-- Snapbars — barras de cera para partir e derreter.
-- Queimadores — peças de cerâmica decorativas.
+- [Velas de Copo](https://playfulcandles.com/categorias/velas-de-copo): velas de 150 g em copo de vidro reutilizável, várias fragrâncias.
+- [Wax Melts](https://playfulcandles.com/categorias/wax-melts): pastilhas de cera para derreter no queimador, sem chama nem pavio.
+- [Snapbars](https://playfulcandles.com/categorias/snapbars): barras de cera para partir em quadradinhos e derreter no queimador.
+- [Queimadores](https://playfulcandles.com/categorias/queimadores): queimadores de cerâmica para wax melts e snapbars (usam vela tealight).
+- [Packs](https://playfulcandles.com/categorias/packs): conjuntos para oferecer ou poupar, alguns montados à escolha do cliente.
 
 ## Páginas principais
-- Loja: /produtos
-- Coleções: /colecoes
-- Pesquisa: /pesquisa?q=
-- FAQ: /faq
-- Envios e portes: /envios
-- Trocas e devoluções: /devolucoes
-- Contacto: /contacto
-- Sobre: /sobre
+- [Loja (todos os produtos)](https://playfulcandles.com/produtos)
+- [Coleções](https://playfulcandles.com/colecoes): coleções sazonais, como a Coleção de Outono.
+- [Perguntas frequentes](https://playfulcandles.com/faq)
+- [Envios e portes](https://playfulcandles.com/envios): zonas, prazos e custos de envio.
+- [Trocas e devoluções](https://playfulcandles.com/devolucoes)
+- [Contacto](https://playfulcandles.com/contacto)
 
-## Contacto
-- Website: https://playfulcandles.com
-- Instagram: @theplayfulcandles
+## Optional
+- [Informação completa para LLMs](https://playfulcandles.com/llms-full.txt)
+- [Termos e condições](https://playfulcandles.com/termos)
+- [Política de privacidade](https://playfulcandles.com/privacidade)
+- [Instagram @theplayfulcandles](https://www.instagram.com/theplayfulcandles/)

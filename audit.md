@@ -29,6 +29,12 @@
 4. **Soft-404 + canonical/OG herdados da home** (P1, código, ~30 min).
 5. **Erros reais do carrinho escondidos** atrás de uma mensagem genérica, sobretudo nos packs (P1, código).
 
+### Corrigido no código (2026-10-16, lote rápido — falta deploy)
+
+S1, S2, S3, S4, S5 · R1 · L1 · P1, P3, P4 · A1, A2, A3 (parcial: links absolutos, Packs, portes e prazos).
+Verificado em dev: 404 reais em produto/categoria/coleção inexistentes, 308 de `/colecoes/<categoria>`,
+um só `<h1>`, canonical e OG por página, preload do hero com `media`, logo WebP (364 KB → 28 KB).
+
 ---
 
 ## 1. Infraestrutura, robots.txt, sitemap.xml

@@ -9,11 +9,23 @@ import './ProductCard.scss';
 // productType da Shopify → rótulo mostrado no card (os que não estão aqui aparecem como vêm).
 const TYPE_LABELS: Record<string, string> = { Vela: 'Vela de copo' };
 
+// Padrão dos carrosséis; a grelha passa o seu (2 colunas até 1024px, 3 acima).
 const IMAGE_SIZES = '(max-width:600px) 78vw, (max-width:900px) 44vw, 22vw';
 
 // Card de produto: cartão branco arredondado, foto com coração (canto inferior direito),
 // tipo · nome · preço e botão "Adicionar ao carrinho" na largura toda.
-export default function ProductCard({ product, soldOutLabel = 'Esgotado' }: { product: Product; soldOutLabel?: string }) {
+export default function ProductCard({
+  product,
+  soldOutLabel = 'Esgotado',
+  sizes = IMAGE_SIZES,
+  priority = false,
+}: {
+  product: Product;
+  soldOutLabel?: string;
+  sizes?: string;
+  /** Primeiros cards da grelha: são o LCP da página de loja. */
+  priority?: boolean;
+}) {
   const href = `/produtos/${product.handle}`;
   const image = product.featuredImage ?? product.images[0];
   // A 2.ª foto aparece no hover (só em dispositivos com mouse — ver ProductCard.scss).
@@ -30,13 +42,21 @@ export default function ProductCard({ product, soldOutLabel = 'Esgotado' }: { pr
               src={hoverImage.url}
               alt=""
               fill
-              sizes={IMAGE_SIZES}
+              sizes={sizes}
               className="product-card__hover-image"
               style={{ objectFit: 'cover' }}
             />
           )}
           {image ? (
-            <Image src={image.url} alt={image.altText ?? product.title} fill sizes={IMAGE_SIZES} style={{ objectFit: 'cover' }} />
+            <Image
+              src={image.url}
+              alt={image.altText ?? product.title}
+              fill
+              sizes={sizes}
+              priority={priority}
+              fetchPriority={priority ? 'high' : undefined}
+              style={{ objectFit: 'cover' }}
+            />
           ) : (
             <span className="product-card__placeholder" aria-hidden="true">
               <b>{product.title}</b>

@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { CATEGORY_HANDLES } from './lib/categories';
 
 const config: NextConfig = {
   // Build autocontido para a imagem Docker (Coolify): .next/standalone traz só o necessário.
@@ -19,11 +20,20 @@ const config: NextConfig = {
       ['queimador-chiquissimo', 'queimador-dubai'],
       ['queimador-rosa', 'queimador-amsterda'],
     ];
-    return renamedProducts.map(([oldHandle, newHandle]) => ({
-      source: `/produtos/${oldHandle}`,
-      destination: `/produtos/${newHandle}`,
-      permanent: true,
-    }));
+    return [
+      ...renamedProducts.map(([oldHandle, newHandle]) => ({
+        source: `/produtos/${oldHandle}`,
+        destination: `/produtos/${newHandle}`,
+        permanent: true,
+      })),
+      // As categorias já viveram em /colecoes/ — 301 aqui (o redirect() da página sai como
+      // meta-refresh com 200 quando a resposta já está em streaming).
+      ...CATEGORY_HANDLES.map((handle) => ({
+        source: `/colecoes/${handle}`,
+        destination: `/categorias/${handle}`,
+        permanent: true,
+      })),
+    ];
   },
 };
 
