@@ -152,7 +152,7 @@ export default function BuyBox({
   };
 
   // Esgotado: o botão abre o WhatsApp com uma mensagem pronta pedindo aviso de reposição.
-  const notifyMeHref = `${SITE.whatsapp}?text=${encodeURIComponent(
+  const notifyMeHref = `${SITE.notifyWhatsapp}?text=${encodeURIComponent(
     `Olá! Avisem-me quando "${product.title}" voltar ao stock 🕯️`,
   )}`;
 

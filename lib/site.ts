@@ -17,6 +17,8 @@ export const SITE = {
   logo: '/images/logo.png',
   telephone: '+351937820986', // também WhatsApp
   whatsapp: 'https://wa.me/351937820986',
+  // Botão "Avisa-me" (produto esgotado) vai para outro número.
+  notifyWhatsapp: 'https://wa.me/351937821016',
   // Grupo "Playful VIP" — acesso antecipado a coleções + ofertas exclusivas (substitui a
   // newsletter por e-mail).
   vipGroup: 'https://chat.whatsapp.com/IeUzRHoQVX4Kiac8nkX6Vr',

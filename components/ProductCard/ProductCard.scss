@@ -141,9 +141,4 @@
       margin: 8px 0;
     }
   }
-
-  // Esgotado: foto desbotada.
-  &--sold-out &__image img {
-    filter: saturate(0.5) opacity(0.85);
-  }
 }
