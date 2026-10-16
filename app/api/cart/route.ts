@@ -4,13 +4,12 @@ import {
   addCartLines,
   createCart,
   getCart,
-  getProducts,
   removeCartLines,
   updateCartDiscountCodes,
   updateCartLines,
 } from '@/lib/shopify';
 import { getPackCodes, getVariantStock } from '@/lib/shopify/admin';
-import { validatePackChoice } from '@/lib/packs';
+import { packLimits } from '@/lib/packs';
 import type { Cart, CartLineInput } from '@/lib/shopify/types';
 
 const CART_COOKIE = 'cartId';
@@ -59,32 +58,35 @@ async function hidePackCodes(cart: Cart): Promise<Cart> {
   return { ...cart, discountCodes };
 }
 
-// Packs de escolha: a composição (propriedades da linha) tem de ser válida e ter stock.
-// Devolve o primeiro erro, ou null se está tudo bem.
-// ponytail: só valida ao adicionar; subir a quantidade no carrinho (PATCH) não revê o stock dos itens.
-async function checkPacks(lines: CartLineInput[]): Promise<string | null> {
-  const packs = (await getProducts(20, { query: 'product_type:Pack' })).products.filter(
-    (product) => product.packSlots.length,
-  );
-  for (const line of lines) {
-    const pack = packs.find((product) => product.variants.some((variant) => variant.id === line.merchandiseId));
-    if (!pack) continue;
-    const error = await validatePackChoice(pack.packSlots, line.attributes ?? [], line.quantity);
-    if (error) return `${pack.title}: ${error}`;
+// Packs de escolha: as linhas em `indexes` têm de ter composição válida e caber no stock dos itens,
+// contando o carrinho todo. Devolve o primeiro erro, ou null se está tudo bem.
+async function checkPacks(lines: CartLineInput[], indexes: number[]): Promise<string | null> {
+  const limits = await packLimits(lines);
+  for (const index of indexes) {
+    const { max, error } = limits[index];
+    if (error) return error;
+    if (max != null && lines[index].quantity > max) return 'Sem stock suficiente para os itens do pack';
   }
   return null;
 }
+
+const toLineInputs = (cart: Cart): CartLineInput[] =>
+  cart.lines.map((line) => ({ merchandiseId: line.merchandise.id, quantity: line.quantity, attributes: line.attributes }));
 
 // Anexa o estoque de cada linha para a UI não deixar subir a quantidade acima do disponível.
 async function withStock(cart: Cart | null) {
   if (!cart) return NextResponse.json({ cart });
   cart = await syncPackCodes(cart).catch(() => cart!);
   cart = await hidePackCodes(cart);
-  const stock = await getVariantStock(cart.lines.map((line) => line.merchandise.id));
-  const lines = cart.lines.map((line) => ({
-    ...line,
-    merchandise: { ...line.merchandise, quantityAvailable: stock[line.merchandise.id] },
-  }));
+  const [stock, limits] = await Promise.all([
+    getVariantStock(cart.lines.map((line) => line.merchandise.id)),
+    packLimits(toLineInputs(cart)).catch(() => []),
+  ]);
+  // Máximo da linha = stock da variante e, se tocar em itens de packs, o que sobra deles.
+  const lines = cart.lines.map((line, index) => {
+    const caps = [stock[line.merchandise.id], limits[index]?.max].filter((cap): cap is number => cap != null);
+    return { ...line, merchandise: { ...line.merchandise, quantityAvailable: caps.length ? Math.min(...caps) : null } };
+  });
   return NextResponse.json({ cart: { ...cart, lines } });
 }
 
@@ -162,21 +164,26 @@ export async function POST(request: Request) {
   if (!lines.length) {
     return NextResponse.json({ error: 'merchandiseId obrigatorio' }, { status: 400 });
   }
-  // Sem conseguir validar, não deixa passar (a composição vai direta para a encomenda).
-  const packError = await checkPacks(lines).catch(() => 'Não foi possível validar o pack');
-  if (packError) return NextResponse.json({ error: packError }, { status: 422 });
-
   try {
+    // O carrinho pode ter expirado (ex.: checkout concluído) → recria. "Comprar agora" ignora-o.
+    let cartId = buyNow ? null : await readCartId();
+    const current = cartId ? await getCart(cartId) : null;
+    if (!current) cartId = null;
+
+    // Sem conseguir validar, não deixa passar (a composição vai direta para a encomenda).
+    const existing = current ? toLineInputs(current) : [];
+    const packError = await checkPacks(
+      [...existing, ...lines],
+      [...lines.keys()].map((index) => existing.length + index),
+    ).catch(() => 'Não foi possível validar o pack');
+    if (packError) return NextResponse.json({ error: packError }, { status: 422 });
+
     // "Comprar agora": carrinho descartável só com este item — o carrinho do cliente fica intacto
     // (senão levaria para o checkout o que já estava lá, sem avisar).
     if (buyNow) {
       const cart = await createCart(lines);
       return withStock(cart);
     }
-
-    // O carrinho pode ter expirado (ex.: checkout concluído) → recria.
-    let cartId = await readCartId();
-    if (cartId && !(await getCart(cartId))) cartId = null;
 
     const cart = cartId ? await addCartLines(cartId, lines) : await createCart(lines);
 
@@ -207,6 +214,15 @@ export async function PATCH(request: Request) {
     }
     if (!body.lineId || body.quantity == null) {
       return NextResponse.json({ error: 'lineId e quantity obrigatorios' }, { status: 400 });
+    }
+    // Subir a quantidade revê o stock partilhado dos itens dos packs (descer passa sempre).
+    const current = await getCart(cartId);
+    const index = current?.lines.findIndex((line) => line.id === body.lineId) ?? -1;
+    if (current && index >= 0 && body.quantity > current.lines[index].quantity) {
+      const lines = toLineInputs(current);
+      lines[index] = { ...lines[index], quantity: body.quantity };
+      const packError = await checkPacks(lines, [index]).catch(() => 'Não foi possível validar o pack');
+      if (packError) return NextResponse.json({ error: packError }, { status: 422 });
     }
     const cart = await updateCartLines(cartId, [{ id: body.lineId, quantity: body.quantity }]);
     return withStock(cart);

@@ -49,7 +49,8 @@ export default function BuyBox({ product, pack }: { product: Product; pack?: Pac
   const quantityInCart =
     cart?.lines.find((line) => line.merchandise.id === variant?.id)?.quantity ?? 0;
   // Pack: a escolha (item → nome) e quantos packs o stock dos itens escolhidos permite.
-  // ponytail: não desconta os mesmos itens já no carrinho (soltos ou noutro pack).
+  // ponytail: não desconta os mesmos itens já no carrinho (soltos ou noutro pack) — o /api/cart
+  // conta o carrinho todo e recusa; aqui o cliente só vê o erro ao adicionar.
   const packAttributes = pack?.flatMap((slot) => {
     const option = slot.options.find((candidate) => candidate.handle === packChoice[slot.key]);
     return option ? [{ key: slot.key, value: option.title }] : [];
