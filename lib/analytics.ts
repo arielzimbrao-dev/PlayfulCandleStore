@@ -10,8 +10,14 @@ function dataLayer(): DataLayer | null {
   return globalWindow.dataLayer as unknown as DataLayer;
 }
 
+// O gtag.js (GA4 direto) não lê objetos `{ event }` do dataLayer, só chamadas gtag(): reenvia.
+function gtagEvent(event: string, params: Record<string, unknown>) {
+  (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag?.('event', event, params);
+}
+
 export function pushEvent(event: string, data: Record<string, unknown> = {}) {
   dataLayer()?.push({ event, ...data });
+  if (typeof window !== 'undefined') gtagEvent(event, data);
 }
 
 export type EcommerceItem = {
@@ -32,8 +38,7 @@ export function ecommerceEvent(
   const layer = dataLayer();
   if (!layer) return;
   layer.push({ ecommerce: null });
-  layer.push({
-    event,
-    ecommerce: { currency: 'EUR', items, ...extra },
-  });
+  const ecommerce = { currency: 'EUR', items, ...extra };
+  layer.push({ event, ecommerce });
+  gtagEvent(event, ecommerce);
 }

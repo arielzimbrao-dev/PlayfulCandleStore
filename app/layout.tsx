@@ -19,11 +19,13 @@ import { getCollections, getProducts } from '@/lib/shopify';
 import { getShippingZones } from '@/lib/shopify/admin';
 import { shippingFrom } from '@/components/ShippingNote/ShippingNote';
 import { NON_COLLECTION_HANDLES } from '@/lib/categories';
-import { SITE } from '@/lib/site';
+import { OG_BASE, SITE } from '@/lib/site';
 import { fontVars } from './fonts';
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+// GA4 carregado direto (gtag.js), ao lado do GTM: não criar também uma tag GA4 no GTM, senão
+// conta a dobrar. `||` porque o Docker passa build args vazios como string vazia.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-4K004KLKSP';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -37,14 +39,12 @@ export const metadata: Metadata = {
   // apontariam para a home. O Next preenche og:title/description a partir de cada página.
   robots: { index: true, follow: true },
   openGraph: {
-    type: 'website',
-    locale: 'pt_PT',
-    siteName: SITE.name,
-    // Imagem via convenção app/opengraph-image.tsx (1200×630).
+    ...OG_BASE,
+    // Imagem via convenção app/opengraph-image.jpg (1200×630, JPEG: o WhatsApp ignora > ~300 KB).
   },
   twitter: {
     card: 'summary_large_image',
-    // Imagem via convenção app/opengraph-image.tsx (Next reutiliza-a para o Twitter).
+    // Imagem via convenção app/opengraph-image.jpg (Next reutiliza-a para o Twitter).
   },
   verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION
     ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION }
@@ -83,7 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           gtag('set','url_passthrough',true);
         `}</Script>
         {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
-        {!GTM_ID && GA_ID && <GoogleAnalytics gaId={GA_ID} />}
+        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
 
         <JsonLd data={[organizationLd(), websiteLd()]} />
 
