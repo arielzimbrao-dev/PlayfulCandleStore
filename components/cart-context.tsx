@@ -116,9 +116,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const body = Array.isArray(merchandiseId)
         ? { lines: merchandiseId.map((id) => ({ merchandiseId: id, quantity })) }
         : { merchandiseId, quantity, attributes };
-      const result = await mutate({ method: 'POST', body: JSON.stringify(body) });
-      if (result.ok) setIsOpen(true);
-      return result;
+      // Otimista: a gaveta abre já, com uma linha em loading (pending 'cart') até a Shopify responder.
+      setIsOpen(true);
+      return mutate({ method: 'POST', body: JSON.stringify(body) });
     },
     [mutate],
   );

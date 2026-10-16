@@ -17,6 +17,9 @@ import { getShippingZones, getVariantStock } from '@/lib/shopify/admin';
 import { getPackOptions, slotKeys } from '@/lib/packs';
 import { getSeasonalCollection } from '@/lib/shopify/types';
 import TwoToneTitle from '@/components/TwoToneTitle/TwoToneTitle';
+import GoogleRating from '@/components/GoogleRating/GoogleRating';
+import { shippingFrom } from '@/components/ShippingNote/ShippingNote';
+import { withPackSavings } from '@/lib/bundle';
 import './product-page.scss';
 
 export const revalidate = 3600;
@@ -73,17 +76,18 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   const shopifyProduct = await getProduct(handle);
   if (!shopifyProduct) notFound();
   // O estoque vem da Admin API (a Storefront API não o expõe com o nosso token).
-  const [stockByVariant, shippingZones, packOptions] = await Promise.all([
+  const [stockByVariant, shippingZones, packOptions, [withSavings]] = await Promise.all([
     getVariantStock(shopifyProduct.variants.map((variant) => variant.id)),
     getShippingZones(),
     shopifyProduct.packSlots.length ? getPackOptions(shopifyProduct.packSlots) : null,
+    withPackSavings([shopifyProduct]),
   ]);
   // Pack de escolha: um seletor por item na BuyBox.
   const pack = packOptions
     ? slotKeys(shopifyProduct.packSlots).map((key, index) => ({ key, options: packOptions[index] }))
     : undefined;
   const product = {
-    ...shopifyProduct,
+    ...withSavings,
     variants: shopifyProduct.variants.map((variant) => ({ ...variant, quantityAvailable: stockByVariant[variant.id] })),
   };
 
@@ -132,22 +136,25 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
                   {collection.title}
                 </Link>
               )}
-              <div
-                className="product__rating"
-                aria-label={reviews.length ? `${averageRating.toFixed(1)} de 5 (${reviews.length})` : 'Sem avaliações'}
-              >
-                {/* Estrela cheia a partir de x,75 (ex.: 4,8 mostra 5 estrelas). */}
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <i
-                    key={star}
-                    className={`fa-star ${averageRating >= star - 0.25 ? 'fa-solid' : 'fa-regular'}`}
-                    aria-hidden="true"
-                  />
-                ))}
-              </div>
+              {/* Sem avaliações do produto: estrelas vazias seriam prova social negativa —
+                  mostra antes o selo da ficha Google da loja. */}
+              {reviews.length ? (
+                <div className="product__rating" aria-label={`${averageRating.toFixed(1)} de 5 (${reviews.length})`}>
+                  {/* Estrela cheia a partir de x,75 (ex.: 4,8 mostra 5 estrelas). */}
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <i
+                      key={star}
+                      className={`fa-star ${averageRating >= star - 0.25 ? 'fa-solid' : 'fa-regular'}`}
+                      aria-hidden="true"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <GoogleRating />
+              )}
             </div>
 
-            <BuyBox product={product} pack={pack} />
+            <BuyBox product={product} pack={pack} shippingFrom={shippingFrom(shippingZones)} />
 
             {(product.descriptionHtml || product.description) && (
               <div className="product__description prose">

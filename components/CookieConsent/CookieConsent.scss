@@ -35,6 +35,17 @@
     color: var(--color-ink);
   }
 
+  &__link {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-weight: 700;
+    color: var(--color-coral-dark);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
   // Checkboxes de "Personalizar": ocupam uma linha inteira, acima dos botões.
   &__categories {
     order: 1;
@@ -70,6 +81,31 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+  }
+
+  // Celular: barra compacta — texto curto em cima, os dois botões lado a lado em baixo.
+  @include mobile {
+    padding: 8px 0;
+
+    &__body {
+      gap: 8px;
+    }
+
+    // ponytail: 14px é exceção à regra dos múltiplos de 8 — a 16px o texto ocupa 4 linhas.
+    &__text {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    &__actions {
+      flex: 1 1 100%;
+      flex-wrap: nowrap;
+
+      .btn {
+        flex: 1;
+        min-height: 40px;
+      }
+    }
   }
 }
 

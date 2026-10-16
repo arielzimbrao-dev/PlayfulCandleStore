@@ -89,7 +89,13 @@ export default function CookieConsent() {
     <div className="consent" role="dialog" aria-label={t.consent.title} aria-live="polite">
       <div className="consent__body">
         <p className="consent__text">
-          <strong>{t.consent.title}</strong> {t.consent.text}
+          <strong>{t.consent.title}</strong> {t.consent.text}{' '}
+          {/* "Personalizar" é link, não botão: no celular a barra fica em 2 linhas. */}
+          {!isCustomizing && (
+            <button type="button" className="consent__link" onClick={() => setIsCustomizing(true)}>
+              {t.consent.customize}
+            </button>
+          )}
         </p>
 
         {isCustomizing && (
@@ -113,17 +119,13 @@ export default function CookieConsent() {
           <button type="button" className="btn btn--outline btn--compact" onClick={() => saveChoice(false, false)}>
             {t.consent.reject}
           </button>
-          {isCustomizing ? (
+          {isCustomizing && (
             <button
               type="button"
               className="btn btn--outline btn--compact"
               onClick={() => saveChoice(analytics, marketing)}
             >
               {t.consent.save}
-            </button>
-          ) : (
-            <button type="button" className="btn btn--outline btn--compact" onClick={() => setIsCustomizing(true)}>
-              {t.consent.customize}
             </button>
           )}
           <button type="button" className="btn btn--primary btn--compact" onClick={() => saveChoice(true, true)}>

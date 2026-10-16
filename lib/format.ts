@@ -1,4 +1,4 @@
-import type { Money } from './shopify/types';
+import type { Money, Product } from './shopify/types';
 import type { ShippingRate } from './shopify/admin';
 
 export function formatMoney(money: Money): string {
@@ -16,4 +16,9 @@ const eur = (value: number) => formatMoney({ amount: String(value), currencyCode
 export function shippingRateLabel([first]: ShippingRate[]) {
   if (!first) return null;
   return first.maxKg ? `${eur(first.price)} por cada ${kg(first.maxKg)}` : eur(first.price);
+}
+
+// "Poupas 1,50 €" dos packs (ou "Poupas desde…" quando depende dos itens escolhidos).
+export function savingsLabel({ amount, atLeast }: NonNullable<Product['packSavings']>): string {
+  return `Poupas ${atLeast ? 'desde ' : ''}${formatMoney({ amount: amount.toFixed(2), currencyCode: 'EUR' })}`;
 }

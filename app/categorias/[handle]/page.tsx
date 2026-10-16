@@ -5,6 +5,7 @@ import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 import ProductListing from '@/components/ProductListing/ProductListing';
 import HowToUse from '@/components/HowToUse/HowToUse';
 import { getProducts } from '@/lib/shopify';
+import { withPackSavings } from '@/lib/bundle';
 import { resolveSort } from '@/lib/sort';
 import { CATEGORIES, categoryBanner } from '@/lib/categories';
 
@@ -48,7 +49,9 @@ export default async function CategoryPage({
     { name: info.title, url: `/categorias/${handle}` },
   ];
 
-  const { products } = await getProducts(250, { query: info.query, sortKey: sort.product, reverse: sort.reverse });
+  const products = await withPackSavings(
+    (await getProducts(250, { query: info.query, sortKey: sort.product, reverse: sort.reverse })).products,
+  );
 
   if (products.length === 0) {
     return (

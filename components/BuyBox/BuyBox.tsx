@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useCart } from '@/components/cart-context';
 import { useToast } from '@/components/Toast/Toast';
 import { useT } from '@/components/LanguageProvider';
-import { formatMoney } from '@/lib/format';
+import { formatMoney, savingsLabel } from '@/lib/format';
+import ShippingNote from '@/components/ShippingNote/ShippingNote';
 import { ecommerceEvent } from '@/lib/analytics';
 import { SITE } from '@/lib/site';
 import PackPicker, { type PackPickerSlot } from '@/components/PackPicker/PackPicker';
@@ -17,7 +18,16 @@ const UNLIMITED_STOCK = 99;
 // Caixa de compra da PDP: preço, quantidade, variante e os botões
 // "Adicionar ao carrinho" + "Comprar agora". No celular há também uma barra fixa no rodapé.
 // pack: itens a escolher num pack — a escolha vai como propriedades da linha do carrinho.
-export default function BuyBox({ product, pack }: { product: Product; pack?: PackPickerSlot[] }) {
+// shippingFrom: portes desde (€) para a linha sob os botões (C3).
+export default function BuyBox({
+  product,
+  pack,
+  shippingFrom,
+}: {
+  product: Product;
+  pack?: PackPickerSlot[];
+  shippingFrom?: number;
+}) {
   const { cart, addItem, loading } = useCart();
   const toast = useToast();
   const t = useT();
@@ -40,6 +50,16 @@ export default function BuyBox({ product, pack }: { product: Product; pack?: Pac
     });
     observer.observe(target);
     return () => observer.disconnect();
+  }, []);
+
+  // Voltar do checkout pelo "Voltar" do browser restaura a página do bfcache ainda em
+  // "A adicionar…" — destrava o "Comprar agora".
+  useEffect(() => {
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) setIsBuyingNow(false);
+    };
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
   }, []);
 
   if (variants.length === 0) return <p>Produto indisponível.</p>;
@@ -112,7 +132,7 @@ export default function BuyBox({ product, pack }: { product: Product; pack?: Pac
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           merchandiseId: variant.id,
-          quantity: Math.min(quantity, packMax, variant.quantityAvailable ?? UNLIMITED_STOCK),
+          quantity: safeQuantity,
           attributes: packAttributes,
           buyNow: true,
         }),
@@ -143,6 +163,7 @@ export default function BuyBox({ product, pack }: { product: Product; pack?: Pac
         {isOnSale && variant?.compareAtPrice && (
           <span className="price-old">{formatMoney(variant.compareAtPrice)}</span>
         )}
+        {product.packSavings && <span className="price-savings">{savingsLabel(product.packSavings)}</span>}
       </div>
 
       {pack && !isSoldOut && (
@@ -219,7 +240,7 @@ export default function BuyBox({ product, pack }: { product: Product; pack?: Pac
             </button>
             <button
               className="btn btn--yellow btn--block"
-              disabled={isBuyingNow || loading || !variant || isPackIncomplete}
+              disabled={!canAdd}
               onClick={buyNow}
             >
               <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
@@ -228,6 +249,7 @@ export default function BuyBox({ product, pack }: { product: Product; pack?: Pac
           </>
         )}
       </div>
+      {!isSoldOut && <ShippingNote from={shippingFrom} />}
 
       {/* Barra fixa de compra no celular: entra quando os botões acima saem do ecrã.
           Escondida, fica `inert` para não receber foco do teclado. */}

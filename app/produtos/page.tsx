@@ -7,6 +7,7 @@ import ShopLayout from '@/components/ShopLayout/ShopLayout';
 import JsonLd from '@/components/JsonLd/JsonLd';
 import { itemListLd } from '@/lib/jsonld';
 import { getProducts } from '@/lib/shopify';
+import { withPackSavings } from '@/lib/bundle';
 import { applyFilters, availableScents, availableTypes } from '@/lib/filters';
 import { resolveSort } from '@/lib/sort';
 
@@ -27,7 +28,7 @@ export default async function ShopPage({
   const query = await searchParams;
   const sort = resolveSort(query.sort);
   // O catálogo é pequeno: busca tudo de uma vez e filtra em memória.
-  const { products } = await getProducts(250, { sortKey: sort.product, reverse: sort.reverse });
+  const products = await withPackSavings((await getProducts(250, { sortKey: sort.product, reverse: sort.reverse })).products);
 
   const params = { sort: sort.key, type: query.type, scent: query.scent, price: query.price };
   const filtered = applyFilters(products, params);

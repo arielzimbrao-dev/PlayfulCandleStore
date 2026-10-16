@@ -1,0 +1,16 @@
+// Linha de portes/expedição (PDP e carrinho).
+
+.shipping-note {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--color-ink-soft);
+
+  a {
+    color: var(--color-coral-dark);
+    font-weight: 700;
+    text-decoration: underline;
+  }
+}

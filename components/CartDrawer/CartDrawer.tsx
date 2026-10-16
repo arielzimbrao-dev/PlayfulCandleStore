@@ -10,6 +10,9 @@ import LineQuantity from '@/components/cart/LineQuantity/LineQuantity';
 import DiscountForm from '@/components/cart/DiscountForm/DiscountForm';
 import CheckoutButton from '@/components/cart/CheckoutButton/CheckoutButton';
 import TrustList from '@/components/cart/TrustList/TrustList';
+import ShippingNote from '@/components/ShippingNote/ShippingNote';
+import QuickAddButton from '@/components/ProductCard/QuickAddButton/QuickAddButton';
+import type { Product } from '@/lib/shopify/types';
 import './CartDrawer.scss';
 
 const FOCUSABLE_SELECTOR =
@@ -17,10 +20,16 @@ const FOCUSABLE_SELECTOR =
 
 // Gaveta do carrinho que desliza da direita. Fica sempre montada (para a animação de saída);
 // abre quando um produto é adicionado ou pelo ícone do carrinho no header.
-export default function CartDrawer() {
-  const { cart, isOpen, closeCart } = useCart();
+// shippingFrom: portes desde (€); suggestions: mais vendidos (o mesmo fallback do "Compra também"
+// da PDP), dos quais mostra até 3 que ainda não estão no carrinho.
+export default function CartDrawer({ shippingFrom, suggestions = [] }: { shippingFrom?: number; suggestions?: Product[] }) {
+  const { cart, isOpen, closeCart, pending } = useCart();
   const t = useT();
-  const isEmpty = !cart || cart.lines.length === 0;
+  // Linha "fantasma" enquanto um produto novo está a ser adicionado (a gaveta abre antes da resposta).
+  const isAdding = pending === 'cart';
+  const isEmpty = (!cart || cart.lines.length === 0) && !isAdding;
+  const inCart = new Set(cart?.lines.map((line) => line.merchandise.product.id));
+  const crossSell = suggestions.filter((product) => !inCart.has(product.id)).slice(0, 3);
   const drawerRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -88,8 +97,8 @@ export default function CartDrawer() {
         ) : (
           <div className="drawer__content">
 
-            <ul className="drawer__lines">
-              {cart.lines.map((line) => {
+            <ul className="drawer__lines" aria-busy={isAdding}>
+              {cart?.lines.map((line) => {
                 const product = line.merchandise.product;
                 const productHref = `/produtos/${product.handle}`;
                 return (
@@ -124,15 +133,50 @@ export default function CartDrawer() {
                   </li>
                 );
               })}
+              {isAdding && (
+                <li className="drawer__line" aria-label={t.product.adding}>
+                  <span className="drawer__thumb skeleton" />
+                  <span className="drawer__line-info">
+                    <span className="skeleton drawer__skeleton-text" />
+                    <span className="skeleton drawer__skeleton-text drawer__skeleton-text--short" />
+                  </span>
+                </li>
+              )}
             </ul>
+
+            {crossSell.length > 0 && (
+              <section className="drawer__suggestions" aria-labelledby="drawer-suggestions-title">
+                <h2 id="drawer-suggestions-title" className="drawer__suggestions-title">Leva também</h2>
+                <ul>
+                  {crossSell.map((product) => {
+                    const image = product.featuredImage ?? product.images[0];
+                    return (
+                      <li key={product.id} className="drawer__suggestion">
+                        <Link href={`/produtos/${product.handle}`} className="drawer__thumb" onClick={closeCart} tabIndex={-1} aria-hidden="true">
+                          {image && <Image src={image.url} alt="" width={56} height={56} style={{ objectFit: 'cover' }} />}
+                        </Link>
+                        <div className="drawer__line-info">
+                          <Link href={`/produtos/${product.handle}`} className="drawer__line-name" onClick={closeCart}>
+                            {product.title}
+                          </Link>
+                          <small>{formatMoney(product.priceRange.minVariantPrice)}</small>
+                        </div>
+                        <QuickAddButton product={product} />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            )}
 
             <footer className="drawer__footer">
               <DiscountForm />
               <p className="drawer__total">
                 <span>{t.cart.total}</span>
-                <strong>{formatMoney(cart.cost.totalAmount)}</strong>
+                <strong>{cart ? formatMoney(cart.cost.totalAmount) : '—'}</strong>
               </p>
-              <CheckoutButton cart={cart} />
+              <ShippingNote from={shippingFrom} cart onNavigate={closeCart} />
+              {cart && <CheckoutButton cart={cart} />}
               <TrustList items={['shipping', 'securePay']} />
             </footer>
           </div>

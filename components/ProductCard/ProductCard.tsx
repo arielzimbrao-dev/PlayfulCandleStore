@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import WishlistButton from '@/components/WishlistButton/WishlistButton';
 import QuickAddButton from '@/components/ProductCard/QuickAddButton/QuickAddButton';
-import { formatMoney } from '@/lib/format';
+import { formatMoney, savingsLabel } from '@/lib/format';
 import type { Product } from '@/lib/shopify/types';
 import './ProductCard.scss';
 
@@ -73,7 +73,10 @@ export default function ProductCard({
         <Link href={href} className="product-card__name">
           {product.title}
         </Link>
-        <span className="product-card__price">{formatMoney(product.priceRange.minVariantPrice)}</span>
+        <span className="product-card__price">
+          {formatMoney(product.priceRange.minVariantPrice)}
+          {product.packSavings && <span className="price-savings">{savingsLabel(product.packSavings)}</span>}
+        </span>
         <QuickAddButton product={product} isSoldOut={isSoldOut} soldOutLabel={soldOutLabel} />
       </div>
     </article>

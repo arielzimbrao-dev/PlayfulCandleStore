@@ -54,6 +54,9 @@ export type Product = {
   weight: string; // metafield custom.peso (ex.: "150g"); fallback por tipo. '' se desconhecido
   reviews: Review[]; // metafield custom.reviews (JSON) já parseado (só aprovadas)
   packSlots: PackSlot[]; // metafield custom.pack_slots: itens que o cliente escolhe no pack ([] = não é pack de escolha)
+  /** Quanto o pack poupa face aos itens soltos (lib/bundle withPackSavings); atLeast = os itens
+   *  têm preços diferentes e o valor é o mínimo garantido. */
+  packSavings?: { amount: number; atLeast: boolean };
   collections: { title: string; handle: string }[];
   seo: Seo;
   featuredImage: Image | null;

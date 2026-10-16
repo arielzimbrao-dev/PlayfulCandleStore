@@ -17,6 +17,7 @@
 
   &__price {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     gap: 8px;
   }

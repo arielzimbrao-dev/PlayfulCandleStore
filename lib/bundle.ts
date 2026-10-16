@@ -1,7 +1,7 @@
 import { getProducts } from '@/lib/shopify';
 import { getActivePromos, type Promo } from '@/lib/shopify/admin';
 import { productCategory } from '@/lib/filters';
-import type { Product, ProductVariant } from '@/lib/shopify/types';
+import type { PackSlot, Product, ProductVariant } from '@/lib/shopify/types';
 
 export type BundleItem = { product: Product; variant: ProductVariant; price: number };
 export type Bundle = {
@@ -116,4 +116,34 @@ export async function getBundle(product: Product): Promise<Bundle | null> {
     total: originalTotal - discount,
     promoTitle: discount > 0 ? promo!.title : null,
   };
+}
+
+// ponytail: cópia de fitsSlot (lib/packs.ts) — exportá-la de lá quando packs.ts estiver livre.
+const fitsSlot = (product: Product, slot: PackSlot) =>
+  productCategory(product) === slot.type &&
+  (!slot.collection || product.collections.some((collection) => collection.handle === slot.collection)) &&
+  (!slot.handles?.length || slot.handles.includes(product.handle));
+
+// Packs de escolha: preenche packSavings = soma dos itens soltos (o mais barato de cada item)
+// − preço do pack, para o card e a PDP mostrarem "Poupas 1,50 €". Só quando poupa mesmo.
+export async function withPackSavings(products: Product[]): Promise<Product[]> {
+  if (!products.some((product) => product.packSlots.length)) return products;
+  const catalog = await getProducts(100)
+    .then((page) => page.products)
+    .catch(() => [] as Product[]);
+  return products.map((product) => {
+    if (!product.packSlots.length) return product;
+    const ranges = product.packSlots.map((slot) => {
+      const prices = catalog.flatMap((candidate) => {
+        const item = fitsSlot(candidate, slot) ? buyableItem(candidate) : null;
+        return item ? [item.price] : [];
+      });
+      return prices.length ? { min: Math.min(...prices), max: Math.max(...prices) } : null;
+    });
+    if (ranges.some((range) => !range)) return product;
+    const cheapest = ranges.reduce((sum, range) => sum + range!.min, 0);
+    const priciest = ranges.reduce((sum, range) => sum + range!.max, 0);
+    const amount = cheapest - Number(product.priceRange.minVariantPrice.amount);
+    return amount > 0.005 ? { ...product, packSavings: { amount, atLeast: priciest > cheapest } } : product;
+  });
 }

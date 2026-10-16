@@ -16,7 +16,9 @@ import CookieConsent from '@/components/CookieConsent/CookieConsent';
 import BackToTop from '@/components/BackToTop/BackToTop';
 import JsonLd from '@/components/JsonLd/JsonLd';
 import { organizationLd, websiteLd } from '@/lib/jsonld';
-import { getCollections } from '@/lib/shopify';
+import { getCollections, getProducts } from '@/lib/shopify';
+import { getShippingZones } from '@/lib/shopify/admin';
+import { shippingFrom } from '@/components/ShippingNote/ShippingNote';
 import { NON_COLLECTION_HANDLES } from '@/lib/categories';
 import { SITE } from '@/lib/site';
 import { fontVars } from './fonts';
@@ -58,6 +60,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ?.handle,
     )
     .catch(() => undefined);
+  // Gaveta do carrinho: portes desde (C3) e sugestões "Leva também" (C7) — os mais vendidos
+  // que se adicionam com um clique (sem packs de escolha), sem a descrição para não pesar no HTML.
+  const [shippingZones, bestSellers] = await Promise.all([
+    getShippingZones(),
+    getProducts(10, { sortKey: 'BEST_SELLING' })
+      .then((page) => page.products)
+      .catch(() => []),
+  ]);
+  const suggestions = bestSellers
+    .filter((product) => product.availableForSale && !product.packSlots.length)
+    .slice(0, 6)
+    .map((product) => ({ ...product, description: '', descriptionHtml: '', reviews: [] }));
 
   return (
     <html lang="pt-PT" className={fontVars}>
@@ -84,7 +98,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Header autumnHandle={autumnHandle} />
               <main id="main">{children}</main>
               <Footer />
-              <CartDrawer />
+              <CartDrawer shippingFrom={shippingFrom(shippingZones)} suggestions={suggestions} />
               <CookieConsent />
               <BackToTop />
               <ScrollReveal />

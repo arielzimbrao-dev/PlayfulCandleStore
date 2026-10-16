@@ -8,6 +8,7 @@ import ScentGrid from '@/components/ScentGrid/ScentGrid';
 import HowToUse from '@/components/HowToUse/HowToUse';
 import Testimonials from '@/components/Testimonials/Testimonials';
 import { getProducts, getCollection } from '@/lib/shopify';
+import { withPackSavings } from '@/lib/bundle';
 
 const AUTUMN_COLLECTION = 'colecao-de-outono';
 
@@ -29,12 +30,12 @@ export default async function HomePage() {
       <CategoryNav />
       <ProductRail
         variant="autumn"
-        products={autumnCollection?.products ?? []}
+        products={await withPackSavings(autumnCollection?.products ?? [])}
         href={`/colecoes/${AUTUMN_COLLECTION}`}
       />
       <PackBanner />
       <ScentGrid />
-      <ProductRail variant="latest" products={newArrivals.products} />
+      <ProductRail variant="latest" products={await withPackSavings(newArrivals.products)} />
       <HowToUse />
       <Testimonials />
       {/* ponytail: CustomerReviews fora até haver avaliações reais; voltar a pôr aqui depois. */}

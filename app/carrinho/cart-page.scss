@@ -8,6 +8,20 @@
     min-height: 44vh;
   }
 
+  &__skeleton-text {
+    display: block;
+    height: 16px;
+    margin-bottom: 8px;
+
+    &--short {
+      width: 40%;
+    }
+  }
+
+  &__skeleton-summary {
+    min-height: 240px;
+  }
+
   &__grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

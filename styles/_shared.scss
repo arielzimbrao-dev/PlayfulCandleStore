@@ -178,6 +178,36 @@ main>section {
   text-decoration: line-through;
 }
 
+// Bloco cinzento a pulsar no lugar de conteúdo que ainda está a carregar.
+.skeleton {
+  border-radius: var(--radius-sm);
+  background: var(--color-blush);
+  animation: skeleton-pulse 1.2s ease-in-out infinite alternate;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes skeleton-pulse {
+  to {
+    opacity: 0.5;
+  }
+}
+
+// Selo "Poupas 1,50 €" dos packs (card e PDP).
+.price-savings {
+  display: inline-block;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
 // Mensagem centralizada de "nada para mostrar" (filtros sem resultados, favoritos vazios).
 .empty-state {
   margin: 40px 0;

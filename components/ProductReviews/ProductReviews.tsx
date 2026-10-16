@@ -3,6 +3,7 @@
 import { useId, useState, type FormEvent } from 'react';
 import { useToast } from '@/components/Toast/Toast';
 import type { Review } from '@/lib/shopify/types';
+import GoogleRating from '@/components/GoogleRating/GoogleRating';
 import './ProductReviews.scss';
 
 // Significado de cada nota (índice = número de estrelas).
@@ -121,9 +122,10 @@ export default function ProductReviews({ productId, reviews }: { productId: stri
               </div>
             </div>
           ) : (
+            // Sem avaliações: nada de estrelas vazias — o selo Google da loja e um convite discreto.
             <div className="reviews-summary__empty">
-              <Stars value={0} large />
-              <p>Ainda sem avaliações. Sê o primeiro a dizer o que achaste! ✨</p>
+              <GoogleRating />
+              <p>Já provaste este aroma? Conta-nos o que achaste ✨</p>
             </div>
           )}
           {reviews.length > 0 && (

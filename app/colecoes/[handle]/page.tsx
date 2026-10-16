@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import ProductListing from '@/components/ProductListing/ProductListing';
 import { getCollection } from '@/lib/shopify';
+import { withPackSavings } from '@/lib/bundle';
 import { resolveSort } from '@/lib/sort';
 import { CATEGORIES } from '@/lib/categories';
 
@@ -77,7 +78,7 @@ export default async function CollectionPage({
       photo={photoBanner}
       crumbs={crumbs}
       basePath={`/colecoes/${handle}`}
-      products={collection.products}
+      products={await withPackSavings(collection.products)}
       showType
       sort={sort}
       onlyInStock={onlyInStock}
