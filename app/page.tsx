@@ -6,7 +6,6 @@ import PackBanner from '@/components/PackBanner/PackBanner';
 import ScentGrid from '@/components/ScentGrid/ScentGrid';
 import HowToUse from '@/components/HowToUse/HowToUse';
 import Testimonials from '@/components/Testimonials/Testimonials';
-import CustomerReviews from '@/components/CustomerReviews/CustomerReviews';
 import { getProducts, getCollection } from '@/lib/shopify';
 
 const AUTUMN_COLLECTION = 'colecao-de-outono';
@@ -32,7 +31,7 @@ export default async function HomePage() {
       <ProductRail variant="latest" products={newArrivals.products} />
       <HowToUse />
       <Testimonials />
-      <CustomerReviews />
+      {/* ponytail: CustomerReviews fora até haver avaliações reais; voltar a pôr aqui depois. */}
     </>
   );
 }
