@@ -1,20 +1,12 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { NextResponse, type NextRequest } from 'next/server';
+import { slotKeys } from '@/lib/packs';
 import { adminFetch } from '@/lib/shopify/admin';
+import type { PackSlot } from '@/lib/shopify/types';
 
 // Webhook orders/create (registado por scripts/register-webhooks.mjs): os packs de escolha não têm
 // stock próprio, por isso desconta aqui 1 × quantidade de cada item escolhido (propriedades da
 // linha, ex. "Snapbar 1: Dama da Noite"). Assinado com o client secret da app (HMAC SHA-256).
-
-// Mesma regra de slotKeys() em lib/packs.ts: rótulos repetidos ganham número ("Snapbar 1"…).
-// ponytail: cópia local para a rota não depender do resto da funcionalidade de packs; manter igual.
-function slotKeys(slots: { label: string }[]): string[] {
-  return slots.map((slot, index) => {
-    const same = slots.filter((other) => other.label === slot.label).length;
-    const nth = slots.slice(0, index + 1).filter((other) => other.label === slot.label).length;
-    return same > 1 ? `${slot.label} ${nth}` : slot.label;
-  });
-}
 
 type OrderPayload = {
   admin_graphql_api_id: string;
@@ -59,7 +51,7 @@ export async function POST(request: NextRequest) {
     data.nodes.flatMap((node) => {
       if (!node?.packSlots) return [];
       try {
-        return [[node.id, JSON.parse(node.packSlots.value) as { label: string }[]] as const];
+        return [[node.id, JSON.parse(node.packSlots.value) as PackSlot[]] as const];
       } catch {
         return [];
       }

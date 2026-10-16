@@ -7,6 +7,7 @@ import { useT } from '@/components/LanguageProvider';
 import { formatMoney } from '@/lib/format';
 import { ecommerceEvent } from '@/lib/analytics';
 import { SITE } from '@/lib/site';
+import PackPicker, { type PackPickerSlot } from '@/components/PackPicker/PackPicker';
 import type { Product } from '@/lib/shopify/types';
 import './BuyBox.scss';
 
@@ -15,7 +16,8 @@ const UNLIMITED_STOCK = 99;
 
 // Caixa de compra da PDP: preço, quantidade, variante e os botões
 // "Adicionar ao carrinho" + "Comprar agora". No celular há também uma barra fixa no rodapé.
-export default function BuyBox({ product }: { product: Product }) {
+// pack: itens a escolher num pack — a escolha vai como propriedades da linha do carrinho.
+export default function BuyBox({ product, pack }: { product: Product; pack?: PackPickerSlot[] }) {
   const { cart, addItem, loading } = useCart();
   const toast = useToast();
   const t = useT();
@@ -24,6 +26,7 @@ export default function BuyBox({ product }: { product: Product }) {
   const [variantId, setVariantId] = useState(firstAvailable?.id ?? '');
   const [quantity, setQuantity] = useState(1);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
+  const [packChoice, setPackChoice] = useState<Record<string, string>>({}); // item → handle
   // Barra fixa do celular: só aparece depois de o botão principal sair do ecrã por cima
   // (antes disso ele já está à vista e a barra só taparia conteúdo).
   const mainActionsRef = useRef<HTMLDivElement>(null);
@@ -45,16 +48,34 @@ export default function BuyBox({ product }: { product: Product }) {
   // Limite = estoque menos o que já está no carrinho (quantityAvailable null = sem limite).
   const quantityInCart =
     cart?.lines.find((line) => line.merchandise.id === variant?.id)?.quantity ?? 0;
-  const maxQuantity =
-    variant?.quantityAvailable == null
-      ? UNLIMITED_STOCK
-      : Math.max(0, variant.quantityAvailable - quantityInCart);
-  const isSoldOut = !variant?.availableForSale || variant.quantityAvailable === 0;
+  // Pack: a escolha (item → nome) e quantos packs o stock dos itens escolhidos permite.
+  // ponytail: não desconta os mesmos itens já no carrinho (soltos ou noutro pack).
+  const packAttributes = pack?.flatMap((slot) => {
+    const option = slot.options.find((candidate) => candidate.handle === packChoice[slot.key]);
+    return option ? [{ key: slot.key, value: option.title }] : [];
+  });
+  const isPackIncomplete = !!pack && packAttributes!.length < pack.length;
+  const packMax = Math.min(
+    ...(pack ?? []).flatMap((slot) => {
+      const option = slot.options.find((candidate) => candidate.handle === packChoice[slot.key]);
+      const uses = Object.values(packChoice).filter((handle) => handle === option?.handle).length;
+      return option?.stock != null ? [Math.floor(option.stock / uses)] : [];
+    }),
+  );
+  const maxQuantity = Math.min(
+    packMax,
+    variant?.quantityAvailable == null ? UNLIMITED_STOCK : Math.max(0, variant.quantityAvailable - quantityInCart),
+  );
+  const isSoldOut =
+    !variant?.availableForSale ||
+    variant.quantityAvailable === 0 ||
+    (!!pack && pack.some((slot) => slot.options.length === 0));
   const safeQuantity = Math.min(quantity, Math.max(1, maxQuantity));
   const isOnSale =
     !!variant?.compareAtPrice &&
     Number(variant.compareAtPrice.amount) > Number(variant.price.amount);
-  const canAdd = !loading && !isBuyingNow && !!variant && maxQuantity > 0;
+  const canAdd = !loading && !isBuyingNow && !!variant && maxQuantity > 0 && !isPackIncomplete;
+  const addLabel = isPackIncomplete ? 'Escolhe os itens do pack' : loading ? t.product.adding : t.product.choose;
 
   const trackAddToCart = () => {
     if (!variant) return;
@@ -71,7 +92,7 @@ export default function BuyBox({ product }: { product: Product }) {
 
   const addToCart = async () => {
     if (!variant) return;
-    const isAdded = await addItem(variant.id, safeQuantity);
+    const isAdded = await addItem(variant.id, safeQuantity, packAttributes);
     toast.show(
       isAdded ? `${product.title} — ${t.product.added}` : t.product.addError,
       isAdded ? 'success' : 'error',
@@ -89,7 +110,8 @@ export default function BuyBox({ product }: { product: Product }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           merchandiseId: variant.id,
-          quantity: Math.min(quantity, variant.quantityAvailable ?? UNLIMITED_STOCK),
+          quantity: Math.min(quantity, packMax, variant.quantityAvailable ?? UNLIMITED_STOCK),
+          attributes: packAttributes,
           buyNow: true,
         }),
       });
@@ -119,6 +141,14 @@ export default function BuyBox({ product }: { product: Product }) {
           <span className="price-old">{formatMoney(variant.compareAtPrice)}</span>
         )}
       </div>
+
+      {pack && !isSoldOut && (
+        <PackPicker
+          slots={pack}
+          value={packChoice}
+          onChange={(key, handle) => setPackChoice((current) => ({ ...current, [key]: handle }))}
+        />
+      )}
 
       {!isSoldOut && (
         <div className="buybox__quantity">
@@ -182,11 +212,11 @@ export default function BuyBox({ product }: { product: Product }) {
           <>
             <button className="btn btn--orange btn--block" disabled={!canAdd} onClick={addToCart}>
               <i className="fa-solid fa-cart-shopping" aria-hidden="true" />
-              {loading ? t.product.adding : t.product.choose}
+              {addLabel}
             </button>
             <button
               className="btn btn--yellow btn--block"
-              disabled={isBuyingNow || loading || !variant}
+              disabled={isBuyingNow || loading || !variant || isPackIncomplete}
               onClick={buyNow}
             >
               <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
@@ -215,7 +245,7 @@ export default function BuyBox({ product }: { product: Product }) {
             disabled={!canAdd}
             onClick={addToCart}
           >
-            {loading ? t.product.adding : t.product.choose}{' '}
+            {addLabel}{' '}
             <i className="fa-solid fa-bag-shopping" aria-hidden="true" />
           </button>
         )}

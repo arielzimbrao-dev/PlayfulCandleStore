@@ -14,6 +14,7 @@ import { productLd } from '@/lib/jsonld';
 import { productCategory } from '@/lib/filters';
 import { getProduct } from '@/lib/shopify';
 import { getShippingZones, getVariantStock } from '@/lib/shopify/admin';
+import { getPackOptions, slotKeys } from '@/lib/packs';
 import { getSeasonalCollection } from '@/lib/shopify/types';
 import TwoToneTitle from '@/components/TwoToneTitle/TwoToneTitle';
 import './product-page.scss';
@@ -71,10 +72,15 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   const shopifyProduct = await getProduct(handle);
   if (!shopifyProduct) notFound();
   // O estoque vem da Admin API (a Storefront API não o expõe com o nosso token).
-  const [stockByVariant, shippingZones] = await Promise.all([
+  const [stockByVariant, shippingZones, packOptions] = await Promise.all([
     getVariantStock(shopifyProduct.variants.map((variant) => variant.id)),
     getShippingZones(),
+    shopifyProduct.packSlots.length ? getPackOptions(shopifyProduct.packSlots) : null,
   ]);
+  // Pack de escolha: um seletor por item na BuyBox.
+  const pack = packOptions
+    ? slotKeys(shopifyProduct.packSlots).map((key, index) => ({ key, options: packOptions[index] }))
+    : undefined;
   const product = {
     ...shopifyProduct,
     variants: shopifyProduct.variants.map((variant) => ({ ...variant, quantityAvailable: stockByVariant[variant.id] })),
@@ -140,7 +146,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
               </div>
             </div>
 
-            <BuyBox product={product} />
+            <BuyBox product={product} pack={pack} />
 
             {(product.descriptionHtml || product.description) && (
               <div className="product__description prose">

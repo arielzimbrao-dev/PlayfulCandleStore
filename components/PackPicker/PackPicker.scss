@@ -1,0 +1,96 @@
+// Escolha dos itens de um pack (dentro da BuyBox): um bloco numerado por item, opções em pílulas com foto.
+
+@use '../../styles/mixins' as *;
+
+.pack-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__slot {
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-ink);
+    }
+  }
+
+  &__step {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-pill);
+    background: var(--color-pink);
+    font-size: 16px;
+    color: #fff;
+  }
+
+  &__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  // Pílula clicável; o rádio nativo fica escondido mas continua acessível pelo teclado.
+  &__option {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 4px 16px 4px 4px;
+    border: 2px solid var(--color-border-strong);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+
+    input {
+      @include visually-hidden;
+    }
+
+    &:has(input:checked) {
+      border-color: var(--color-pink);
+      background: var(--color-blush);
+    }
+
+    &:has(input:focus-visible) {
+      box-shadow: var(--focus-ring);
+    }
+
+    &:has(input:disabled) {
+      opacity: 0.48;
+      cursor: not-allowed;
+    }
+
+    @include has-hover {
+      &:hover:not(:has(input:disabled)) {
+        border-color: var(--color-pink);
+      }
+    }
+  }
+
+  &__thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-pill);
+    object-fit: cover;
+  }
+
+  &__empty {
+    margin: 0;
+    font-size: 16px;
+    color: var(--color-ink-soft);
+  }
+}

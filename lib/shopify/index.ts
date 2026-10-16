@@ -38,7 +38,7 @@ const REVALIDATE = 60 * 60; // ISR de 1h para as leituras da loja
 type Connection<T> = { nodes: T[] };
 type RawProduct = Omit<
   Product,
-  'images' | 'variants' | 'collections' | 'scents' | 'weight' | 'reviews'
+  'images' | 'variants' | 'collections' | 'scents' | 'weight' | 'reviews' | 'packSlots'
 > & {
   images: Connection<Image>;
   variants: Connection<ProductVariant>;
@@ -46,6 +46,7 @@ type RawProduct = Omit<
   scent: { value: string } | null;
   peso: { value: string } | null;
   reviews: { value: string } | null;
+  packSlots: { value: string } | null;
 };
 type RawAllocation = { discountedAmount: { amount: string; currencyCode: string }; code?: string };
 type RawCart = Omit<Cart, 'lines'> & {
@@ -121,7 +122,21 @@ const productWeight = (metafield: Metafield, productType: string): string =>
   WEIGHT_BY_TYPE.find(([pattern]) => pattern.test(productType))?.[1] ||
   '';
 
-const normalizeProduct = ({ scent, peso, reviews, ...product }: RawProduct): Product => ({
+// custom.pack_slots é JSON editável no admin: descarta entradas sem label/tipo válido.
+const SLOT_TYPES = ['velas', 'wax', 'snap', 'burner'];
+function parsePackSlots(metafield: Metafield): Product['packSlots'] {
+  if (!metafield?.value) return [];
+  try {
+    const parsed = JSON.parse(metafield.value);
+    return (Array.isArray(parsed) ? parsed : []).filter(
+      (slot) => typeof slot?.label === 'string' && SLOT_TYPES.includes(slot.type),
+    );
+  } catch {
+    return [];
+  }
+}
+
+const normalizeProduct = ({ scent, peso, reviews, packSlots, ...product }: RawProduct): Product => ({
   ...product,
   images: product.images.nodes,
   variants: product.variants.nodes,
@@ -129,6 +144,7 @@ const normalizeProduct = ({ scent, peso, reviews, ...product }: RawProduct): Pro
   scents: parseScents(scent),
   weight: productWeight(peso, product.productType),
   reviews: parseReviews(reviews),
+  packSlots: parsePackSlots(packSlots),
 });
 
 // Soma o que cada código desconta (nas linhas e no total do carrinho) e descarta as alocações

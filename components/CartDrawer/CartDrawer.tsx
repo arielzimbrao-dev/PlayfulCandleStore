@@ -114,6 +114,10 @@ export default function CartDrawer() {
                       </Link>
                       {/* "Default Title" é o nome que a Shopify dá a produtos sem variantes. */}
                       {line.merchandise.title !== 'Default Title' && <small>{line.merchandise.title}</small>}
+                      {/* Itens escolhidos num pack (propriedades da linha). */}
+                      {line.attributes.length > 0 && (
+                        <small>{line.attributes.map((attribute) => `${attribute.key}: ${attribute.value}`).join(' · ')}</small>
+                      )}
                       <LineQuantity line={line} />
                     </div>
                     <span className="drawer__line-price">{formatMoney(line.cost.subtotalAmount)}</span>

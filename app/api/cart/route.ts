@@ -4,11 +4,13 @@ import {
   addCartLines,
   createCart,
   getCart,
+  getProducts,
   removeCartLines,
   updateCartDiscountCodes,
   updateCartLines,
 } from '@/lib/shopify';
 import { getPackCodes, getVariantStock } from '@/lib/shopify/admin';
+import { validatePackChoice } from '@/lib/packs';
 import type { Cart, CartLineInput } from '@/lib/shopify/types';
 
 const CART_COOKIE = 'cartId';
@@ -55,6 +57,22 @@ async function hidePackCodes(cart: Cart): Promise<Cart> {
     return pack ? { ...discount, code: '', label: `Desconto ${pack.title}` } : discount;
   });
   return { ...cart, discountCodes };
+}
+
+// Packs de escolha: a composição (propriedades da linha) tem de ser válida e ter stock.
+// Devolve o primeiro erro, ou null se está tudo bem.
+// ponytail: só valida ao adicionar; subir a quantidade no carrinho (PATCH) não revê o stock dos itens.
+async function checkPacks(lines: CartLineInput[]): Promise<string | null> {
+  const packs = (await getProducts(20, { query: 'product_type:Pack' })).products.filter(
+    (product) => product.packSlots.length,
+  );
+  for (const line of lines) {
+    const pack = packs.find((product) => product.variants.some((variant) => variant.id === line.merchandiseId));
+    if (!pack) continue;
+    const error = await validatePackChoice(pack.packSlots, line.attributes ?? [], line.quantity);
+    if (error) return `${pack.title}: ${error}`;
+  }
+  return null;
 }
 
 // Anexa o estoque de cada linha para a UI não deixar subir a quantidade acima do disponível.
@@ -120,8 +138,15 @@ export async function POST(request: Request) {
     quantity?: number;
     buyNow?: boolean;
     lines?: CartLineInput[];
+    attributes?: CartLineInput['attributes'];
   }>(request);
   const { merchandiseId, quantity = 1, buyNow } = body ?? {};
+  const toAttributes = (value: unknown) =>
+    Array.isArray(value)
+      ? value
+          .filter((attribute) => typeof attribute?.key === 'string' && typeof attribute?.value === 'string')
+          .map(({ key, value }) => ({ key: String(key), value: String(value) }))
+      : [];
   // `lines` adiciona vários itens numa só chamada (seção "Leva junto").
   const lines = Array.isArray(body?.lines)
     ? body.lines
@@ -129,13 +154,17 @@ export async function POST(request: Request) {
         .map((line) => ({
           merchandiseId: line.merchandiseId,
           quantity: Math.max(1, Number(line.quantity) || 1),
+          attributes: toAttributes(line.attributes),
         }))
     : merchandiseId
-      ? [{ merchandiseId, quantity }]
+      ? [{ merchandiseId, quantity: Math.max(1, Number(quantity) || 1), attributes: toAttributes(body?.attributes) }]
       : [];
   if (!lines.length) {
     return NextResponse.json({ error: 'merchandiseId obrigatorio' }, { status: 400 });
   }
+  // Sem conseguir validar, não deixa passar (a composição vai direta para a encomenda).
+  const packError = await checkPacks(lines).catch(() => 'Não foi possível validar o pack');
+  if (packError) return NextResponse.json({ error: packError }, { status: 422 });
 
   try {
     // "Comprar agora": carrinho descartável só com este item — o carrinho do cliente fica intacto

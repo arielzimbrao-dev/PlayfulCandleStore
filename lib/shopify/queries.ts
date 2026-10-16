@@ -18,6 +18,9 @@ const PRODUCT_FRAGMENT = /* GraphQL */ `
     reviews: metafield(namespace: "custom", key: "reviews") {
       value
     }
+    packSlots: metafield(namespace: "custom", key: "pack_slots") {
+      value
+    }
     collections(first: 5) {
       nodes {
         title
@@ -112,6 +115,10 @@ export const CART_FRAGMENT = /* GraphQL */ `
       nodes {
         id
         quantity
+        attributes {
+          key
+          value
+        }
         cost {
           totalAmount {
             amount

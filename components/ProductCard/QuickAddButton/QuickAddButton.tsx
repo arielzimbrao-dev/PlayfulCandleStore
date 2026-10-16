@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCart } from '@/components/cart-context';
 import { useToast } from '@/components/Toast/Toast';
 import { useT } from '@/components/LanguageProvider';
@@ -22,6 +23,15 @@ export default function QuickAddButton({
   const toast = useToast();
   const t = useT();
   const variant = product.variants.find((candidate) => candidate.availableForSale) ?? product.variants[0];
+
+  // Pack de escolha: os itens escolhem-se na página do produto.
+  if (product.packSlots.length && !isSoldOut) {
+    return (
+      <Link href={`/produtos/${product.handle}`} className="quick-add">
+        <i className="fa-solid fa-gift" aria-hidden="true" /> Montar o pack
+      </Link>
+    );
+  }
 
   const addToCart = async () => {
     if (!variant) return;

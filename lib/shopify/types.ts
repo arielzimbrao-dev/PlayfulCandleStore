@@ -20,6 +20,14 @@ export type ProductVariant = {
   selectedOptions: { name: string; value: string }[];
 };
 
+// Um item a escolher num pack: tipo de produto e, opcionalmente, coleção ou lista de handles.
+export type PackSlot = {
+  label: string;
+  type: 'velas' | 'wax' | 'snap' | 'burner';
+  collection?: string;
+  handles?: string[];
+};
+
 export type Review = {
   author: string;
   rating: number; // 1..5
@@ -43,6 +51,7 @@ export type Product = {
   scents: string[]; // metafield custom.aromas (lista) já parseado
   weight: string; // metafield custom.peso (ex.: "150g"); fallback por tipo. '' se desconhecido
   reviews: Review[]; // metafield custom.reviews (JSON) já parseado (só aprovadas)
+  packSlots: PackSlot[]; // metafield custom.pack_slots: itens que o cliente escolhe no pack ([] = não é pack de escolha)
   collections: { title: string; handle: string }[];
   seo: Seo;
   featuredImage: Image | null;
@@ -76,6 +85,8 @@ export type CollectionSummary = {
 export type CartLine = {
   id: string;
   quantity: number;
+  /** Propriedades da linha (ex.: os itens escolhidos num pack — "Vela: Cappuccino"). */
+  attributes: { key: string; value: string }[];
   /** subtotalAmount: preço cheio (preço × quantidade); totalAmount: já com descontos. */
   cost: { totalAmount: Money; subtotalAmount: Money };
   merchandise: {
@@ -109,7 +120,11 @@ export type SearchHit = {
   priceRange: { minVariantPrice: Money };
 };
 
-export type CartLineInput = { merchandiseId: string; quantity: number };
+export type CartLineInput = {
+  merchandiseId: string;
+  quantity: number;
+  attributes?: { key: string; value: string }[];
+};
 export type CartLineUpdateInput = { id: string; quantity: number };
 
 // Handles que representam TIPOS de produto (não coleções curadas/sazonais).
