@@ -13,11 +13,15 @@ import './ProductGallery.scss';
 // a tocar ou o foco do teclado lá dentro. Quem pediu menos animação ao sistema não tem autoplay.
 const AUTOPLAY_MS = 4000;
 
-// JPG original da Shopify, sem passar pelo otimizador do Next (pedido da marca: qualidade máxima).
-// format=pjpg impede o CDN da Shopify de trocar para WebP. ponytail: ~0,4–0,7 MB por foto.
-const originalJpg = (url: string) => `${url}${url.includes('?') ? '&' : '?'}format=pjpg`;
-// Thumbs pequenas direto do CDN da Shopify (width=), para não baixar o original 5×.
-const thumbUrl = (url: string) => `${url}${url.includes('?') ? '&' : '?'}width=200`;
+// JPG da Shopify, sem passar pelo otimizador do Next (pedido da marca: manter a textura).
+// O CDN da Shopify redimensiona (width=) e format=pjpg impede-o de trocar para WebP.
+const shopifyJpg = (url: string, width: number) =>
+  `${url}${url.includes('?') ? '&' : '?'}format=pjpg&width=${width}`;
+const SLIDE_WIDTHS = [640, 960, 1280, 1600];
+const slideSrcSet = (url: string) => SLIDE_WIDTHS.map((w) => `${shopifyJpg(url, w)} ${w}w`).join(', ');
+// Celular: a foto sangra até às bordas; tablet: .container a 90%; desktop: coluna 1,1fr da grelha
+// (≈48vw, no máximo ~1030px com o --site-max-width de 1920px).
+const SLIDE_SIZES = '(max-width: 760px) 100vw, (max-width: 1023px) 90vw, min(48vw, 1030px)';
 
 export default function ProductGallery({
   images,
@@ -115,15 +119,18 @@ export default function ProductGallery({
               aria-roledescription="slide"
               aria-label={`${index + 1} de ${images.length}`}
             >
-              <Image
-                src={originalJpg(image.url)}
+              {/* <img> e não next/image: com unoptimized o next/image descarta o srcSet. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="gallery__photo"
+                src={shopifyJpg(image.url, 1280)}
+                srcSet={slideSrcSet(image.url)}
+                sizes={SLIDE_SIZES}
                 alt={altFor(image, index)}
                 title={altFor(image, index)}
-                fill
-                unoptimized
-                style={{ objectFit: 'cover' }}
-                priority={index === 0}
-                loading={index === 0 ? undefined : 'lazy'}
+                fetchPriority={index === 0 ? 'high' : undefined}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                decoding="async"
               />
             </div>
           ))}
@@ -169,7 +176,7 @@ export default function ProductGallery({
               aria-current={index === active}
               onClick={() => goTo(index)}
             >
-              <Image src={thumbUrl(image.url)} alt="" fill unoptimized style={{ objectFit: 'cover' }} />
+              <Image src={shopifyJpg(image.url, 160)} alt="" fill unoptimized style={{ objectFit: 'cover' }} />
             </button>
           ))}
         </div>

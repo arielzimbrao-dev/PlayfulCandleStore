@@ -26,7 +26,7 @@ export default async function BundleOffer({ product }: { product: Product }) {
         </div>
         <div className="bundle__row">
           {/* display: contents → os cards e os "+" ficam na mesma linha flex que o "=" e o total. */}
-          <div className="bundle__items" role="list">
+          <div className="bundle__items">
             {bundle.items.map((item, index) => (
               <Fragment key={item.product.id}>
                 {index > 0 && (

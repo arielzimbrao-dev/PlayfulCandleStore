@@ -35,7 +35,7 @@ export default function PagedCarousel({ children, ariaLabel }: { children: React
             className="carousel__track"
             ref={trackRef}
             style={{ transform: `translateX(${offset}px)` }}
-            role="list"
+            role="group"
             aria-label={ariaLabel}
           >
             {children}

@@ -1,4 +1,4 @@
-// Barra de apelos (Figma): fundo lilás-claro, ícones redondos e textos rosa.
+// Barra de apelos (Figma): fundo lilás-claro, ícones redondos e textos rosa-escuro.
 // Desktop: ★ apelo apelo apelo ★ numa grade de 5 colunas.
 // Celular: estrelas fixas nas pontas e um apelo de cada vez no meio (scroll-snap).
 
@@ -54,7 +54,7 @@
     gap: 8px;
     font-weight: 600;
     font-size: 16px;
-    color: var(--color-pink);
+    color: var(--color-coral-dark); // o rosa da marca dá 2,7:1 sobre o lilás; este dá 5,1:1
 
     @include tablet {
       scroll-snap-align: center;

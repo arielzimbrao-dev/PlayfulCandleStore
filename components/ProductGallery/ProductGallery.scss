@@ -40,6 +40,14 @@
     scroll-snap-align: start;
   }
 
+  &__photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   // Produto sem fotos: vela gigante no lugar.
   &__placeholder {
     display: grid;

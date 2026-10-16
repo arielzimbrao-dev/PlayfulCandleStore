@@ -133,6 +133,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
               )}
               <div
                 className="product__rating"
+                role="img"
                 aria-label={reviews.length ? `${averageRating.toFixed(1)} de 5 (${reviews.length})` : 'Sem avaliações'}
               >
                 {/* Estrela cheia a partir de x,75 (ex.: 4,8 mostra 5 estrelas). */}

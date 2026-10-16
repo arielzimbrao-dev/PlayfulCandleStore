@@ -18,10 +18,17 @@
     }
   }
 
+  // Fundo da página (#fafafa): o rosa e o laranja da marca ficam abaixo do contraste AA,
+  // por isso aqui vão os tons escuros (coral-dark 5,2:1; tangerine-dark 3,7:1, título ≥24px).
   &__title {
     margin: 0 0 32px;
     font-size: 40px;
     text-align: center;
+    color: var(--color-coral-dark);
+
+    em {
+      color: var(--color-tangerine-dark);
+    }
 
     @include mobile {
       margin-bottom: 24px;
@@ -81,7 +88,7 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
-    color: var(--color-pink);
+    color: var(--color-coral-dark);
   }
 
   &__item:hover &__photo {
@@ -90,6 +97,6 @@
   }
 
   &__item:hover &__name {
-    color: var(--color-coral-dark);
+    color: var(--color-coral-darker);
   }
 }
