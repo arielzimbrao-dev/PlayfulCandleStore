@@ -12,9 +12,9 @@ export const revalidate = 3600;
 const PHOTO_BANNERS: Record<string, { title?: string; desktop: string; mobile: string; alt: string; text: string }> = {
   'colecao-de-outono': {
     title: 'Autumn Collection', // em inglês: a fonte Genty não tem ç/ã
-    desktop: '/images/banners/col-outono-v3-desktop.jpg',
-    mobile: '/images/banners/col-outono-v2-mobile.jpg',
-    alt: 'Velas Orange & Cinnamon, Pumpkin Spice e Cappuccino numa rodela de madeira, entre pinhas, folhas de outono, canela e laranja',
+    desktop: '/images/banners/col-outono-v4-desktop.jpg',
+    mobile: '/images/banners/col-outono-v3-mobile.jpg',
+    alt: 'Velas Orange & Cinnamon, Pumpkin Spice e Cappuccino entre folhas de outono, abóboras, paus de canela e laranja seca',
     text: 'Canela, café e abóbora num trio a pensar no outono. Acende uma, puxa a manta e deixa-te ficar.',
   },
 };
