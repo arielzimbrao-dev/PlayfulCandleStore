@@ -8,3 +8,6 @@
 next-env.d.ts
 .DS_Store
 .env
+
+# vídeos gerados pela skill /brag-slim
+brag-output*/
