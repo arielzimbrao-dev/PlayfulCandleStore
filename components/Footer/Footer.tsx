@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useT } from '@/components/LanguageProvider';
 import { SITE } from '@/lib/site';
+import GoogleRating from '@/components/GoogleRating/GoogleRating';
 import VipBanner from '@/components/Footer/VipBanner/VipBanner';
 import { OPEN_CONSENT_EVENT } from '@/components/CookieConsent/CookieConsent';
 import './Footer.scss';
@@ -54,6 +55,7 @@ export default function Footer() {
                 </a>
               ))}
             </div>
+            <GoogleRating />
           </div>
 
           {columns.map((column) => (

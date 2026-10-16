@@ -33,8 +33,11 @@ export const SITE = {
     instagram: 'https://www.instagram.com/theplayfulcandles/',
     tiktok: 'https://www.tiktok.com/@theplayfulcandles',
     pinterest: 'https://www.pinterest.com/theplayfulcandles',
-    google: 'https://share.google/DphzSoO0MEHFYOGAI',
+    google: 'https://share.google/DphzSoO0MEHFYOGAI', // ficha Google "The Playful Candles"
   },
+  // Nota e nº de avaliações da ficha Google (selo GoogleRating). Atualizar à mão com os valores
+  // reais da ficha — nunca arredondar para cima nem inventar.
+  googleReviews: { rating: 5 as number, count: 2 as number }, // `as number`: o `as const` fixaria os literais
 } as const;
 
 export const SOCIAL_PROFILE_URLS = Object.values(SITE.social);

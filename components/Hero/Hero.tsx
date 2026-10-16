@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useT } from '@/components/LanguageProvider';
 import PhotoBanner from '@/components/PhotoBanner/PhotoBanner';
+import GoogleRating from '@/components/GoogleRating/GoogleRating';
 import './Hero.scss';
 
 const HERO_HREF = '/colecoes/colecao-de-outono';
@@ -27,6 +28,7 @@ export default function Hero() {
         <Link className="btn btn--gold" href={HERO_HREF}>
           {t.hero.ctaShop} →
         </Link>
+        <GoogleRating />
       </PhotoBanner>
     </section>
   );

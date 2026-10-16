@@ -1,0 +1,26 @@
+// Pílula branca (mesmo formato do resumo das avaliações da home).
+
+.google-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  font-size: 14px;
+  color: var(--color-ink);
+  white-space: nowrap;
+
+  i {
+    color: var(--color-yellow);
+  }
+
+  strong {
+    font-size: 16px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

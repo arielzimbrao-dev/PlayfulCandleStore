@@ -97,6 +97,15 @@ $footer-text: rgba(255, 255, 255, 0.85);
     }
   }
 
+  // Selo do Google: desfaz o estilo de `.footer__inner a` (mais específico que .google-rating).
+  &__inner .google-rating {
+    display: inline-flex;
+    margin-top: 16px;
+    padding: 4px 16px;
+    font-size: 14px;
+    color: var(--color-ink);
+  }
+
   // "Gerir cookies" é um botão no meio dos links — mesmo visual que eles.
   &__cookies {
     display: block;
