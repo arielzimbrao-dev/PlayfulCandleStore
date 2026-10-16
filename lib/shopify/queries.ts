@@ -16,9 +16,6 @@ const PRODUCT_FRAGMENT = /* GraphQL */ `
     peso: metafield(namespace: "custom", key: "peso") {
       value
     }
-    reviews: metafield(namespace: "custom", key: "reviews") {
-      value
-    }
     packSlots: metafield(namespace: "custom", key: "pack_slots") {
       value
     }

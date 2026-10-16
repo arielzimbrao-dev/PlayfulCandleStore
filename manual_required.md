@@ -25,9 +25,11 @@ Detalhe técnico completo em `audit.md`.
 | 10 | **Pack de 3 snapbars por €13,50** | Admin → Produtos/Descontos | A categoria Packs está vazia e há textos que prometem o pack |
 
 ### Moderação de avaliações
-As avaliações já funcionam no site (formulário na página de produto). Entram como **pendentes** e
-**só aparecem depois de aprovadas**: no metafield `custom.reviews` do produto, põe `approved: true`
-na avaliação. O `scripts/reviews.mjs` ajuda a listar/aprovar.
+As avaliações já funcionam no site (formulário na página de produto). Entram como **Rascunho** em
+**Admin → Conteúdo → Metaobjects → Avaliações** e **só aparecem depois de aprovadas**: abre a
+avaliação e muda o estado para **Ativo** (aparece no site em até ~5 min). Para recusar, apaga-a.
+Também dá para criar avaliações à mão lá (ex.: recebidas por WhatsApp), escolhendo o produto.
+Setup/migração: `node scripts/setup-reviews.mjs` (idempotente).
 
 ---
 

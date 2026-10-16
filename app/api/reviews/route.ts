@@ -1,22 +1,8 @@
 import { NextResponse } from 'next/server';
 import { adminFetch } from '@/lib/shopify/admin';
 
-// Envio de avaliação → grava no metafield custom.reviews (JSON) como PENDENTE (approved:false).
-// O dono aprova depois no admin (approved:true) ou via script. Só as aprovadas aparecem na loja.
-const MAX_STORED = 200;
-
-// Serializa o read-modify-write por produto DENTRO desta instância. Num único processo (next start)
-// elimina o lost-update entre envios concorrentes; em serverless multi-instância resta uma janela
-// mínima que só um storage atômico fecharia — YAGNI nesta escala.
-const writeChains = new Map<string, Promise<unknown>>();
-function serialize<T>(key: string, task: () => Promise<T>): Promise<T> {
-  const next = (writeChains.get(key) ?? Promise.resolve()).then(task, task);
-  writeChains.set(
-    key,
-    next.catch(() => {}),
-  );
-  return next;
-}
+// Envio de avaliação → cria um metaobject "avaliacao" em RASCUNHO (Admin → Conteúdo → Metaobjects
+// → Avaliações). O dono muda para Ativo para publicar; o Storefront só devolve as ativas.
 
 // Rate limit por IP: um envio é um ato humano raro, um bot faz centenas. Sem isso, um script
 // enche as avaliações pendentes e gasta o limite de requisições da Admin API.
@@ -82,69 +68,35 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await serialize(productId, async () => {
-      const data = await adminFetch<{ product: { metafield: { value: string } | null } | null }>(
-        `query($id:ID!){ product(id:$id){ metafield(namespace:"custom",key:"reviews"){ value } } }`,
-        { id: productId },
-      );
-      // Aceita os dois formatos já usados no metafield: array puro ou { items: [...] }.
-      // JSON estragado → não grava nada (gravar por cima apagaria todas as avaliações).
-      let reviews: unknown[] = [];
-      const stored = data.product?.metafield?.value;
-      if (stored) {
-        const parsed = JSON.parse(stored) as unknown;
-        const items = (parsed as { items?: unknown })?.items;
-        if (Array.isArray(parsed)) reviews = parsed;
-        else if (Array.isArray(items)) reviews = items;
-        else throw new Error('metafield custom.reviews com formato inesperado');
-      }
-
-      reviews.push({
-        author,
-        rating,
-        text,
-        date: new Date().toISOString(),
-        verified: false,
-        approved: false,
-      });
-      if (reviews.length > MAX_STORED) {
-        // Corta as PENDENTES mais antigas primeiro — spam nunca empurra para fora as aprovadas.
-        let excess = reviews.length - MAX_STORED;
-        reviews = reviews.filter((review) => {
-          if (excess > 0 && !(review as { approved?: boolean }).approved) {
-            excess--;
-            return false;
-          }
-          return true;
-        });
-        if (reviews.length > MAX_STORED) reviews = reviews.slice(reviews.length - MAX_STORED);
-      }
-
-      return adminFetch<{ metafieldsSet: { userErrors: { message: string }[] } }>(
-        `mutation($metafields:[MetafieldsSetInput!]!){
-          metafieldsSet(metafields:$metafields){ userErrors{ field message } } }`,
-        {
-          metafields: [
+    const result = await adminFetch<{ metaobjectCreate: { userErrors: { message: string }[] } }>(
+      `mutation($m:MetaobjectCreateInput!){ metaobjectCreate(metaobject:$m){ userErrors{ field message } } }`,
+      {
+        m: {
+          type: 'avaliacao',
+          capabilities: { publishable: { status: 'DRAFT' } },
+          fields: [
+            { key: 'produto', value: productId },
+            { key: 'nome', value: author },
             {
-              ownerId: productId,
-              namespace: 'custom',
-              key: 'reviews',
-              type: 'json',
-              value: JSON.stringify(reviews),
+              key: 'classificacao',
+              value: JSON.stringify({ value: String(rating), scale_min: '1', scale_max: '5' }),
             },
+            { key: 'comentario', value: text },
+            { key: 'data', value: new Date().toISOString() },
+            { key: 'compra_verificada', value: 'false' },
           ],
         },
-      );
-    });
-    const userErrors = result.metafieldsSet.userErrors;
+      },
+    );
+    const userErrors = result.metaobjectCreate.userErrors;
     if (userErrors.length) {
-      console.error('reviews: metafieldsSet', userErrors);
+      console.error('reviews: metaobjectCreate', userErrors);
       return NextResponse.json({ error: 'Não foi possível guardar a avaliação.' }, { status: 422 });
     }
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    // O detalhe (Admin API, JSON estragado) fica no log do servidor, não vai para o browser.
+    // O detalhe (Admin API) fica no log do servidor, não vai para o browser.
     console.error('reviews:', error);
     return NextResponse.json({ error: 'Não foi possível guardar a avaliação.' }, { status: 500 });
   }

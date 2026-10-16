@@ -29,6 +29,7 @@ import type {
   Product,
   ProductVariant,
   ProductsPage,
+  Review,
   SearchHit,
 } from './types';
 
@@ -45,7 +46,6 @@ type RawProduct = Omit<
   collections: Connection<{ title: string; handle: string }>;
   scent: { value: string } | null;
   peso: { value: string } | null;
-  reviews: { value: string } | null;
   packSlots: { value: string } | null;
 };
 type RawAllocation = { discountedAmount: { amount: string; currencyCode: string }; code?: string };
@@ -68,46 +68,56 @@ function parseScents(metafield: Metafield): string[] {
   }
 }
 
-type RawReview = {
-  author?: string;
-  rating?: number;
-  text?: string;
-  date?: string;
-  verified?: boolean;
-  approved?: boolean;
-  photo?: string;
-};
-
 // Foto da avaliação: só https:// ou caminho local (/…); qualquer outra coisa é ignorada.
 const safePhoto = (photo: unknown) =>
   typeof photo === 'string' && /^(https:\/\/|\/[^/])/.test(photo) ? photo : undefined;
 
-// custom.reviews é JSON: array de {author,rating,text,date,verified,approved,photo?}
-// (ou { items: [...] }).
-// Só mostramos as aprovadas; o metafield pode ser editado à mão, então tudo é normalizado.
-function parseReviews(metafield: Metafield): Product['reviews'] {
-  if (!metafield?.value) return [];
-  try {
-    const parsed = JSON.parse(metafield.value);
-    const rawReviews: RawReview[] = Array.isArray(parsed)
-      ? parsed
-      : Array.isArray(parsed?.items)
-        ? parsed.items
-        : [];
-    return rawReviews
-      .filter((review) => review && review.approved !== false && Number(review.rating) >= 1)
-      .map((review) => ({
-        author: String(review.author ?? 'Cliente'),
-        rating: Math.max(1, Math.min(5, Math.round(Number(review.rating)))),
-        text: String(review.text ?? ''),
-        date: review.date,
-        verified: review.verified,
-        approved: review.approved,
-        photo: safePhoto(review.photo),
-      }));
-  } catch {
-    return [];
+type ReviewField = { value: string } | null;
+type RawReviewNode = {
+  produto: ReviewField;
+  nome: ReviewField;
+  classificacao: ReviewField;
+  comentario: ReviewField;
+  data: ReviewField;
+  compra_verificada: ReviewField;
+  foto: ReviewField;
+};
+
+// Avaliações = metaobjects "avaliacao" (scripts/setup-reviews.mjs). O Storefront só devolve as
+// ATIVAS — rascunho é pendente de aprovação no admin. Cache curto para a aprovação chegar ao site
+// em minutos. ponytail: 250 avaliações numa só página; paginar quando a loja passar disso.
+export async function getReviewsByProduct(): Promise<Map<string, Review[]>> {
+  const byProduct = new Map<string, Review[]>();
+  const data = await shopifyFetch<{ metaobjects: { nodes: RawReviewNode[] } }>(
+    `{ metaobjects(type:"avaliacao", first:250){ nodes{
+      produto: field(key:"produto"){ value } nome: field(key:"nome"){ value }
+      classificacao: field(key:"classificacao"){ value } comentario: field(key:"comentario"){ value }
+      data: field(key:"data"){ value } compra_verificada: field(key:"compra_verificada"){ value }
+      foto: field(key:"foto"){ value } } } }`,
+    {},
+    { revalidate: 300 },
+  ).catch(() => null);
+  for (const node of data?.metaobjects.nodes ?? []) {
+    const productId = node.produto?.value;
+    let rating = 0;
+    try {
+      rating = Math.round(Number(JSON.parse(node.classificacao?.value ?? '{}').value));
+    } catch {}
+    if (!productId || !(rating >= 1 && rating <= 5)) continue;
+    const list = byProduct.get(productId) ?? [];
+    list.push({
+      author: node.nome?.value || 'Cliente',
+      rating,
+      text: node.comentario?.value ?? '',
+      date: node.data?.value,
+      verified: node.compra_verificada?.value === 'true',
+      photo: safePhoto(node.foto?.value),
+    });
+    byProduct.set(productId, list);
   }
+  // Mais recentes primeiro.
+  for (const list of byProduct.values()) list.sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+  return byProduct;
 }
 
 // custom.peso é texto livre (ex.: "150g"). Fallback por tipo: vela 150g · wax melt 100g ·
@@ -136,14 +146,14 @@ function parsePackSlots(metafield: Metafield): Product['packSlots'] {
   }
 }
 
-const normalizeProduct = ({ scent, peso, reviews, packSlots, ...product }: RawProduct): Product => ({
+const normalizeProduct = ({ scent, peso, packSlots, ...product }: RawProduct): Product => ({
   ...product,
   images: product.images.nodes,
   variants: product.variants.nodes,
   collections: product.collections?.nodes ?? [],
   scents: parseScents(scent),
   weight: productWeight(peso, product.productType),
-  reviews: parseReviews(reviews),
+  reviews: [], // preenchido por getProduct (getReviewsByProduct)
   packSlots: parsePackSlots(packSlots),
 });
 
@@ -217,7 +227,9 @@ export async function getProduct(handle: string): Promise<Product | null> {
     { handle },
     { revalidate: REVALIDATE },
   );
-  return data.product ? normalizeProduct(data.product) : null;
+  if (!data.product) return null;
+  const product = normalizeProduct(data.product);
+  return { ...product, reviews: (await getReviewsByProduct()).get(product.id) ?? [] };
 }
 
 export async function getProductRecommendations(

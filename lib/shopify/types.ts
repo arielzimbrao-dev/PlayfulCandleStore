@@ -35,7 +35,6 @@ export type Review = {
   text: string;
   date?: string; // ISO
   verified?: boolean;
-  approved?: boolean; // moderação: só aprovadas aparecem
   photo?: string; // foto enviada pelo cliente (URL https ou caminho /local), opcional
 };
 
@@ -52,7 +51,7 @@ export type Product = {
   updatedAt: string; // ISO (lastmod do sitemap)
   scents: string[]; // metafield custom.aromas (lista) já parseado
   weight: string; // metafield custom.peso (ex.: "150g"); fallback por tipo. '' se desconhecido
-  reviews: Review[]; // metafield custom.reviews (JSON) já parseado (só aprovadas)
+  reviews: Review[]; // metaobjects "avaliacao" ativos (só getProduct preenche)
   packSlots: PackSlot[]; // metafield custom.pack_slots: itens que o cliente escolhe no pack ([] = não é pack de escolha)
   /** Quanto o pack poupa face aos itens soltos (lib/bundle withPackSavings); atLeast = os itens
    *  têm preços diferentes e o valor é o mínimo garantido. */

@@ -2,12 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import PagedCarousel from '@/components/PagedCarousel/PagedCarousel';
 import TwoToneTitle from '@/components/TwoToneTitle/TwoToneTitle';
-import { getProducts } from '@/lib/shopify';
+import { getProducts, getReviewsByProduct } from '@/lib/shopify';
 import type { Review } from '@/lib/shopify/types';
 import './CustomerReviews.scss';
 
 // "Quem experimenta, apaixona-se" (home): slide de cartões (foto em cima + avaliação), com as
-// avaliações aprovadas dos produtos (metafield custom.reviews, ver scripts/reviews.mjs), as mais
+// avaliações aprovadas dos produtos (metaobjects "avaliacao" ativos, ver scripts/setup-reviews.mjs), as mais
 // recentes primeiro. Foto do cartão = a que o cliente enviou (review.photo) ou a do produto.
 // Sem avaliações, a secção não aparece em produção. Em desenvolvimento mostra EXEMPLOS
 // marcados como tal, só para ver o layout — avaliações inventadas não podem ir para o ar
@@ -36,11 +36,14 @@ const SAMPLE_REVIEWS: ReviewCard[] = [
 
 // Todas as avaliações (a média e o total contam todas); o slide mostra só as MAX_REVIEWS mais recentes.
 async function getReviewCards(): Promise<ReviewCard[]> {
-  const products = await getProducts(100)
-    .then((page) => page.products)
-    .catch(() => []);
+  const [products, reviewsByProduct] = await Promise.all([
+    getProducts(100)
+      .then((page) => page.products)
+      .catch(() => []),
+    getReviewsByProduct(),
+  ]);
   const cards = products.flatMap((product) =>
-    product.reviews.map((review) => ({
+    (reviewsByProduct.get(product.id) ?? []).map((review) => ({
       ...review,
       productTitle: product.title,
       productHref: `/produtos/${product.handle}`,
