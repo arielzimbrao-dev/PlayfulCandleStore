@@ -5,6 +5,7 @@ import { useCart } from '@/components/cart-context';
 import { useToast } from '@/components/Toast/Toast';
 import { useT } from '@/components/LanguageProvider';
 import { ecommerceEvent } from '@/lib/analytics';
+import { notifyMeHref } from '@/lib/site';
 import type { Product } from '@/lib/shopify/types';
 import './QuickAddButton.scss';
 
@@ -13,19 +14,26 @@ import './QuickAddButton.scss';
 export default function QuickAddButton({
   product,
   isSoldOut = false,
-  soldOutLabel,
 }: {
   product: Product;
   isSoldOut?: boolean;
-  soldOutLabel?: string;
 }) {
   const { addItem, loading } = useCart();
   const toast = useToast();
   const t = useT();
   const variant = product.variants.find((candidate) => candidate.availableForSale) ?? product.variants[0];
 
+  // Esgotado: "Avisa-me" abre o WhatsApp para pedir aviso de reposição.
+  if (isSoldOut) {
+    return (
+      <a href={notifyMeHref(product.title)} className="quick-add" target="_blank" rel="noopener noreferrer">
+        <i className="fa-solid fa-bell" aria-hidden="true" /> {t.product.notify}
+      </a>
+    );
+  }
+
   // Pack de escolha: os itens escolhem-se na página do produto.
-  if (product.packSlots.length && !isSoldOut) {
+  if (product.packSlots.length) {
     return (
       <Link href={`/produtos/${product.handle}`} className="quick-add">
         <i className="fa-solid fa-gift" aria-hidden="true" /> Montar o pack
@@ -57,18 +65,12 @@ export default function QuickAddButton({
   return (
     <button
       type="button"
-      className={`quick-add${isSoldOut ? ' quick-add--sold-out' : ''}`}
-      disabled={isSoldOut || loading || !variant}
+      className="quick-add"
+      disabled={loading || !variant}
       onClick={addToCart}
-      aria-label={isSoldOut ? undefined : `${t.product.choose}: ${product.title}`}
+      aria-label={`${t.product.choose}: ${product.title}`}
     >
-      {isSoldOut ? (
-        (soldOutLabel ?? t.product.soldout)
-      ) : (
-        <>
-          <i className="fa-solid fa-cart-shopping" aria-hidden="true" /> {t.product.choose}
-        </>
-      )}
+      <i className="fa-solid fa-cart-shopping" aria-hidden="true" /> {t.product.choose}
     </button>
   );
 }

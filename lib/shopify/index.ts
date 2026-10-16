@@ -221,6 +221,41 @@ export async function getProducts(
   return { products: data.products.nodes.map(normalizeProduct), pageInfo: data.products.pageInfo };
 }
 
+// Best-Sellers (home e pré-footer): primeiro a ordem escolhida pela dona, depois os mais
+// vendidos da Shopify até `count`. Handle que deixe de existir é simplesmente ignorado.
+const BEST_SELLER_HANDLES = [
+  'under-the-sea',
+  'pack-starter-wax',
+  'purple-vanilla',
+  'pack-snapbar',
+  'pack-outono',
+  'passion-fruit',
+  'lemon-and-raspberry-snapbar',
+  'trio-outono',
+  'cappuccino',
+  'cinnamon-rolls',
+];
+
+export async function getBestSellers(count = 12): Promise<Product[]> {
+  const { products } = await getProducts(100, { sortKey: 'BEST_SELLING' });
+  const picked = BEST_SELLER_HANDLES.flatMap((handle) => products.filter((product) => product.handle === handle));
+  const rest = products.filter((product) => !BEST_SELLER_HANDLES.includes(product.handle));
+  return [...picked, ...rest].slice(0, count);
+}
+
+// Bundle nativo (ex.: Trio Outono): handles dos produtos que o compõem, pela 1.ª variante.
+export async function getBundleComponents(handle: string): Promise<string[]> {
+  const data = await shopifyFetch<{
+    product: { variants: { nodes: { components: { nodes: { productVariant: { product: { handle: string } } }[] } }[] } } | null;
+  }>(
+    `query($handle: String!){ product(handle:$handle){ variants(first:1){ nodes{
+      components(first:10){ nodes{ productVariant{ product{ handle } } } } } } } }`,
+    { handle },
+    { revalidate: REVALIDATE },
+  );
+  return data.product?.variants.nodes[0]?.components.nodes.map((node) => node.productVariant.product.handle) ?? [];
+}
+
 export async function getProduct(handle: string): Promise<Product | null> {
   const data = await shopifyFetch<{ product: RawProduct | null }>(
     PRODUCT_BY_HANDLE_QUERY,

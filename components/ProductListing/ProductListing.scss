@@ -38,11 +38,94 @@
     }
   }
 
+  // Categorias e coleções com foto (desktop): título grande e intro em branco, bloco a ~20% da esquerda e centrado
+  // na vertical, sobre a parte lisa da foto. A sombra leve garante leitura nos tons claros.
+  &.listing-banner--overlay .photo-banner__content {
+    @include above(761px) {
+      left: 20%;
+      width: min(32%, 560px);
+      padding: 40px 0;
+    }
+  }
+
+  &.listing-banner--overlay .photo-banner__title {
+    @include above(761px) {
+      margin-bottom: 24px;
+      font-size: clamp(48px, 5vw, 96px);
+      color: #fff;
+      text-shadow: 0 2px 16px rgba(120, 30, 60, 0.25);
+    }
+  }
+
+  &.listing-banner--overlay .photo-banner__lead {
+    @include above(761px) {
+      display: block; // Packs (.banner-wall) também mostra a intro
+      max-width: 34ch;
+      color: #fff;
+      text-shadow: 0 1px 8px rgba(120, 30, 60, 0.35);
+    }
+  }
+
   // Foto de outono (.banner-wall, em Packs): a 3:1 aparece inteira, e a parede lisa começa
   // mais à direita do que no recorte do hero.
   &.banner-wall .photo-banner__content {
     @include above(761px) {
       left: 29%;
+      width: 24%;
+    }
+  }
+
+  // Fotos claras (bege, ex.: Packs e Outono): a intro branca precisa de uma sombra mais forte.
+  &.listing-banner--light.listing-banner--overlay .photo-banner__lead {
+    @include above(761px) {
+      text-shadow: 0 1px 12px rgba(90, 40, 10, 0.6);
+    }
+  }
+}
+
+// Celular: a foto aparece inteira (4:5) e só com a imagem; as migalhas vêm logo a seguir e o título + intro
+// por baixo delas, alinhados à esquerda. `display: contents` tira o banner e o .photo-banner da
+// caixa para a foto, as migalhas e o texto se ordenarem numa coluna só (o h1 continua um só).
+// `.listing-banner` nos seletores ganha às regras do .banner-wall (Packs) no celular.
+.listing-head {
+  @include mobile {
+    display: flex;
+    flex-direction: column;
+
+    .listing-banner,
+    .photo-banner {
+      display: contents;
+    }
+
+    .listing-banner .photo-banner__picture {
+      order: 0;
+      width: 100vw;
+      margin-inline: calc(50% - 50vw);
+      margin-block: -32px 32px;
+      line-height: 0;
+    }
+
+    .breadcrumbs {
+      order: 1;
+      margin-bottom: 32px;
+    }
+
+    .listing-banner .photo-banner__content {
+      position: static;
+      order: 2;
+      align-items: flex-start;
+      width: auto;
+      padding: 0;
+      text-align: left;
+    }
+
+    .listing-banner .photo-banner__title {
+      margin-bottom: 8px;
+    }
+
+    .listing-banner .photo-banner__lead {
+      max-width: none;
+      margin: 0 0 32px;
     }
   }
 }

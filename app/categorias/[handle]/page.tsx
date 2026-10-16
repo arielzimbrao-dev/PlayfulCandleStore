@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 import ProductListing from '@/components/ProductListing/ProductListing';
 import HowToUse from '@/components/HowToUse/HowToUse';
-import { getProducts } from '@/lib/shopify';
+import { getProduct, getProducts } from '@/lib/shopify';
 import { withPackSavings } from '@/lib/bundle';
 import { resolveSort } from '@/lib/sort';
 import { CATEGORIES, categoryBanner } from '@/lib/categories';
@@ -49,9 +49,11 @@ export default async function CategoryPage({
     { name: info.title, url: `/categorias/${handle}` },
   ];
 
-  const products = await withPackSavings(
-    (await getProducts(250, { query: info.query, sortKey: sort.product, reverse: sort.reverse })).products,
-  );
+  const [{ products: typed }, pinned] = await Promise.all([
+    getProducts(250, { query: info.query, sortKey: sort.product, reverse: sort.reverse }),
+    info.pinned && sort.key === 'destaque' ? getProduct(info.pinned).catch(() => null) : null,
+  ]);
+  const products = await withPackSavings(pinned && typed.length ? [pinned, ...typed] : typed);
 
   if (products.length === 0) {
     return (

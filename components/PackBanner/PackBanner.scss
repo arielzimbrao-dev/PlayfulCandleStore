@@ -1,4 +1,4 @@
-// Banner Pack Gourmand (home): cartão creme r32 com texto + lista + botão à esquerda
+// Banner Pack Outono (home): cartão creme r32 com texto + lista + botão à esquerda
 // e foto 4:3 com etiquetas numeradas à direita. Folhas de outono flutuam em volta.
 
 @use '../../styles/mixins' as *;
@@ -107,22 +107,11 @@
     }
   }
 
-  // Produto do pack sem stock: nome riscado e apagado.
-  &__item--soldout {
-    s,
-    strong {
-      color: var(--color-ink-soft);
-    }
-  }
-
-  // Preço avulso de cada item, encostado à direita (base do "riscado" do total).
-  &__item-price {
-    margin-left: auto;
-    padding-left: 16px;
+  // Aromas disponíveis para cada item, por baixo do nome.
+  &__item-options {
+    display: block;
     font-size: 14px;
-    font-weight: 600;
     color: var(--color-ink-soft);
-    white-space: nowrap;
   }
 
   // Bloco de preço: "Preço do pack" · total riscado · preço do pack · selo "Poupas X €".
@@ -287,7 +276,11 @@
   &__media {
     position: relative;
     display: block;
-    aspect-ratio: 4 / 3;
+    // Foto do produto é vertical (2:3): 4:5 mostra os três formatos. Centrada (sem esticar) para
+    // as etiquetas baterem sempre; min-width 0 impede o aspect-ratio de alargar a coluna da grelha.
+    align-self: center;
+    min-width: 0;
+    aspect-ratio: 4 / 5;
     overflow: hidden;
 
     // No tablet/celular a foto vem antes do texto.

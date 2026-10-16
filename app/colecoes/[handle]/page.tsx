@@ -10,13 +10,17 @@ export const revalidate = 3600;
 
 // Banners de foto por coleção (desktop 3:1 / mobile 4:5, texto em HTML por cima).
 // ponytail: mapa fixo; passar para um metafield se crescer.
-const PHOTO_BANNERS: Record<string, { title?: string; desktop: string; mobile: string; alt: string; text: string }> = {
+const PHOTO_BANNERS: Record<
+  string,
+  { title?: string; desktop: string; mobile: string; alt: string; text: string; light?: boolean }
+> = {
   'colecao-de-outono': {
     title: 'Autumn Collection', // em inglês: a fonte Genty não tem ç/ã
     desktop: '/images/banners/col-outono-v4-desktop.jpg',
     mobile: '/images/banners/col-outono-v3-mobile.jpg',
     alt: 'Velas Orange & Cinnamon, Pumpkin Spice e Cappuccino entre folhas de outono, abóboras, paus de canela e laranja seca',
     text: 'Canela, café e abóbora num trio a pensar no outono. Acende uma, puxa a manta e deixa-te ficar.',
+    light: true,
   },
 };
 
@@ -70,6 +74,20 @@ export default async function CollectionPage({
   ];
 
   const photoBanner = PHOTO_BANNERS[handle];
+  // Outono: nos produtos que não são packs nem wax melts, o card começa na 2.ª foto.
+  const shown =
+    handle === 'colecao-de-outono'
+      ? collection.products.map((product) =>
+          !['Pack', 'Wax Melt'].includes(product.productType) && product.images.length > 1
+            ? { ...product, featuredImage: product.images[1], images: product.images.slice(1) }
+            : product,
+        )
+      : collection.products;
+  // "Em Destaque": os packs da coleção aparecem primeiro (sort estável mantém a ordem manual do resto).
+  const products =
+    sort.key === 'destaque'
+      ? shown.toSorted((a, b) => Number(b.productType === 'Pack') - Number(a.productType === 'Pack'))
+      : shown;
 
   return (
     <ProductListing
@@ -78,7 +96,7 @@ export default async function CollectionPage({
       photo={photoBanner}
       crumbs={crumbs}
       basePath={`/colecoes/${handle}`}
-      products={await withPackSavings(collection.products)}
+      products={await withPackSavings(products)}
       showType
       sort={sort}
       onlyInStock={onlyInStock}

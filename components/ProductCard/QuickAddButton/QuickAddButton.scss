@@ -1,4 +1,4 @@
-// Botão laranja "Adicionar ao carrinho" na largura toda do card, sempre colado ao fundo dele.
+// Botão laranja "Adicionar ao carrinho" (ou "Avisa-me" se esgotado) na largura toda do card, sempre colado ao fundo dele.
 
 @use '../../../styles/mixins' as *;
 
@@ -38,10 +38,5 @@
     i {
       display: none;
     }
-  }
-
-  // Produto esgotado: botão cinza com o texto "Esgotado".
-  &--sold-out {
-    background: var(--color-ink-soft);
   }
 }

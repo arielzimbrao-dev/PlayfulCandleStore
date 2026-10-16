@@ -1,58 +1,35 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import TwoToneTitle from '@/components/TwoToneTitle/TwoToneTitle';
-import BundleAddButton from '@/components/BundleOffer/BundleAddButton/BundleAddButton';
 import { getProduct } from '@/lib/shopify';
-import { getPackCodes } from '@/lib/shopify/admin';
-import { productCategory } from '@/lib/filters';
-import { formatMoney } from '@/lib/format';
-import type { Product } from '@/lib/shopify/types';
+import { getPackOptions } from '@/lib/packs';
+import { withPackSavings } from '@/lib/bundle';
+import { formatMoney, savingsLabel } from '@/lib/format';
+import type { PackSlot } from '@/lib/shopify/types';
 import './PackBanner.scss';
 
-// Banner do Pack Gourmand (home): texto + lista do que vem no pack à esquerda; foto com
-// etiquetas numeradas por cima de cada produto à direita.
-// Os produtos vêm do desconto "Pack Gourmand" na Shopify (ver getPackCodes): o botão põe 1 de cada
-// no carrinho e o carrinho aplica o código. Sem o desconto ativo, o banner não aparece.
-// Preço: soma dos produtos (riscada) − valor do desconto = preço do pack, com a poupança em destaque.
+// Banner do Pack Outono (home): texto + lista dos itens do pack à esquerda; foto com
+// etiquetas numeradas por cima de cada formato à direita.
+// O pack é o produto "pack-outono" da Shopify: preço próprio e itens à escolha (custom.pack_slots);
+// o botão leva à página do produto, onde se escolhe. Sem o produto, o banner não aparece.
 // ponytail: copy só em PT.
-const PACK_TITLE = /gourmand/i;
+const PACK_HANDLE = 'pack-outono';
 
-// Posição (%) da etiqueta de cada produto na foto — bate com o recorte 4:3 de
-// /images/banners/pack-gourmand.jpg; se trocar a foto ou os produtos do pack, revisar aqui.
-// Produto sem posição fica só na lista.
+// Posição (%) da etiqueta de cada formato na foto — bate com a 1.ª foto do produto pack-outono
+// (vela Cappuccino, wax Cinnamon Rolls, snapbar) no recorte 4:5 com PHOTO_POSITION;
+// se trocar a foto na Shopify, revisar aqui. Formato sem posição fica só na lista.
+const PHOTO_POSITION = '50% 65%';
 const TAG_POSITIONS: Record<string, { left: string; top: string }> = {
-  cappuccino: { left: '80%', top: '22%' },
-  'cinnamon-rolls': { left: '47%', top: '22%' },
-  'salt-caramel': { left: '19%', top: '7%' },
+  velas: { left: '83%', top: '44%' },
+  wax: { left: '29%', top: '42%' },
+  snap: { left: '56%', top: '39%' },
 };
 
-const TYPE_LABELS: Record<string, string> = { velas: 'Vela', wax: 'Wax Melt', snap: 'Snapbar', burner: 'Queimador' };
+// "Cappuccino, Pumpkin Spice ou Orange & Cinnamon"
+const orList = (names: string[]) =>
+  names.length > 1 ? `${names.slice(0, -1).join(', ')} ou ${names.at(-1)}` : (names[0] ?? '');
 
-type PackItem = { number: number; product: Product; type: string; variantId: string | null; price: number };
-
-async function getPack(): Promise<{ items: PackItem[]; discount: number }> {
-  const pack = (await getPackCodes()).find((candidate) => PACK_TITLE.test(candidate.title));
-  if (!pack) return { items: [], discount: 0 };
-  // Mesma ordem das etiquetas da foto; produtos sem etiqueta vão para o fim.
-  const tagOrder = Object.keys(TAG_POSITIONS);
-  const rank = (handle: string) => (tagOrder.includes(handle) ? tagOrder.indexOf(handle) : tagOrder.length);
-  const handles = [...pack.productHandles].sort((a, b) => rank(a) - rank(b));
-  const products = await Promise.all(handles.map((handle) => getProduct(handle).catch(() => null)));
-  const items = products
-    .filter((product): product is Product => !!product)
-    .map((product, index) => {
-      // Mesma variante que o botão põe no carrinho, para o preço bater com o checkout.
-      const variant = product.variants.find((candidate) => candidate.availableForSale);
-      return {
-        number: index + 1,
-        product,
-        type: TYPE_LABELS[productCategory(product) ?? ''] ?? '',
-        variantId: variant?.id ?? null,
-        price: Number(variant?.price.amount ?? product.priceRange.minVariantPrice.amount),
-      };
-    });
-  // ponytail: só desconto de valor fixo (pack.amount); desconto em % dá 0 e o banner mostra só o total.
-  return { items, discount: pack.amount };
-}
+type PackItem = { number: number; slot: PackSlot; options: string[] };
 
 // Elementos de outono flutuando em volta do cartão (decorativos, SVG inline).
 // A posição, o tamanho e o ritmo de cada um ficam em PackBanner.scss (.pack__decoration--N).
@@ -109,15 +86,19 @@ function AutumnDecoration({ shape, index }: { shape: AutumnShape; index: number 
 }
 
 export default async function PackBanner() {
-  const { items, discount } = await getPack();
-  if (!items.length) return null;
-  const currencyCode = items[0].product.priceRange.minVariantPrice.currencyCode;
-  const money = (value: number) => formatMoney({ amount: value.toFixed(2), currencyCode });
-  const originalTotal = items.reduce((sum, item) => sum + item.price, 0);
-  const saving = Math.min(discount, originalTotal);
-  const packPrice = originalTotal - saving;
-  const variantIds = items.map((item) => item.variantId);
-  const isSoldOut = variantIds.some((id) => !id);
+  const found = await getProduct(PACK_HANDLE).catch(() => null);
+  if (!found?.packSlots.length) return null;
+  const [pack] = await withPackSavings([found]);
+  const options = await getPackOptions(pack.packSlots).catch(() => pack.packSlots.map(() => []));
+  const items: PackItem[] = pack.packSlots.map((slot, index) => ({
+    number: index + 1,
+    slot,
+    options: options[index].map((option) => option.title),
+  }));
+  const photo = pack.featuredImage ?? pack.images[0];
+  const price = pack.priceRange.minVariantPrice;
+  const savings = pack.packSavings;
+  const isSoldOut = !pack.variants.some((variant) => variant.availableForSale) || items.some((item) => !item.options.length);
 
   return (
     <section className="pack" aria-labelledby="pack-title">
@@ -130,83 +111,74 @@ export default async function PackBanner() {
           <div className="pack__body">
             <p className="pack__eyebrow">Novo · Edição de Outono</p>
             <h2 id="pack-title" className="script-title pack__title">
-              <TwoToneTitle text="Pack Gourmand" />
+              <TwoToneTitle text={pack.title} />
             </h2>
             <p className="pack__lead">
-              Três aromas doces num só pack, para a casa cheirar a pastelaria acabada de abrir. Perfeito para
-              oferecer, ou para te mimares.
+              Monta o teu outono: escolhes os aromas da estação e nós juntamos tudo num pack. A forma mais fácil
+              de experimentar os três formatos, para ti ou para oferecer.
             </p>
             <ol className="pack__list">
               {items.map((item) => (
-                <li key={item.number} className={item.variantId ? undefined : 'pack__item--soldout'}>
+                <li key={item.number}>
                   <span className="pack__number" aria-hidden="true">
                     {item.number}
                   </span>
-                  {item.variantId ? (
-                    <span>
-                      1 {item.type} de <strong>{item.product.title}</strong>
-                    </span>
-                  ) : (
-                    <s>
-                      1 {item.type} de <strong>{item.product.title}</strong>
-                      <span className="visually-hidden"> (esgotado)</span>
-                    </s>
-                  )}
-                  <span className="pack__item-price">{money(item.price)}</span>
+                  <span>
+                    1 <strong>{item.slot.label}</strong> à escolha
+                    {item.options.length > 0 && <small className="pack__item-options">{orList(item.options)}</small>}
+                  </span>
                 </li>
               ))}
             </ol>
             <div className="pack__price">
               <span className="pack__price-label">Preço do pack</span>
               <span className="pack__price-row">
-                {saving > 0 && (
+                {savings && !savings.atLeast && (
                   <span className="price-old">
                     <span className="visually-hidden">Em separado: </span>
-                    {money(originalTotal)}
+                    {formatMoney({ amount: (Number(price.amount) + savings.amount).toFixed(2), currencyCode: price.currencyCode })}
                   </span>
                 )}
-                <strong className="pack__price-now">{money(packPrice)}</strong>
-                {saving > 0 && <span className="pack__save">Poupas {money(saving)}</span>}
+                <strong className="pack__price-now">{formatMoney(price)}</strong>
+                {savings && <span className="pack__save">{savingsLabel(savings)}</span>}
               </span>
-              {saving > 0 && (
+              {savings && (
                 <small className="pack__price-note">face à compra dos {items.length} produtos em separado</small>
               )}
             </div>
             {isSoldOut ? (
               <p className="pack__cta pack__cta--soon">Volta em breve</p>
             ) : (
-              <BundleAddButton
-                variantIds={variantIds as string[]}
-                label="Quero o meu pack"
-                className="pack__cta"
-              />
+              <Link href={`/produtos/${PACK_HANDLE}`} className="pack__cta">
+                Monta o teu pack <i className="fa-solid fa-arrow-right" aria-hidden="true" />
+              </Link>
             )}
           </div>
 
           {/* Foto decorativa: as etiquetas repetem a lista ao lado, por isso fica fora dos leitores de tela. */}
           <div className="pack__media" aria-hidden="true">
-            <Image
-              src="/images/banners/pack-gourmand.jpg"
-              alt=""
-              fill
-              sizes="(max-width: 900px) 90vw, 50vw"
-              quality={90}
-              style={{ objectFit: 'cover' }}
-            />
-            {saving > 0 && (
+            {photo && (
+              <Image
+                src={photo.url}
+                alt=""
+                fill
+                sizes="(max-width: 900px) 90vw, 50vw"
+                quality={90}
+                style={{ objectFit: 'cover', objectPosition: PHOTO_POSITION }}
+              />
+            )}
+            {savings && (
               <span className="pack__sticker">
-                <small>Poupa</small>
-                {money(saving)}
+                <small>Poupa{savings.atLeast ? ' desde' : ''}</small>
+                {formatMoney({ amount: savings.amount.toFixed(2), currencyCode: price.currencyCode })}
               </span>
             )}
             {items
-              .filter((item) => TAG_POSITIONS[item.product.handle])
+              .filter((item) => TAG_POSITIONS[item.slot.type])
               .map((item) => (
-                <span key={item.number} className="pack__tag" style={TAG_POSITIONS[item.product.handle]}>
+                <span key={item.number} className="pack__tag" style={TAG_POSITIONS[item.slot.type]}>
                   <b>{item.number}</b>
-                  <span className="pack__tag-label">
-                    {item.type} · {item.product.title}
-                  </span>
+                  <span className="pack__tag-label">{item.slot.label} à escolha</span>
                 </span>
               ))}
           </div>

@@ -7,7 +7,7 @@ import PackBanner from '@/components/PackBanner/PackBanner';
 import ScentGrid from '@/components/ScentGrid/ScentGrid';
 import HowToUse from '@/components/HowToUse/HowToUse';
 import Testimonials from '@/components/Testimonials/Testimonials';
-import { getProducts, getCollection } from '@/lib/shopify';
+import { getBestSellers, getCollection } from '@/lib/shopify';
 import { withPackSavings } from '@/lib/bundle';
 
 const AUTUMN_COLLECTION = 'colecao-de-outono';
@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [autumnCollection, newArrivals] = await Promise.all([
+  const [autumnCollection, bestSellers] = await Promise.all([
     getCollection(AUTUMN_COLLECTION, 12).catch(() => null),
-    getProducts(12, { sortKey: 'CREATED_AT', reverse: true }),
+    getBestSellers().catch(() => []),
   ]);
 
   return (
@@ -35,7 +35,7 @@ export default async function HomePage() {
       />
       <PackBanner />
       <ScentGrid />
-      <ProductRail variant="latest" products={await withPackSavings(newArrivals.products)} />
+      <ProductRail variant="best" products={await withPackSavings(bestSellers)} />
       <HowToUse />
       <Testimonials />
       {/* ponytail: CustomerReviews fora até haver avaliações reais; voltar a pôr aqui depois. */}

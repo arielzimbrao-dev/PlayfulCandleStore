@@ -7,7 +7,8 @@ import { useT } from '@/components/LanguageProvider';
 import { formatMoney, savingsLabel } from '@/lib/format';
 import ShippingNote from '@/components/ShippingNote/ShippingNote';
 import { ecommerceEvent } from '@/lib/analytics';
-import { SITE } from '@/lib/site';
+import { notifyMeHref } from '@/lib/site';
+import { usePackChoice } from '@/components/PackPicker/PackChoice';
 import PackPicker, { type PackPickerSlot } from '@/components/PackPicker/PackPicker';
 import type { Product } from '@/lib/shopify/types';
 import './BuyBox.scss';
@@ -36,7 +37,7 @@ export default function BuyBox({
   const [variantId, setVariantId] = useState(firstAvailable?.id ?? '');
   const [quantity, setQuantity] = useState(1);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
-  const [packChoice, setPackChoice] = useState<Record<string, string>>({}); // item → handle
+  const [packChoice, setPackChoice] = usePackChoice(); // item → handle
   // Barra fixa do celular: só aparece depois de o botão principal sair do ecrã por cima
   // (antes disso ele já está à vista e a barra só taparia conteúdo).
   const mainActionsRef = useRef<HTMLDivElement>(null);
@@ -151,10 +152,7 @@ export default function BuyBox({
     setIsBuyingNow(false);
   };
 
-  // Esgotado: o botão abre o WhatsApp com uma mensagem pronta pedindo aviso de reposição.
-  const notifyMeHref = `${SITE.notifyWhatsapp}?text=${encodeURIComponent(
-    `Olá! Avisem-me quando "${product.title}" voltar ao stock 🕯️`,
-  )}`;
+  const notifyHref = notifyMeHref(product.title);
 
   return (
     <div className="buybox">
@@ -170,7 +168,7 @@ export default function BuyBox({
         <PackPicker
           slots={pack}
           value={packChoice}
-          onChange={(key, handle) => setPackChoice((current) => ({ ...current, [key]: handle }))}
+          onChange={setPackChoice}
         />
       )}
 
@@ -225,7 +223,7 @@ export default function BuyBox({
         {isSoldOut ? (
           <a
             className="btn btn--orange btn--block"
-            href={notifyMeHref}
+            href={notifyHref}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -258,7 +256,7 @@ export default function BuyBox({
         {isSoldOut ? (
           <a
             className="btn btn--primary mobile-buy-bar__button"
-            href={notifyMeHref}
+            href={notifyHref}
             target="_blank"
             rel="noopener noreferrer"
           >

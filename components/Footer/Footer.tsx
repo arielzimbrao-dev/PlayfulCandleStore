@@ -105,6 +105,12 @@ export default function Footer() {
         <p className="footer__legal-id">
           {SITE.legalName} · NIF {SITE.nif} · {SITE.address.postalCode} {SITE.address.addressLocality}
         </p>
+        <p className="footer__credit">
+          Desenvolvido por
+          <a href="https://agenciapael.pt/pt" target="_blank" rel="noopener noreferrer">
+            <Image src="/images/pael-logo.svg" alt="Agência Pael" width={81} height={25} unoptimized />
+          </a>
+        </p>
       </div>
     </footer>
   );

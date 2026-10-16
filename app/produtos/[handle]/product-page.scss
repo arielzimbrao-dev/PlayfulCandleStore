@@ -132,6 +132,24 @@
   }
 
   // Descrição vinda da Shopify (HTML): mesma tipografia do texto dos acordeões.
+  // Aviso "aroma diferente de…" (SCENT_NOTES na página).
+  &__scent-note {
+    margin: 16px 0 0;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--color-blush);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-ink);
+
+    a {
+      font-weight: 700;
+      color: var(--color-coral-dark);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  }
+
   &__description {
     max-width: none; // ocupa a coluna toda (a .prose limitaria a 72ch)
     margin-top: 16px;

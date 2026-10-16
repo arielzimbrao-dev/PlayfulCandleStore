@@ -1,0 +1,39 @@
+// Hero da home: mesmo estilo dos banners das categorias.
+// Desktop: título grande e texto em branco, bloco a ~20% da esquerda, centrado na vertical.
+// Celular: texto branco centralizado no topo da foto.
+
+@use '../../styles/mixins' as *;
+
+.hero.banner-wall {
+  .photo-banner__content {
+    @include above(761px) {
+      left: 20%;
+      width: min(32%, 560px);
+    }
+
+    @include mobile {
+      align-items: center;
+      padding: 32px var(--gutter) 48px;
+      text-align: center;
+    }
+  }
+
+  .photo-banner__title {
+    color: #fff;
+    text-shadow: 0 2px 16px rgba(90, 40, 10, 0.5);
+
+    em {
+      color: #fff;
+    }
+
+    @include above(761px) {
+      margin-bottom: 16px;
+      font-size: clamp(40px, 4vw, 80px); // menor que nas categorias: o pote começa a ~45%
+    }
+  }
+
+  .eyebrow {
+    color: #fff;
+    text-shadow: 0 1px 12px rgba(90, 40, 10, 0.6);
+  }
+}

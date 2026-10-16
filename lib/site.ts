@@ -50,3 +50,7 @@ export function absoluteUrl(path: string): string {
   if (path.startsWith('http')) return path;
   return `${SITE.url}${path.startsWith('/') ? '' : '/'}${path}`;
 }
+
+// Esgotado: "Avisa-me" abre o WhatsApp com uma mensagem pronta pedindo aviso de reposição.
+export const notifyMeHref = (title: string) =>
+  `${SITE.notifyWhatsapp}?text=${encodeURIComponent(`Olá! Avisem-me quando "${title}" voltar ao stock 🕯️`)}`;

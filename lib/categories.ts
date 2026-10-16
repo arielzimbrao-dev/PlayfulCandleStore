@@ -4,7 +4,8 @@ import { PRODUCT_TYPE_HANDLES } from './shopify/types';
 import type { CategoryKey } from './filters';
 
 // seoTitle: <title> da página (≤42 car.; o template junta " · Playful Candles" → ≤60).
-export type Category = { title: string; seoTitle: string; query: string; text: string; type: CategoryKey };
+// pinned: produto de outro tipo (ex.: um pack) mostrado em 1.º lugar na ordem "Em Destaque".
+export type Category = { title: string; seoTitle: string; query: string; text: string; type: CategoryKey; pinned?: string };
 
 // Sufixo de versão quando a foto de uma categoria é trocada (nome novo = sem cache antigo).
 const BANNER_VERSION: Record<string, string> = { 'velas-de-copo': '-v3', snapbars: '-v2', queimadores: '-v2', 'wax-melts': '-v2' };
@@ -12,7 +13,7 @@ const BANNER_VERSION: Record<string, string> = { 'velas-de-copo': '-v3', snapbar
 export const categoryBanner = (handle: string) =>
   handle === 'packs'
     ? // Packs reaproveita a foto de outono do hero da home (mesmo enquadramento: .banner-wall).
-      { desktop: '/images/banners/hero-outono-desktop.jpg', mobile: '/images/banners/hero-outono-mobile.jpg', wall: true }
+      { desktop: '/images/banners/hero-outono-desktop.jpg', mobile: '/images/banners/hero-outono-mobile.jpg', wall: true, light: true }
     : {
         desktop: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-desktop.jpg`,
         mobile: `/images/banners/cat-${handle}${BANNER_VERSION[handle] ?? ''}-mobile.jpg`,
@@ -39,6 +40,7 @@ export const CATEGORIES: Record<string, Category> = {
     query: 'product_type:Snapbar',
     text: 'Parte, aquece e muda o mood. Barras de cera perfeitas para experimentar vários aromas ao teu gosto.',
     type: 'snap',
+    pinned: 'pack-snapbar',
   },
   queimadores: {
     title: 'Queimadores',

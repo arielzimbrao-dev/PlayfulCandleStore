@@ -77,7 +77,7 @@ export default function ProductCard({
           {formatMoney(product.priceRange.minVariantPrice)}
           {product.packSavings && <span className="price-savings">{savingsLabel(product.packSavings)}</span>}
         </span>
-        <QuickAddButton product={product} isSoldOut={isSoldOut} soldOutLabel={soldOutLabel} />
+        <QuickAddButton product={product} isSoldOut={isSoldOut} />
       </div>
     </article>
   );

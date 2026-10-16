@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useT } from '@/components/LanguageProvider';
 import PhotoBanner from '@/components/PhotoBanner/PhotoBanner';
+import './Hero.scss';
 
 const HERO_HREF = '/colecoes/colecao-de-outono';
 
