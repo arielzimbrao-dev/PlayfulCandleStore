@@ -17,5 +17,5 @@ export default async function RelatedProducts({ product, limit = 8 }: { product?
     related = (bestSellers?.products ?? []).filter((candidate) => candidate.id !== product?.id).slice(0, limit);
   }
 
-  return <ProductRail title="Compra também" products={related} />;
+  return <ProductRail title="Compra mais" products={related} />;
 }
