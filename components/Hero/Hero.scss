@@ -3,11 +3,9 @@
 @use '../../styles/mixins' as *;
 
 .hero {
-  // Sem véu claro: no desktop o texto fica na parede lisa entre a manta (esquerda) e os
+  // No desktop o texto fica na parede lisa entre a manta (esquerda) e os
   // produtos (direita) da foto de outono — se trocar a foto, revisar esta faixa.
   .photo-banner__content {
-    background: none;
-
     @include above(761px) {
       left: 23%;
       width: 32%;

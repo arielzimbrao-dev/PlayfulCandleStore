@@ -1,18 +1,8 @@
 // Banner de foto com texto por cima.
-// Desktop (21:8): texto no terço esquerdo sobre um véu claro, para dar contraste.
+// Desktop (21:8): texto no terço esquerdo, direto sobre a foto (sem véu).
 // Celular (4:5): texto centralizado no topo.
 
 @use '../../styles/mixins' as *;
-
-// Véu rosado claro que esmaece para transparente (a direção muda conforme o lado do texto).
-@function veil($direction, $strength: 0.82) {
-  @return linear-gradient(
-    $direction,
-    rgba(255, 246, 250, $strength) 0%,
-    rgba(255, 246, 250, 0.55) 70%,
-    transparent 100%
-  );
-}
 
 .photo-banner {
   position: relative;
@@ -49,9 +39,8 @@
     gap: 8px;
     width: min(46%, 624px);
     padding: 40px 80px;
-    background: veil(90deg);
     color: var(--color-ink);
-    // O véu não bloqueia cliques na foto; só os links/botões do texto são clicáveis.
+    // A caixa do texto não bloqueia cliques na foto; só os links/botões do texto são clicáveis.
     pointer-events: none;
 
     a,
@@ -76,7 +65,6 @@
       width: 100%;
       padding: 40px var(--gutter) 48px;
       text-align: center;
-      background: veil(180deg, 0.88);
     }
   }
 
@@ -84,7 +72,6 @@
   &--text-right &__content {
     @include above(761px) {
       inset: 0 0 0 auto;
-      background: veil(270deg);
     }
   }
 
