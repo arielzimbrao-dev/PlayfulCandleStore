@@ -22,7 +22,7 @@ export default function Testimonials() {
 
       <PagedCarousel ariaLabel="Testemunhos de clientes">
         {TESTIMONIALS.map((item, index) => (
-          <article key={index} className="review-card" role="listitem">
+          <article key={index} className="review-card">
             {item.photo && (
               <div className="review-card__photo">
                 <Image

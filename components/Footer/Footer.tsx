@@ -60,7 +60,7 @@ export default function Footer() {
 
           {columns.map((column) => (
             <nav key={column.title} aria-label={column.title}>
-              <h4>{column.title}</h4>
+              <h3>{column.title}</h3>
               {column.labels.map((label, index) => (
                 <Link key={label} href={column.hrefs[index] ?? '/produtos'} title={label}>
                   {label}
@@ -70,7 +70,7 @@ export default function Footer() {
           ))}
 
           <nav aria-label="Links úteis">
-            <h4>Links úteis</h4>
+            <h3>Links úteis</h3>
             <Link href="/termos">Termos &amp; condições</Link>
             <Link href="/privacidade">Política de privacidade</Link>
             <button type="button" className="footer__cookies" onClick={openCookieSettings}>

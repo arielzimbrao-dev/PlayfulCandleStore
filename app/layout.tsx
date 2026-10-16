@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
-import '@fortawesome/fontawesome-free/css/all.min.css';
 import '@/styles/global.scss';
 import { CartProvider } from '@/components/cart-context';
 import { WishlistProvider } from '@/components/wishlist-context';

@@ -33,7 +33,7 @@ export default function ProductCard({
   const isSoldOut = product.variants.length > 0 && !product.variants.some((variant) => variant.availableForSale);
 
   return (
-    <article className={`product-card${isSoldOut ? ' product-card--sold-out' : ''}`} role="listitem">
+    <article className={`product-card${isSoldOut ? ' product-card--sold-out' : ''}`}>
       <div className="product-card__media">
         <Link href={href} className="product-card__image" aria-label={product.title} tabIndex={-1}>
           {isSoldOut && <span className="product-card__badge">{soldOutLabel}</span>}

@@ -139,7 +139,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
               {/* Sem avaliações do produto: estrelas vazias seriam prova social negativa —
                   mostra antes o selo da ficha Google da loja. */}
               {reviews.length ? (
-                <div className="product__rating" aria-label={`${averageRating.toFixed(1)} de 5 (${reviews.length})`}>
+                <div className="product__rating" role="img" aria-label={`${averageRating.toFixed(1)} de 5 (${reviews.length})`}>
                   {/* Estrela cheia a partir de x,75 (ex.: 4,8 mostra 5 estrelas). */}
                   {[1, 2, 3, 4, 5].map((star) => (
                     <i

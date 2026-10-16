@@ -22,8 +22,12 @@ $footer-text: rgba(255, 255, 255, 0.85);
     position: relative;
     z-index: 2;
 
-    h4 {
+    // h3 (o h2 é o do bloco VIP) com o aspeto do antigo h4.
+    h3 {
       margin: 0 0 8px;
+      font-weight: 700;
+      line-height: inherit;
+      letter-spacing: normal;
       font-size: 16px;
       color: #fff;
     }

@@ -6,6 +6,7 @@
 //   styles/_base.scss     → reset e elementos HTML sem classe
 //   styles/_shared.scss   → utilitários usados em vários lugares (.wrap, .btn, .script-title…)
 //   styles/_prose.scss    → texto corrido e acordeões
+//   styles/_icons.scss    → ícones fa-* (SVG em mask-image, sem a fonte do Font Awesome)
 //
 // Cada componente tem sua própria pasta com o .tsx e o .scss (ex.: components/Footer/Footer.scss),
 // importados no próprio .tsx.
@@ -27,4 +28,5 @@
 @layer shared {
   @include meta.load-css('shared');
   @include meta.load-css('prose');
+  @include meta.load-css('icons');
 }

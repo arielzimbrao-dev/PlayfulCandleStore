@@ -75,7 +75,7 @@ export default async function CustomerReviews() {
 
       <PagedCarousel ariaLabel="Avaliações de clientes">
         {reviews.slice(0, MAX_REVIEWS).map((review, index) => (
-          <article key={index} className="review-card" role="listitem">
+          <article key={index} className="review-card">
             <div className="review-card__photo">
               {review.cardPhoto && (
                 <Image

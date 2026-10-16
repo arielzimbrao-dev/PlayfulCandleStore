@@ -19,7 +19,7 @@ export default function ProductGrid({ products, listName }: { products: Product[
           item_category: product.productType,
         }))}
       />
-      <div className="product-grid" role="list">
+      <div className="product-grid">
         {products.map((product, index) => (
           <ProductCard key={product.id} product={product} sizes={GRID_SIZES} priority={index < 3} />
         ))}
