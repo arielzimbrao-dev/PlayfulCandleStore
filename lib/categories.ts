@@ -3,7 +3,8 @@
 import { PRODUCT_TYPE_HANDLES } from './shopify/types';
 import type { CategoryKey } from './filters';
 
-export type Category = { title: string; query: string; text: string; type: CategoryKey };
+// seoTitle: <title> da página (≤42 car.; o template junta " · Playful Candles" → ≤60).
+export type Category = { title: string; seoTitle: string; query: string; text: string; type: CategoryKey };
 
 // Sufixo de versão quando a foto de uma categoria é trocada (nome novo = sem cache antigo).
 const BANNER_VERSION: Record<string, string> = { 'velas-de-copo': '-v3', snapbars: '-v2', queimadores: '-v2', 'wax-melts': '-v2' };
@@ -16,30 +17,35 @@ export const categoryBanner = (handle: string) => ({
 export const CATEGORIES: Record<string, Category> = {
   'velas-de-copo': {
     title: 'Velas de Copo',
+    seoTitle: 'Velas de Copo Artesanais em Cera Vegetal',
     query: 'product_type:Vela',
     text: 'Horas de aroma num copo giro que podes reutilizar depois. Cera vegetal e fragrâncias que se notam mal acendes.',
     type: 'velas',
   },
   'wax-melts': {
     title: 'Wax Melts',
+    seoTitle: 'Wax Melts de Cera Vegetal feitos em Lisboa',
     query: "product_type:'Wax Melt'",
     text: 'Cera para pôr no queimador. Sem chama nem pavio: derrete e a divisão fica a cheirar em minutos.',
     type: 'wax',
   },
   snapbars: {
     title: 'Snapbars',
+    seoTitle: 'Snapbars de Cera Vegetal para Queimador',
     query: 'product_type:Snapbar',
     text: 'Parte, aquece e muda o mood. Barras de cera perfeitas para experimentar vários aromas ao teu gosto.',
     type: 'snap',
   },
   queimadores: {
     title: 'Queimadores',
+    seoTitle: 'Queimadores de Cerâmica para Wax Melts',
     query: 'product_type:Queimador',
     text: 'Cerâmica para derreter os teus wax melts e snapbars, bonita o suficiente para ficar à vista.',
     type: 'burner',
   },
   packs: {
     title: 'Packs',
+    seoTitle: 'Packs de Velas e Wax Melts para Oferecer',
     query: 'product_type:Pack',
     text: 'Conjuntos prontos a oferecer, ou a guardar para ti. Vários aromas bem embalados numa só caixa.',
     type: 'pack',

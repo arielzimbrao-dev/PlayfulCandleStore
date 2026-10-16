@@ -61,7 +61,8 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   return {
     // O seo.title da Shopify já traz "| Playful Candles" — `absolute` evita repetir o sufixo do template.
     title: product.seo.title ? { absolute: product.seo.title } : product.title,
-    description: description.slice(0, 155),
+    // ≤155 car., cortado no último espaço (não a meio da palavra).
+    description: description.length > 155 ? `${description.slice(0, description.lastIndexOf(' ', 154))}…` : description,
     alternates: { canonical: `/produtos/${handle}` },
     openGraph: imageUrl ? { type: 'website', images: [{ url: imageUrl }] } : undefined,
   };
@@ -96,7 +97,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
 
   return (
     <>
-      <JsonLd data={productLd(product, shippingZones.find((zone) => zone.name.includes('Portugal'))?.days)} />
+      <JsonLd data={productLd(product, shippingZones)} />
       <TrackProductView
         id={product.id}
         name={product.title}

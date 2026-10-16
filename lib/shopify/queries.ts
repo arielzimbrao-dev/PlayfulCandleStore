@@ -9,6 +9,7 @@ const PRODUCT_FRAGMENT = /* GraphQL */ `
     tags
     vendor
     availableForSale
+    updatedAt
     scent: metafield(namespace: "custom", key: "aromas") {
       value
     }
@@ -65,6 +66,7 @@ const PRODUCT_FRAGMENT = /* GraphQL */ `
       nodes {
         id
         title
+        sku
         availableForSale
         price {
           amount
@@ -245,6 +247,7 @@ export const COLLECTIONS_QUERY = /* GraphQL */ `
         handle
         title
         description
+        updatedAt
         image {
           url
           altText

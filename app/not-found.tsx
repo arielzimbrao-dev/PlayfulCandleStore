@@ -1,15 +1,8 @@
-import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
 import Link from 'next/link';
 
+// Sem breadcrumbs: emitiriam BreadcrumbList JSON-LD a apontar para /404.
 export default function NotFound() {
   return (
-    <div className="container">
-    <Breadcrumbs
-        items={[
-          { name: 'Início', url: '/' },
-          { name: 'Página não encontrada', url: '/404' }
-        ]}
-      />
     <section className="container status-page">
       <p className="eyebrow eyebrow--large">Erro 404</p>
       <h1>Página não encontrada</h1>
@@ -18,6 +11,5 @@ export default function NotFound() {
       </p>
       <Link className="btn btn--primary" href="/">Voltar à loja</Link>
     </section>
-  </div>
   );
 }

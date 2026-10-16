@@ -4,6 +4,10 @@ import { CATEGORY_HANDLES } from './lib/categories';
 const config: NextConfig = {
   // Build autocontido para a imagem Docker (Coolify): .next/standalone traz só o necessário.
   output: 'standalone',
+  // Metadados sempre no <head>: o Next 15.5 faz streaming deles para o <body> em user-agents que
+  // não estão na lista de bots, e Lighthouse/crawlers de IA não os encontram. /.*/ desliga o
+  // streaming para todos.
+  htmlLimitedBots: /.*/,
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'cdn.shopify.com' }],
     // 75 é o default do Next e chega para thumbnails; 90 é para as imagens grandes de marca

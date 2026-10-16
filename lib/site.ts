@@ -12,7 +12,7 @@ export const SITE = {
   accountUrl: process.env.NEXT_PUBLIC_ACCOUNT_URL || 'https://shopify.com/98533048648/account',
   locale: 'pt_PT',
   description:
-    'Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com ceras vegetais e fragrâncias premium. Expedição em 24h para Portugal continental e Espanha peninsular.',
+    'Velas de copo, wax melts, snapbars e queimadores feitos à mão em Lisboa, com cera vegetal. Expedimos em 24h para Portugal continental e Espanha peninsular.',
   currency: 'EUR',
   logo: '/images/logo.png',
   telephone: '+351937820986', // também WhatsApp

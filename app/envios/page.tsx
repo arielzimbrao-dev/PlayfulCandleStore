@@ -1,24 +1,13 @@
 import type { Metadata } from 'next';
 import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumbs';
-import { formatMoney } from '@/lib/format';
-import { getShippingZones, type ShippingRate } from '@/lib/shopify/admin';
+import { shippingRateLabel } from '@/lib/format';
+import { getShippingZones } from '@/lib/shopify/admin';
 
 export const metadata: Metadata = {
   title: 'Envios & portes',
   description: 'Expedição em até 24 horas úteis para Portugal continental e Espanha peninsular. Vê prazos e custos de envio.',
   alternates: { canonical: '/envios' },
 };
-
-const kg = (value: number) => `${value.toLocaleString('pt-PT', { maximumFractionDigits: 2 })} kg`;
-
-const eur = (value: number) => formatMoney({ amount: String(value), currencyCode: 'EUR' });
-
-// Resume a tabela da Shopify pelo 1.º escalão: 0–1 kg a €5 → "5,00 € por cada 1 kg"
-// (os escalões seguintes na Shopify são múltiplos dele).
-function rateLabel([first]: ShippingRate[]) {
-  if (!first) return null;
-  return first.maxKg ? `${eur(first.price)} por cada ${kg(first.maxKg)}` : eur(first.price);
-}
 
 export default async function EnviosPage() {
   const zones = await getShippingZones();
@@ -49,7 +38,7 @@ export default async function EnviosPage() {
         <ul>
           {zones.map((zone) => (
             <li key={zone.name}>
-              {zone.name}: <strong>{rateLabel(zone.rates)}</strong>
+              {zone.name}: <strong>{shippingRateLabel(zone.rates)}</strong>
             </li>
           ))}
         </ul>

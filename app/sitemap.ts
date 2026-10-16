@@ -28,18 +28,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const [{ products }, collections] = await Promise.all([getProducts(250), getCollections(50)]);
     // Só listar categorias com produtos: as vazias renderizam "em breve" com noindex
     // (ver generateMetadata em /categorias/[handle]) e dariam erro no Search Console.
-    const categoriesWithProducts = new Set(products.map(productCategory).filter(Boolean));
+    // lastmod da categoria = produto dela alterado mais recentemente.
+    const categoryUpdatedAt = new Map<string, string>();
+    for (const product of products) {
+      const category = productCategory(product);
+      if (category && product.updatedAt > (categoryUpdatedAt.get(category) ?? '')) {
+        categoryUpdatedAt.set(category, product.updatedAt);
+      }
+    }
     dynamicRoutes = [
       ...products.map((product) => ({
         url: `${SITE.url}/produtos/${product.handle}`,
+        lastModified: product.updatedAt,
         changeFrequency: 'weekly' as const,
         priority: 0.8,
       })),
       // categorias (tipos) em /categorias/
-      ...CATEGORY_HANDLES.filter((handle) =>
-        categoriesWithProducts.has(CATEGORIES[handle].type),
-      ).map((handle) => ({
+      ...CATEGORY_HANDLES.filter((handle) => categoryUpdatedAt.has(CATEGORIES[handle].type)).map((handle) => ({
         url: `${SITE.url}/categorias/${handle}`,
+        lastModified: categoryUpdatedAt.get(CATEGORIES[handle].type),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
       })),
@@ -48,6 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .filter((collection) => !NON_COLLECTION_HANDLES.has(collection.handle))
         .map((collection) => ({
           url: `${SITE.url}/colecoes/${collection.handle}`,
+          lastModified: collection.updatedAt,
           changeFrequency: 'weekly' as const,
           priority: 0.7,
         })),

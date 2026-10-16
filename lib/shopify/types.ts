@@ -12,6 +12,7 @@ export type Seo = { title: string | null; description: string | null };
 export type ProductVariant = {
   id: string;
   title: string;
+  sku: string | null;
   availableForSale: boolean;
   /** Estoque disponível (Admin API); null/undefined = sem limite. */
   quantityAvailable?: number | null;
@@ -48,6 +49,7 @@ export type Product = {
   tags: string[];
   vendor: string;
   availableForSale: boolean;
+  updatedAt: string; // ISO (lastmod do sitemap)
   scents: string[]; // metafield custom.aromas (lista) já parseado
   weight: string; // metafield custom.peso (ex.: "150g"); fallback por tipo. '' se desconhecido
   reviews: Review[]; // metafield custom.reviews (JSON) já parseado (só aprovadas)
@@ -79,6 +81,7 @@ export type CollectionSummary = {
   handle: string;
   title: string;
   description: string;
+  updatedAt: string; // ISO (lastmod do sitemap)
   image: Image | null;
 };
 

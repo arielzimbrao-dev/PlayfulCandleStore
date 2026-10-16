@@ -204,7 +204,13 @@ export async function getActivePromos(): Promise<Promo[]> {
 // O site não guarda valores de portes: lê as zonas e tarifas do perfil de envio da Shopify.
 export type ShippingRate = { name: string; price: number; minKg: number | null; maxKg: number | null };
 // days: prazo de entrega = "Tempo de trânsito" do 1.º escalão da zona (em dias).
-export type ShippingZone = { name: string; rates: ShippingRate[]; days: { min: number; max: number } | null };
+// countries: códigos ISO dos países da zona (ex.: ['PT']).
+export type ShippingZone = {
+  name: string;
+  countries: string[];
+  rates: ShippingRate[];
+  days: { min: number; max: number } | null;
+};
 
 type RawCondition = {
   field: string;
@@ -229,11 +235,11 @@ export async function getShippingZones(): Promise<ShippingZone[]> {
   try {
     const data = await adminFetch<{
       deliveryProfiles: { nodes: { default: boolean; profileLocationGroups: {
-        locationGroupZones: { nodes: { zone: { name: string }; methodDefinitions: { nodes: RawMethod[] } }[] };
+        locationGroupZones: { nodes: { zone: { name: string; countries: { code: { countryCode: string | null } }[] }; methodDefinitions: { nodes: RawMethod[] } }[] };
       }[] }[] };
     }>(
       `{ deliveryProfiles(first:10){ nodes{ default profileLocationGroups{ locationGroupZones(first:20){ nodes{
-        zone{ name } methodDefinitions(first:50){ nodes{ name active
+        zone{ name countries{ code{ countryCode } } } methodDefinitions(first:50){ nodes{ name active
           rateProvider{ ... on DeliveryRateDefinition{ price{ amount } minTransitTime maxTransitTime } }
           methodConditions{ field operator conditionCriteria{ ... on Weight{ value unit } } } } } } } } } } }`,
       {},
@@ -267,7 +273,12 @@ export async function getShippingZones(): Promise<ShippingZone[]> {
         const days = transit?.minTransitTime && transit.maxTransitTime
           ? { min: transit.minTransitTime / 86_400, max: transit.maxTransitTime / 86_400 }
           : null;
-        return { name: zone.name, rates: rates.map(({ transit: _, ...rate }) => rate), days };
+        return {
+          name: zone.name,
+          countries: zone.countries.flatMap(({ code }) => (code.countryCode ? [code.countryCode] : [])),
+          rates: rates.map(({ transit: _, ...rate }) => rate),
+          days,
+        };
       }),
     );
     shippingCache = { at: Date.now(), zones };

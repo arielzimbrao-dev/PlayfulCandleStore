@@ -1,5 +1,6 @@
 import { SITE, absoluteUrl, SOCIAL_PROFILE_URLS } from './site';
 import type { Product } from './shopify/types';
+import type { ShippingZone } from './shopify/admin';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -8,7 +9,8 @@ export function organizationLd() {
   const hasAddress = address.streetAddress || address.postalCode;
   return {
     '@context': 'https://schema.org',
-    '@type': 'Store',
+    // Loja só online: OnlineStore (sem priceRange/currenciesAccepted, que são de loja física).
+    '@type': 'OnlineStore',
     '@id': `${SITE.url}/#store`,
     name: SITE.name,
     legalName: SITE.legalName,
@@ -19,9 +21,10 @@ export function organizationLd() {
     description: SITE.description,
     email: SITE.email || undefined,
     telephone: SITE.telephone || undefined,
-    priceRange: '€€',
-    currenciesAccepted: SITE.currency,
-    areaServed: { '@type': 'Country', name: 'Portugal' },
+    areaServed: [
+      { '@type': 'Country', name: 'Portugal' },
+      { '@type': 'Country', name: 'Espanha' },
+    ],
     address: hasAddress
       ? {
           '@type': 'PostalAddress',
@@ -56,10 +59,46 @@ export function websiteLd() {
   };
 }
 
-// transitDays: prazo de entrega em Portugal, lido da tarifa na Shopify (getShippingZones). Sem ele,
-// o transitTime é omitido.
-export function productLd(product: Product, transitDays?: { min: number; max: number } | null) {
-  const price = product.priceRange.minVariantPrice;
+const BUSINESS_DAYS = {
+  '@type': 'OpeningHoursSpecification',
+  dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => `https://schema.org/${day}`),
+};
+
+// Um OfferShippingDetails por país de cada zona de envio da Shopify (getShippingZones): tarifa e
+// prazo de trânsito vêm de lá. Sem zonas (Admin API fora do ar), o shippingDetails é omitido.
+function shippingDetailsLd(zones: ShippingZone[], currency: string) {
+  return zones.flatMap((zone) =>
+    zone.countries.map((country) => ({
+      '@type': 'OfferShippingDetails',
+      shippingDestination: { '@type': 'DefinedRegion', addressCountry: country },
+      // ponytail: tarifa do 1.º escalão de peso (0–1 kg) — cobre uma peça; encomendas maiores
+      // pagam por escalão no checkout. Passar o peso da variante se houver produtos > 1 kg.
+      ...(zone.rates[0]
+        ? { shippingRate: { '@type': 'MonetaryAmount', value: zone.rates[0].price.toFixed(2), currency } }
+        : {}),
+      deliveryTime: {
+        '@type': 'ShippingDeliveryTime',
+        // Expedição em até 24h úteis — a promessa da barra de apelos e de /envios (a Shopify não
+        // expõe o tempo de preparação na API). businessDays: o Google só conta seg-sex.
+        handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'DAY', businessDays: BUSINESS_DAYS },
+        ...(zone.days
+          ? {
+              transitTime: {
+                '@type': 'QuantitativeValue',
+                minValue: zone.days.min,
+                maxValue: zone.days.max,
+                unitCode: 'DAY',
+                businessDays: BUSINESS_DAYS,
+              },
+            }
+          : {}),
+      },
+    })),
+  );
+}
+
+export function productLd(product: Product, shippingZones: ShippingZone[] = []) {
+  const { minVariantPrice: minPrice, maxVariantPrice: maxPrice } = product.priceRange;
   const sourceImages = product.images.length
     ? product.images
     : product.featuredImage
@@ -70,14 +109,37 @@ export function productLd(product: Product, transitDays?: { min: number; max: nu
   const ratingValue = reviews.length
     ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
     : 0;
+  const shippingDetails = shippingDetailsLd(shippingZones, minPrice.currencyCode);
+  const countries = [...new Set(shippingZones.flatMap((zone) => zone.countries))];
+  const samePrice = Number(minPrice.amount) === Number(maxPrice.amount);
+  const offerBase = {
+    url: `${SITE.url}/produtos/${product.handle}`,
+    priceCurrency: minPrice.currencyCode,
+    availability: product.availableForSale
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock',
+    itemCondition: 'https://schema.org/NewCondition',
+    seller: { '@type': 'Organization', name: SITE.name },
+    ...(shippingDetails.length ? { shippingDetails } : {}),
+    hasMerchantReturnPolicy: {
+      '@type': 'MerchantReturnPolicy',
+      applicableCountry: countries.length ? countries : ['PT', 'ES'],
+      returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+      merchantReturnDays: 14,
+      returnMethod: 'https://schema.org/ReturnByMail',
+      // Dentro do prazo e com o produto sem uso, o frete de devolução é por nossa conta.
+      returnFees: 'https://schema.org/FreeReturn',
+    },
+  };
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
     description: product.seo.description || product.description,
     image: imageUrls.length ? imageUrls : [absoluteUrl(SITE.logo)],
-    sku: product.variants[0]?.id,
-    brand: { '@type': 'Brand', name: product.vendor || SITE.name },
+    // SKU real da variante (nunca o GID da Shopify); vazio → omitido.
+    sku: product.variants[0]?.sku || undefined,
+    brand: { '@type': 'Brand', name: SITE.name },
     // AggregateRating/Review só quando há avaliações reais (nunca inventar — risco de penalização
     // do Google).
     ...(reviews.length
@@ -98,58 +160,22 @@ export function productLd(product: Product, transitDays?: { min: number; max: nu
           })),
         }
       : {}),
-    offers: {
-      '@type': 'Offer',
-      url: `${SITE.url}/produtos/${product.handle}`,
-      priceCurrency: price.currencyCode,
-      price: Number(price.amount).toFixed(2),
-      availability: product.availableForSale
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-      // O Google recomenda priceValidUntil; sem promoção com data, damos validade de ~1 ano.
-      priceValidUntil: new Date(Date.now() + 365 * DAY_MS).toISOString().slice(0, 10),
-      seller: { '@type': 'Organization', name: SITE.name },
-      // Sem shippingRate: os portes dependem do peso da encomenda (tarifas na Shopify) e o Google
-      // recebe o valor real pelo Merchant Center.
-      shippingDetails: {
-        '@type': 'OfferShippingDetails',
-        shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'PT' },
-        deliveryTime: {
-          '@type': 'ShippingDeliveryTime',
-          // Envio em até 24h úteis (o mesmo que a loja promete na barra de apelos e em /envios).
-          // businessDays: o Google só conta seg-sex ao estimar a data de entrega.
-          handlingTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 0,
-            maxValue: 1,
-            unitCode: 'DAY',
-            businessDays: {
-              '@type': 'OpeningHoursSpecification',
-              dayOfWeek: [
-                'https://schema.org/Monday',
-                'https://schema.org/Tuesday',
-                'https://schema.org/Wednesday',
-                'https://schema.org/Thursday',
-                'https://schema.org/Friday',
-              ],
-            },
-          },
-          ...(transitDays
-            ? { transitTime: { '@type': 'QuantitativeValue', minValue: transitDays.min, maxValue: transitDays.max, unitCode: 'DAY' } }
-            : {}),
+    // Variantes com preços diferentes → AggregateOffer (intervalo de preços).
+    offers: samePrice
+      ? {
+          '@type': 'Offer',
+          ...offerBase,
+          price: Number(minPrice.amount).toFixed(2),
+          // O Google recomenda priceValidUntil; sem promoção com data, damos validade de ~1 ano.
+          priceValidUntil: new Date(Date.now() + 365 * DAY_MS).toISOString().slice(0, 10),
+        }
+      : {
+          '@type': 'AggregateOffer',
+          ...offerBase,
+          lowPrice: Number(minPrice.amount).toFixed(2),
+          highPrice: Number(maxPrice.amount).toFixed(2),
+          offerCount: product.variants.length,
         },
-      },
-      hasMerchantReturnPolicy: {
-        '@type': 'MerchantReturnPolicy',
-        applicableCountry: 'PT',
-        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-        merchantReturnDays: 14,
-        returnMethod: 'https://schema.org/ReturnByMail',
-        // Dentro do prazo e com o produto sem uso, o frete de devolução é por nossa conta.
-        returnFees: 'https://schema.org/FreeReturn',
-      },
-    },
   };
 }
 

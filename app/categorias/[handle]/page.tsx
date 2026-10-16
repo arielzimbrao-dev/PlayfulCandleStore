@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   // Categoria ainda sem produtos não deve ser indexada (mostra só "Em breve").
   const hasProducts = (await getProducts(1, { query: info.query })).products.length > 0;
   return {
-    title: info.title,
+    title: info.seoTitle,
     description: info.text,
     alternates: { canonical: `/categorias/${handle}` },
     robots: { index: hasProducts, follow: true },
