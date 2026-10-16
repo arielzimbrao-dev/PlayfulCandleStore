@@ -1,21 +1,44 @@
-// Ajustes do PhotoBanner só para o hero da home, no celular.
+// Ajustes do PhotoBanner só para o hero da home.
 
 @use '../../styles/mixins' as *;
 
 .hero {
+  // Sem véu claro: no desktop o texto fica na parede lisa entre a manta (esquerda) e os
+  // produtos (direita) da foto de outono — se trocar a foto, revisar esta faixa.
+  .photo-banner__content {
+    background: none;
+
+    @include above(761px) {
+      left: 23%;
+      width: 32%;
+      padding: 40px 0;
+    }
+  }
+
+  // Foto 3:1 num recorte 21:8: ancorada à direita, corta só folhas à esquerda e alarga a parede livre.
+  .photo-banner__image {
+    @include above(761px) {
+      object-position: right center;
+    }
+  }
+
+  .photo-banner__title {
+    @include above(761px) {
+      font-size: clamp(32px, 3.9vw, 64px);
+    }
+  }
+
   @include mobile {
     // As velas estão no fundo da foto: o recorte 4:5 fica ancorado embaixo.
     .photo-banner__image {
       object-position: center bottom;
     }
 
-    // Em 4:5 o parágrafo não cabe sem cobrir as velas.
-    .photo-banner__lead {
-      display: none;
-    }
-
+    // Folhas à esquerda, parede lisa à direita: o bloco começa a meio, texto alinhado à esquerda.
     .photo-banner__content {
-      padding-top: 32px;
+      align-items: flex-start;
+      padding: 32px var(--gutter) 48px 40%;
+      text-align: left;
     }
   }
 }

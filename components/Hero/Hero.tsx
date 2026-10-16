@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useT } from '@/components/LanguageProvider';
 import PhotoBanner from '@/components/PhotoBanner/PhotoBanner';
-import GoogleRating from '@/components/GoogleRating/GoogleRating';
 import './Hero.scss';
 
 const HERO_HREF = '/colecoes/colecao-de-outono';
@@ -14,9 +13,9 @@ export default function Hero() {
   return (
     <section className="hero" aria-label={t.hero.eyebrow}>
       <PhotoBanner
-        desktop="/images/banners/hero-groovy-desktop.jpg"
-        mobile="/images/banners/hero-groovy-mobile-45.jpg"
-        alt="Velas de copo Lemon & Raspberry e Purple Vanilla acesas, entre limões, framboesas, flores e baunilha."
+        desktop="/images/banners/hero-outono-desktop.jpg"
+        mobile="/images/banners/hero-outono-mobile.jpg"
+        alt="Wax melt Cinnamon Rolls, snapbar e vela de copo Cappuccino da Coleção de Outono, entre folhas de outono e uma manta de tricô."
         href={HERO_HREF}
         priority
       >
@@ -24,11 +23,9 @@ export default function Hero() {
         <h1 className="photo-banner__title">
           {t.hero.titleA} <em>{t.hero.titleEm}</em> {t.hero.titleB}
         </h1>
-        <p className="photo-banner__lead">{t.hero.lead}</p>
         <Link className="btn btn--gold" href={HERO_HREF}>
           {t.hero.ctaShop} →
         </Link>
-        <GoogleRating />
       </PhotoBanner>
     </section>
   );
