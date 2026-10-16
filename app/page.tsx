@@ -1,3 +1,4 @@
+import { OG_BASE } from '@/lib/site';
 import type { Metadata } from 'next';
 import Hero from '@/components/Hero/Hero';
 import Appeals from '@/components/Appeals/Appeals';
@@ -14,7 +15,7 @@ const AUTUMN_COLLECTION = 'colecao-de-outono';
 
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
-  openGraph: { url: '/' },
+  openGraph: { ...OG_BASE, url: '/' },
 };
 
 export default async function HomePage() {

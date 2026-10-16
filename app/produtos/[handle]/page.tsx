@@ -1,3 +1,4 @@
+import { OG_BASE } from '@/lib/site';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -119,7 +120,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
     // ≤155 car., cortado no último espaço (não a meio da palavra).
     description: description.length > 155 ? `${description.slice(0, description.lastIndexOf(' ', 154))}…` : description,
     alternates: { canonical: `/produtos/${handle}` },
-    openGraph: imageUrl ? { type: 'website', images: [{ url: imageUrl }] } : undefined,
+    openGraph: imageUrl ? { ...OG_BASE, images: [{ url: imageUrl }] } : undefined,
   };
 }
 

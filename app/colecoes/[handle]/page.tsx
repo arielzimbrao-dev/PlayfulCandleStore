@@ -1,3 +1,4 @@
+import { OG_BASE } from '@/lib/site';
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
 import ProductListing from '@/components/ProductListing/ProductListing';
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
     description:
       collection.seo.description || collection.description || `${collection.title} — velas artesanais Playful Candles.`,
     alternates: { canonical: `/colecoes/${handle}` },
-    openGraph: collection.image ? { images: [{ url: collection.image.url }] } : undefined,
+    openGraph: collection.image ? { ...OG_BASE, images: [{ url: collection.image.url }] } : undefined,
   };
 }
 

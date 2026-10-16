@@ -54,3 +54,7 @@ export function absoluteUrl(path: string): string {
 // Esgotado: "Avisa-me" abre o WhatsApp com uma mensagem pronta pedindo aviso de reposição.
 export const notifyMeHref = (title: string) =>
   `${SITE.notifyWhatsapp}?text=${encodeURIComponent(`Olá! Avisem-me quando "${title}" voltar ao stock 🕯️`)}`;
+
+// Base do Open Graph. O `openGraph` de uma página substitui o do layout por inteiro (não junta),
+// por isso as páginas que o definem espalham esta base para não perder site_name/locale/type.
+export const OG_BASE = { type: 'website', locale: SITE.locale, siteName: SITE.name } as const;
